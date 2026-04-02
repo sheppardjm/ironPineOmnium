@@ -1,0 +1,28 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Iron & Pine Omnium",
+  description = "A two-day gravel series in Michigan's Upper Peninsula combining day 1 moving time with day 2 sector speed and KOM points.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <slot name="head" />
+  </head>
+  <body>
+    <div class="page-noise" aria-hidden="true"></div>
+    <slot />
+  </body>
+</html>

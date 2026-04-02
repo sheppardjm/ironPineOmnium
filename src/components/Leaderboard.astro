@@ -1,0 +1,138 @@
+---
+import { defaultScoringConfig, formatDuration, scoreOmnium } from "../lib/scoring";
+import { sampleRiders } from "../lib/sample-data";
+
+const leaderboards = scoreOmnium(sampleRiders, defaultScoringConfig);
+
+const scoreFormatter = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+---
+
+<div class="leaderboard-shell" data-leaderboard>
+  <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+    <div>
+      <p class="eyebrow">Live Omnium Model</p>
+      <h3 class="text-3xl text-ink-950 md:text-4xl">Overall winners are calculated inside each category.</h3>
+    </div>
+    <div class="tab-list" role="tablist" aria-label="Leaderboard categories">
+      {leaderboards.map((board, index) => (
+        <button
+          class:list={{ "tab-button": true, "is-active": index === 0 }}
+          type="button"
+          role="tab"
+          aria-selected={index === 0 ? "true" : "false"}
+          aria-controls={`panel-${board.categoryId}`}
+          data-target={board.categoryId}
+        >
+          {board.categoryLabel}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  {leaderboards.map((board, index) => {
+    const winner = board.entries[0];
+
+    return (
+      <section
+        id={`panel-${board.categoryId}`}
+        class="leaderboard-panel"
+        role="tabpanel"
+        data-panel={board.categoryId}
+        hidden={index !== 0}
+      >
+        <div class="winner-banner">
+          <div>
+            <p class="winner-label">Projected category winner</p>
+            <h4 class="winner-name">{winner.rider.name}</h4>
+            <p class="winner-meta">{winner.rider.hometown} · {scoreFormatter.format(winner.totalScore)} total points</p>
+          </div>
+          <div class="benchmark-grid">
+            <div>
+              <span>Fastest day 1</span>
+              <strong>{formatDuration(board.benchmarks.fastestDay1MovingTimeSeconds)}</strong>
+            </div>
+            <div>
+              <span>Fastest day 2 sectors</span>
+              <strong>{formatDuration(board.benchmarks.fastestDay2SectorTotalSeconds)}</strong>
+            </div>
+            <div>
+              <span>Most KOM points</span>
+              <strong>{board.benchmarks.highestKomPoints}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="leaderboard-table-wrap">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th scope="col">Rank</th>
+                <th scope="col">Rider</th>
+                <th scope="col">Day 1</th>
+                <th scope="col">Sectors</th>
+                <th scope="col">KOM</th>
+                <th scope="col">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {board.entries.map((entry) => (
+                <tr>
+                  <td class="rank-cell">{entry.rank}</td>
+                  <td>
+                    <div class="font-semibold text-ink-950">{entry.rider.name}</div>
+                    <div class="text-sm text-ink-700">{entry.rider.hometown}</div>
+                  </td>
+                  <td>
+                    <strong>{scoreFormatter.format(entry.day1Score)}</strong>
+                    <div class="score-note">{formatDuration(entry.rider.day1MovingTimeSeconds)}</div>
+                  </td>
+                  <td>
+                    <strong>{scoreFormatter.format(entry.sectorScore)}</strong>
+                    <div class="score-note">{formatDuration(entry.sectorTotalTimeSeconds)}</div>
+                  </td>
+                  <td>
+                    <strong>{scoreFormatter.format(entry.komScore)}</strong>
+                    <div class="score-note">{entry.rider.day2KomPoints} pts</div>
+                  </td>
+                  <td class="total-cell">{scoreFormatter.format(entry.totalScore)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    );
+  })}
+</div>
+
+<script>
+  const leaderboards = document.querySelectorAll("[data-leaderboard]");
+
+  for (const leaderboard of leaderboards) {
+    /** @type {NodeListOf<HTMLButtonElement>} */
+    const buttons = leaderboard.querySelectorAll("[data-target]");
+    /** @type {NodeListOf<HTMLElement>} */
+    const panels = leaderboard.querySelectorAll("[data-panel]");
+
+    for (const button of buttons) {
+      button.addEventListener("click", () => {
+        const target = button.getAttribute("data-target");
+
+        for (const candidate of buttons) {
+          const isActive = candidate === button;
+          candidate.classList.toggle("is-active", isActive);
+          candidate.setAttribute("aria-selected", String(isActive));
+        }
+
+        for (const panel of panels) {
+          if (panel instanceof HTMLElement) {
+            panel.hidden = panel.getAttribute("data-panel") !== target;
+          }
+        }
+      });
+    }
+  }
+</script>

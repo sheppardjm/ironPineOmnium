@@ -1,0 +1,156 @@
+---
+import Leaderboard from "../components/Leaderboard.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { defaultScoringConfig } from "../lib/scoring";
+
+const eventLinks = [
+  {
+    label: "Day 1 · MK Ultra Gravel",
+    href: "file:///Users/Sheppardjm/Repos/mkUltraGravel/dist/index.html",
+    detail: "An all-day fondo-style group ride where moving time still matters, even though the opening day is not a formal race.",
+  },
+  {
+    label: "Day 2 · Hiawatha's Revenge",
+    href: "file:///Users/Sheppardjm/Repos/hiawathasRevenge/dist/index.html",
+    detail: "A grinduro-style day across Alger and Marquette County where gravel sectors and climb points decide the weekend.",
+  },
+];
+
+const scoringPillars = [
+  {
+    title: "Day 1 moving time",
+    weight: `${Math.round(defaultScoringConfig.day1Weight * 100)}%`,
+    body: "Each rider is benchmarked against the fastest moving time in their category. The result is weighted so the fondo counts without turning day one into a pure race.",
+  },
+  {
+    title: "Day 2 gravel sectors",
+    weight: `${Math.round(defaultScoringConfig.sectorWeight * 100)}%`,
+    body: "All timed gravel sectors are totaled, benchmarked against the fastest category aggregate, and weighted most heavily to reflect the grinduro focus.",
+  },
+  {
+    title: "Day 2 KOM points",
+    weight: `${Math.round(defaultScoringConfig.komWeight * 100)}%`,
+    body: "Climb points give aggressive riders a way to move up the standings even if they are not the fastest rider across the full sector set.",
+  },
+];
+---
+
+<BaseLayout
+  title="Iron & Pine Omnium | Two Days of Gravel in the Hiawatha National Forest"
+  description="A bright editorial landing page for Iron & Pine Omnium, a two-day gravel series in Alger and Marquette County, Michigan."
+>
+  <main class="page-shell">
+    <section class="hero-section">
+      <div class="hero-copy">
+        <p class="eyebrow">June 6 to 7, 2026 · Hiawatha National Forest</p>
+        <h1 class="hero-title">Iron & Pine Omnium</h1>
+        <p class="hero-kicker">
+          A two-day gravel series threading Alger and Marquette County with one goal: crown the strongest all-around rider in the forest.
+        </p>
+        <p class="hero-body">
+          Day one is a fondo-style group ride. Day two flips into a grinduro rhythm of timed sectors and KOM chases. Overall winners are calculated separately for men, women, and non-binary riders.
+        </p>
+
+        <div class="cta-row">
+          <a class="primary-button" href="#leaderboard">See the Omnium Leaderboard</a>
+          <a class="secondary-button" href="#format">How the weekend works</a>
+        </div>
+      </div>
+
+      <div class="hero-panel">
+        <div class="floating-badge floating-badge--pine">Forest roads</div>
+        <div class="floating-badge floating-badge--sun">Sector speed</div>
+        <div class="floating-badge floating-badge--coral">KOM points</div>
+
+        <div class="hero-card">
+          <p class="eyebrow text-ink-700">The omnium equation</p>
+          <div class="hero-score-grid">
+            <div>
+              <span>Day 1</span>
+              <strong>Moving time</strong>
+            </div>
+            <div>
+              <span>Day 2</span>
+              <strong>Sectors + KOM</strong>
+            </div>
+            <div>
+              <span>Categories</span>
+              <strong>Men · Women · Non-Binary</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="format" class="content-section">
+      <div class="section-heading">
+        <p class="eyebrow">Weekend Format</p>
+        <h2>Two linked rides, one overall standing.</h2>
+      </div>
+
+      <div class="event-grid">
+        {eventLinks.map((event) => (
+          <article class="event-card">
+            <p class="event-marker">Companion site</p>
+            <h3>{event.label}</h3>
+            <p>{event.detail}</p>
+            <a class="inline-link" href={event.href}>Visit event website</a>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="content-section scoring-section">
+      <div class="section-heading">
+        <p class="eyebrow">Scoring System</p>
+        <h2>Fastest benchmarks are normalized to 100, then the weekend gets weighted.</h2>
+      </div>
+
+      <div class="pillar-grid">
+        {scoringPillars.map((pillar) => (
+          <article class="pillar-card">
+            <div class="pill-row">
+              <span class="score-pill">{pillar.weight}</span>
+              <span class="mini-label">weighted contribution</span>
+            </div>
+            <h3>{pillar.title}</h3>
+            <p>{pillar.body}</p>
+          </article>
+        ))}
+      </div>
+
+      <div class="formula-card">
+        <p class="eyebrow">Formula</p>
+        <p class="formula-text">
+          Overall score = day 1 benchmark ratio × {Math.round(defaultScoringConfig.day1Weight * 100)} +
+          day 2 sector benchmark ratio × {Math.round(defaultScoringConfig.sectorWeight * 100)} +
+          KOM benchmark ratio × {Math.round(defaultScoringConfig.komWeight * 100)}
+        </p>
+        <p class="formula-note">
+          Each category is ranked independently. The leaderboard below uses sample rider data so the model and UI can be validated before importing real results.
+        </p>
+      </div>
+    </section>
+
+    <section id="leaderboard" class="content-section leaderboard-section">
+      <div class="section-heading">
+        <p class="eyebrow">Leaderboard</p>
+        <h2>Three categories. Three score inputs. One omnium winner in each field.</h2>
+      </div>
+
+      <Leaderboard />
+    </section>
+
+    <section class="content-section final-cta">
+      <div>
+        <p class="eyebrow">Upper Peninsula Gravel Weekend</p>
+        <h2>Start with the ride pages, then bring the results back to the omnium.</h2>
+      </div>
+      <div class="cta-stack">
+        {eventLinks.map((event) => (
+          <a class="secondary-button w-full justify-center" href={event.href}>{event.label}</a>
+        ))}
+      </div>
+    </section>
+  </main>
+</BaseLayout>
