@@ -160,31 +160,35 @@
     display: grid;
     gap: 2rem;
     align-items: center;
-    padding: clamp(3.75rem, 8vw, 6.5rem) 0 2rem;
+    overflow: hidden;
+    isolation: isolate;
+    padding: clamp(3.75rem, 8vw, 6.5rem) clamp(1.2rem, 2.5vw, 2.2rem) 2rem;
+    border: 1px solid rgba(242, 238, 230, 0.08);
+    border-radius: 2.4rem;
+    background: rgba(7, 11, 10, 0.52);
   }
 
   .hero-section::before,
   .hero-section::after {
     content: "";
     position: absolute;
-    border-radius: 999px;
-    filter: blur(16px);
     z-index: -1;
   }
 
   .hero-section::before {
-    width: 18rem;
-    height: 18rem;
-    right: 4%;
-    top: 0;
-    background: rgba(109, 137, 119, 0.12);
+    inset: 0;
+    background:
+      linear-gradient(90deg, rgba(5, 8, 8, 0.88) 0%, rgba(5, 8, 8, 0.62) 42%, rgba(5, 8, 8, 0.74) 100%),
+      linear-gradient(180deg, rgba(10, 17, 16, 0.16), rgba(10, 17, 16, 0.84)),
+      url("/images/mist-treeline.jpg") center center / cover;
+    transform: scale(1.03);
   }
 
   .hero-section::after {
-    width: 14rem;
-    height: 14rem;
-    left: 2%;
-    bottom: 2rem;
+    inset: auto -10% -15% 45%;
+    height: 18rem;
+    border-radius: 999px;
+    filter: blur(16px);
     background: rgba(221, 130, 88, 0.14);
   }
 
@@ -192,6 +196,13 @@
   .hero-panel,
   .content-section {
     position: relative;
+  }
+
+  .hero-copy,
+  .hero-panel,
+  .manifesto-section > *,
+  .final-cta > * {
+    z-index: 1;
   }
 
   .eyebrow,
@@ -555,6 +566,9 @@
 
   .content-section {
     margin-top: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
     padding: clamp(1.4rem, 2vw, 2rem);
     border: 1px solid rgba(242, 238, 230, 0.08);
     border-radius: 2rem;
@@ -578,10 +592,108 @@
     max-width: 44rem;
   }
 
+  .manifesto-section::before,
+  .final-cta::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.26;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .manifesto-section::before {
+    background-image:
+      linear-gradient(180deg, rgba(7, 11, 10, 0.26), rgba(7, 11, 10, 0.84)),
+      url("/images/fog-forest.jpg");
+    background-position: center center;
+  }
+
   .manifesto-grid,
   .event-grid,
   .pillar-grid {
     margin-top: 1.75rem;
+  }
+
+  .terrain-section {
+    margin-top: 1.75rem;
+  }
+
+  .terrain-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .terrain-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 18rem;
+    border: 1px solid rgba(242, 238, 230, 0.08);
+    border-radius: 2rem;
+    background-color: rgba(9, 14, 13, 0.68);
+    box-shadow: var(--shadow-panel);
+    isolation: isolate;
+  }
+
+  .terrain-card::before,
+  .terrain-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .terrain-card::before {
+    background-position: center;
+    background-size: cover;
+    transform: scale(1.02);
+  }
+
+  .terrain-card::after {
+    background:
+      linear-gradient(180deg, rgba(6, 9, 8, 0.12), rgba(6, 9, 8, 0.78) 72%, rgba(6, 9, 8, 0.92) 100%);
+  }
+
+  .terrain-card--mist::before {
+    background-image: url("/images/mist-treeline.jpg");
+  }
+
+  .terrain-card--forest::before {
+    background-image: url("/images/fog-forest.jpg");
+  }
+
+  .terrain-card--ridge::before {
+    background-image: url("/images/cloud-ridge.jpg");
+  }
+
+  .terrain-card__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 18rem;
+    padding: 1.3rem;
+  }
+
+  .terrain-label {
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-mist-200);
+  }
+
+  .terrain-card h3 {
+    margin-top: 0.6rem;
+    max-width: 10ch;
+    font-size: clamp(2.2rem, 4vw, 3.25rem);
+    color: var(--color-mist-50);
+  }
+
+  .terrain-card p:last-child {
+    margin-top: 0.75rem;
+    max-width: 28rem;
+    color: var(--color-mist-200);
   }
 
   .manifesto-card,
@@ -785,6 +897,14 @@
     margin-bottom: 2rem;
   }
 
+  .final-cta::before {
+    opacity: 0.3;
+    background-image:
+      linear-gradient(90deg, rgba(6, 9, 8, 0.84) 0%, rgba(6, 9, 8, 0.46) 55%, rgba(6, 9, 8, 0.82) 100%),
+      url("/images/cloud-ridge.jpg");
+    background-position: center center;
+  }
+
   .w-full {
     width: 100%;
   }
@@ -813,6 +933,10 @@
     }
 
     .manifesto-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .terrain-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 

@@ -50,6 +50,24 @@ const gatheringNotes = [
   },
 ];
 
+const terrainPanels = [
+  {
+    title: "Mist line",
+    body: "Cold air hanging over fir tops, the kind of weather that makes the whole start grid feel quieter and more serious.",
+    modifier: "terrain-card--mist",
+  },
+  {
+    title: "Timber stand",
+    body: "A straight-run forest corridor, wet grass under the trees, and the visual texture the page was missing.",
+    modifier: "terrain-card--forest",
+  },
+  {
+    title: "Cloud shelf",
+    body: "Dark ridges and swallowed horizons so the event feels like it belongs outside, not just inside panels and type.",
+    modifier: "terrain-card--ridge",
+  },
+];
+
 const scoringPillars = [
   {
     title: "Day 1 moving time",
@@ -155,6 +173,20 @@ const scoringPillars = [
           <article class="manifesto-card">
             <h3>{note.title}</h3>
             <p>{note.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section class="terrain-section" aria-label="Landscape atmosphere">
+      <div class="terrain-grid">
+        {terrainPanels.map((panel) => (
+          <article class:list={["terrain-card", panel.modifier]}>
+            <div class="terrain-card__body">
+              <p class="terrain-label">Outdoor note</p>
+              <h3>{panel.title}</h3>
+              <p>{panel.body}</p>
+            </div>
           </article>
         ))}
       </div>
