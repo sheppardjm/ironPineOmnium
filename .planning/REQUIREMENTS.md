@@ -74,34 +74,34 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| STRA-01 | — | Pending |
-| STRA-02 | — | Pending |
-| STRA-03 | — | Pending |
-| STRA-04 | — | Pending |
-| SUBM-01 | — | Pending |
-| SUBM-02 | — | Pending |
-| SUBM-03 | — | Pending |
-| SUBM-04 | — | Pending |
-| SUBM-05 | — | Pending |
-| SUBM-06 | — | Pending |
-| LEAD-01 | — | Pending |
-| LEAD-02 | — | Pending |
-| LEAD-03 | — | Pending |
-| LEAD-04 | — | Pending |
-| DATA-01 | — | Pending |
-| DATA-02 | — | Pending |
-| DATA-03 | — | Pending |
-| DSGN-01 | — | Pending |
-| DSGN-02 | — | Pending |
-| DSGN-03 | — | Pending |
-| COMP-01 | — | Pending |
-| COMP-02 | — | Pending |
+| COMP-01 | Phase 1 | Pending |
+| COMP-02 | Phase 1 | Pending |
+| STRA-01 | Phase 3 | Pending |
+| STRA-04 | Phase 3 | Pending |
+| STRA-02 | Phase 4 | Pending |
+| STRA-03 | Phase 4 | Pending |
+| SUBM-01 | Phase 5 | Pending |
+| SUBM-03 | Phase 5 | Pending |
+| SUBM-04 | Phase 5 | Pending |
+| SUBM-05 | Phase 6 | Pending |
+| SUBM-06 | Phase 6 | Pending |
+| DATA-03 | Phase 6 | Pending |
+| DATA-01 | Phase 7 | Pending |
+| DATA-02 | Phase 7 | Pending |
+| SUBM-02 | Phase 7 | Pending |
+| LEAD-04 | Phase 8 | Pending |
+| DSGN-03 | Phase 8 | Pending |
+| LEAD-01 | Phase 9 | Pending |
+| LEAD-02 | Phase 9 | Pending |
+| LEAD-03 | Phase 9 | Pending |
+| DSGN-01 | Phase 10 | Pending |
+| DSGN-02 | Phase 10 | Pending |
 
 **Coverage:**
 - v1 requirements: 22 total
-- Mapped to phases: 0
-- Unmapped: 22 ⚠️
+- Mapped to phases: 22
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-02*
-*Last updated: 2026-04-02 after initial definition*
+*Last updated: 2026-04-02 after roadmap phase mapping*
