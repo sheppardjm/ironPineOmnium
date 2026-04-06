@@ -95,14 +95,11 @@ Plans:
   3. An activity outside June 6-7, 2026 is rejected immediately with a message identifying the actual activity date and the expected event dates
   4. The activity is fetched with `include_all_efforts=true` so segment efforts are available for Day 2 scoring
   5. A network error or Strava API error during fetch shows a recoverable error state — the rider can retry without losing their OAuth session
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: Implement activity URL parsing (regex extract of numeric ID from full Strava URL)
-- [ ] 04-02: Implement Strava activity fetch with `include_all_efforts=true` in `strava-callback.js`
-- [ ] 04-03: Implement athlete ownership verification (`activity.athlete.id === authenticated_athlete_id`)
-- [ ] 04-04: Implement date range validation against June 6-7, 2026 with clear error messaging
-- [ ] 04-05: Add retry-friendly error handling for API failures during fetch
+- [ ] 04-01-PLAN.md — Create strava-fetch-activity.js with URL parsing, API fetch, ownership check, date validation, and segment extraction
+- [ ] 04-02-PLAN.md — End-to-end test against real Strava API via netlify dev (checkpoint)
 
 ---
 
@@ -230,14 +227,14 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Compliance and Prerequisites | 3/4 | ✓ Complete (01-02 deferred) | 2026-04-06 |
-| 2. Netlify Infrastructure | 2/2 | ✓ Complete | 2026-04-06 |
-| 3. Strava OAuth | 3/3 | ✓ Complete | 2026-04-06 |
-| 4. Activity Fetching and Validation | 0/5 | Not started | - |
+| 1. Compliance and Prerequisites | 3/4 | Complete (01-02 deferred) | 2026-04-06 |
+| 2. Netlify Infrastructure | 2/2 | Complete | 2026-04-06 |
+| 3. Strava OAuth | 3/3 | Complete | 2026-04-06 |
+| 4. Activity Fetching and Validation | 0/2 | Planned | - |
 | 5. Submission Form UX | 0/5 | Not started | - |
 | 6. Scoring Extraction | 0/5 | Not started | - |
 | 7. Data Persistence | 0/5 | Not started | - |
@@ -247,4 +244,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-06 after Phase 3 execution*
+*Last updated: 2026-04-06 after Phase 4 planning*
