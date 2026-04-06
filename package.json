@@ -24,6 +24,7 @@
     "pnpm": "10.14.0"
   },
   "overrides": {
-    "vite": "^7"
+    "vite": "^7",
+    "esbuild": "0.27.7"
   }
 }
