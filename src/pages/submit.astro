@@ -1,0 +1,257 @@
+---
+// submit.astro — Activity submission entry point
+// Riders paste a Strava activity URL here. A client-side script POSTs to
+// /api/strava-fetch-activity, handles errors inline, and on success
+// base64url-encodes the payload and redirects to /submit-confirm.
+// Static output mode: no server-side request context available at runtime.
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Submit Activity | Iron & Pine Omnium"
+  description="Paste your Strava activity URL to submit your ride to the Iron & Pine Omnium leaderboard."
+>
+  <main class="page-shell">
+    <div class="submit-shell">
+      <div class="submit-card">
+        <p class="eyebrow" aria-hidden="true">Submit Activity</p>
+        <h1 class="submit-heading">Paste your Strava activity URL</h1>
+        <p class="submit-instructions">
+          Copy the URL from your Strava activity page (e.g.,
+          https://www.strava.com/activities/12345678) and paste it below.
+        </p>
+
+        <form id="submit-form">
+          <input
+            type="url"
+            name="activityUrl"
+            id="activity-url"
+            required
+            placeholder="https://www.strava.com/activities/..."
+            autocomplete="off"
+          />
+          <button type="submit" id="submit-btn" class="primary-button">
+            Look up activity
+          </button>
+        </form>
+
+        <p id="submit-error" class="submit-error" hidden></p>
+        <p id="submit-loading" class="submit-loading" hidden>
+          Fetching activity from Strava...
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function toBase64url(obj: object): string {
+      const json = JSON.stringify(obj);
+      return btoa(json).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
+    }
+
+    const form = document.getElementById("submit-form") as HTMLFormElement;
+    const btn = document.getElementById("submit-btn") as HTMLButtonElement;
+    const errorEl = document.getElementById("submit-error") as HTMLParagraphElement;
+    const loadingEl = document.getElementById("submit-loading") as HTMLParagraphElement;
+    const inputEl = document.getElementById("activity-url") as HTMLInputElement;
+
+    const errorMessages: Record<string, string> = {
+      invalid_url:
+        "That doesn't look like a Strava activity URL. It should look like https://www.strava.com/activities/12345678",
+      activity_not_found:
+        "We couldn't find that activity. Make sure it exists and isn't set to private.",
+      wrong_athlete:
+        "That activity belongs to a different Strava account. You can only submit your own activities.",
+      rate_limited:
+        "Strava's API rate limit has been reached. Please wait a minute and try again.",
+      network_error: "Network error reaching Strava. Check your connection and try again.",
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      // Reset state
+      errorEl.hidden = true;
+      errorEl.textContent = "";
+      loadingEl.hidden = false;
+      btn.disabled = true;
+
+      const activityUrl = inputEl.value.trim();
+
+      let data: Record<string, unknown>;
+
+      try {
+        const res = await fetch("/api/strava-fetch-activity", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({ activityUrl }),
+        });
+
+        if (res.status === 401) {
+          window.location.href = "/api/strava-auth";
+          return;
+        }
+
+        data = await res.json();
+      } catch (_err) {
+        loadingEl.hidden = true;
+        btn.disabled = false;
+        errorEl.textContent = errorMessages.network_error;
+        errorEl.hidden = false;
+        return;
+      }
+
+      loadingEl.hidden = true;
+      btn.disabled = false;
+
+      if (data.error) {
+        let message: string;
+        if (data.error === "wrong_date" && typeof data.actualDate === "string") {
+          message = `That activity is from ${data.actualDate}. The Iron & Pine Omnium is June 6-7, 2026.`;
+        } else {
+          message =
+            errorMessages[data.error as string] ?? "Something went wrong. Please try again.";
+        }
+        errorEl.textContent = message;
+        errorEl.hidden = false;
+        return;
+      }
+
+      // Success — encode and redirect
+      window.location.href = "/submit-confirm?payload=" + toBase64url(data);
+    });
+  </script>
+
+  <style>
+    .submit-shell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: var(--page-gutter, 1.5rem);
+    }
+
+    .submit-card {
+      position: relative;
+      z-index: 1;
+      max-width: 36rem;
+      width: 100%;
+      background: var(--color-fir-900, #17231f);
+      border: 1px solid var(--color-fir-700, #2f463d);
+      border-radius: 0.75rem;
+      padding: clamp(2rem, 6vw, 3.5rem);
+      box-shadow: var(--shadow-poster);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .submit-heading {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 600;
+      color: var(--color-mist-50);
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .submit-instructions {
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--color-mist-200, #d1cabd);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    input[type="url"] {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.75rem 1rem;
+      background: var(--color-night-975, #060908);
+      border: 1px solid var(--color-fir-700, #2f463d);
+      border-radius: 0.375rem;
+      color: var(--color-mist-50, #f2eee6);
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    input[type="url"]:focus {
+      border-color: var(--color-fern-500, #6d8977);
+    }
+
+    input[type="url"]::placeholder {
+      color: var(--color-mist-400, #9f998d);
+    }
+
+    .submit-error {
+      color: var(--color-ember-400, #dd8258);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .submit-loading {
+      color: var(--color-fern-500, #6d8977);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+    }
+
+    /* Eyebrow — matches global pattern */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--color-gold-400, #c7a068);
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 3rem;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.55;
+    }
+
+    /* Primary button — scoped override matching global pill style */
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      background: var(--color-mist-50, #f2eee6);
+      color: var(--color-night-950, #0a1110);
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: box-shadow 0.15s ease, transform 0.15s ease;
+      box-shadow: var(--shadow-button);
+    }
+
+    .primary-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.36);
+    }
+
+    .primary-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</BaseLayout>
