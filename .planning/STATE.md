@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 3 of 10 (Strava OAuth)
-Plan: 0 of 5 in current phase
-Status: Ready to plan
-Last activity: 2026-04-06 — Phase 2 verified and complete (2/2 plans)
+Plan: 2 of 3 in current phase (03-01 and 03-02 complete)
+Status: In progress
+Last activity: 2026-04-06 — Completed 03-02-PLAN.md (OAuth callback + token refresh utility)
 
-Progress: [██░░░░░░░░] 20%
+Progress: [███░░░░░░░] 27%
 
 ## Performance Metrics
 
@@ -61,6 +61,14 @@ Recent decisions affecting current work:
 - 02-02: esbuild overridden to 0.27.7 in pnpm overrides — fixes darwin-arm64 binary mismatch with netlify-cli internals
 - 02-02: netlify dev requires `volta run --node 22.22.2 npx netlify dev` — plain npx uses Node 20 which Astro 6 rejects
 - 02-02: NETLIFY_BUILD_HOOK must exist in Netlify dashboard (not just .env) — deployed functions have no .env access
+- 03-01: CSRF nonce is 32 random bytes hex-encoded, strava_csrf cookie maxAge 600s
+- 03-01: error.astro uses client-side script to read reason query param (static mode)
+- 03-01: Secure flag relaxed when NETLIFY_DEV=true for local dev
+- 03-02: multiValueHeaders required for multiple Set-Cookie in v1 Lambda — headers['Set-Cookie'] drops all but last
+- 03-02: athlete.id from Strava token exchange converted to String() immediately — never in refresh responses
+- 03-02: lib/ subdirectory in netlify/functions/ for shared utilities — no handler export, not exposed as endpoints
+- 03-02: getValidAccessToken() returns { updated: boolean } — callers re-serialize session cookie when true
+- 03-02: BUFFER_SECONDS=300 (5 min) before token expiry triggers refresh; Strava may rotate refresh_token on each grant
 
 ### Pending Todos
 
@@ -74,6 +82,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-06
-Stopped at: Phase 2 complete, verified, roadmap updated. Ready for Phase 3.
+Last session: 2026-04-06T16:46:23Z
+Stopped at: Completed 03-02-PLAN.md (strava-callback.js + strava-tokens.js)
 Resume file: None
