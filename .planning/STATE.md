@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 5 of 10 (Submission Form UX)
-Plan: 0 of 5 in current phase
-Status: Ready to plan
-Last activity: 2026-04-06 — Phase 4 verified and complete (2/2 plans)
+Plan: 1 of 5 in current phase
+Status: In progress
+Last activity: 2026-04-06 — Completed 05-01-PLAN.md (submit page + OAuth callback fix)
 
 Progress: [████░░░░░░] 40%
 
@@ -77,6 +77,9 @@ Recent decisions affecting current work:
 - 04-01: Date validation uses start_date_local.slice(0,10) without timezone math — local date portion is correct despite misleading Z suffix
 - 04-01: Duplicate segment efforts keep fastest (lowest elapsed_time) — prevents double-counting for riders who repeat a sector
 - 04-01: Strava 401 after token refresh treated as activity_not_found — valid token + 401 means private/inaccessible activity
+- 05-01: btoa() used directly for base64url encoding — payload fields are all ASCII-safe (numeric IDs, ISO dates, number values)
+- 05-01: Astro script tag (not is:inline) used for TypeScript type safety and Vite bundling on submit page
+- 05-01: OAuth callback now redirects to /submit after success (was /)
 
 ### Pending Todos
 
@@ -91,6 +94,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-06
-Stopped at: Phase 4 complete, verified, roadmap updated. Ready for Phase 5.
+Last session: 2026-04-06T22:14:56Z
+Stopped at: Completed 05-01-PLAN.md — /submit page and OAuth callback redirect
 Resume file: None
