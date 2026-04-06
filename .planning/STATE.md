@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** Phase 1 — Compliance and Prerequisites
+**Current focus:** Phase 2 — Netlify Infrastructure
 
 ## Current Position
 
-Phase: 1 of 10 (Compliance and Prerequisites)
-Plan: 4 of 4 in current phase (01-01, 01-03, 01-04 complete; 01-02 drafted but not formally closed)
-Status: Phase nearly complete (01-02 SUMMARY.md pending formal closure)
-Last activity: 2026-04-06 — Completed 01-04-PLAN.md (CSV fallback procedure, product owner approved)
+Phase: 2 of 10 (Netlify Infrastructure)
+Plan: 0 of 4 in current phase
+Status: Ready to plan
+Last activity: 2026-04-06 — Phase 1 verified and complete (3/4 plans; 01-02 deferred)
 
-Progress: [██░░░░░░░░] ~8% (3 plans completed of ~40 estimated)
+Progress: [█░░░░░░░░░] 10%
 
 ## Performance Metrics
 
@@ -30,7 +30,7 @@ Progress: [██░░░░░░░░] ~8% (3 plans completed of ~40 estimat
 | 01-compliance | 3/4 | ~26 min | ~9 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-04 (~15 min + checkpoint pause), 01-03 (~1 min), 01-01 (~10 min + checkpoint pause)
+- Last 5 plans: 01-04 (~15 min), 01-03 (~1 min), 01-01 (~10 min)
 - Trend: —
 
 *Updated after each plan completion*
@@ -52,23 +52,21 @@ Recent decisions affecting current work:
 - 01-01: Strava deauth deletes entire athlete JSON file — no partial retention
 - 01-01: hometown not collected — RiderResult.hometown must be emptied or removed in Phase 2
 - 01-03: Segment IDs stored as strings (not numbers) — avoids JS precision issues with large Strava IDs
-- 01-03: SEGMENT_LABELS as flat Record (not inline objects) — keeps as-const arrays clean for literal type inference
 - 01-04: Fallback athlete IDs use manual-NNN scheme — string prefix prevents collision with Strava numeric IDs
 - 01-04: activityId set to literal "manual" for fallback entries — scoring/dedup must handle this sentinel
-- 01-04: KOM fallback records per-rider completion flags only — cross-rider ranking computed separately in scoring phase
+- Phase 1: Strava athlete limit review (01-02) deferred until UI is complete — Strava requires screenshots of finished product before approving
 
 ### Pending Todos
 
-None yet.
+- Submit Strava athlete limit review after UI is built (around Phase 5+) — draft content in 01-02-PLAN.md
 
 ### Blockers/Concerns
 
-- **[Phase 1]**: Strava athlete limit review has multi-week lead time — must be submitted immediately, not after planning. Approval timeline is entirely outside development control and is the single largest schedule risk before June 6.
-- **[Phase 1]**: Strava November 2024 API ToS display restriction must be resolved before any UI work. Conservative path: display computed scores and rider-chosen names only, no raw Strava fields.
-- **[Phase 1]**: Plan 01-02 has no SUMMARY.md — content drafted but not yet formally closed. All other Phase 1 plans are complete.
+- **[Deferred]**: Strava athlete limit review not yet submitted — 7-10 business day lead time. Submit as soon as UI shows all Strava data touchpoints.
+- **[Phase 2]**: RiderResult.hometown field in src/lib/types.ts must be removed or left empty — flagged by verification.
 
 ## Session Continuity
 
 Last session: 2026-04-06
-Stopped at: Completed 01-04-PLAN.md — CSV fallback procedure approved by product owner, SUMMARY.md created
+Stopped at: Phase 1 complete, verified, roadmap updated. Ready for Phase 2.
 Resume file: None

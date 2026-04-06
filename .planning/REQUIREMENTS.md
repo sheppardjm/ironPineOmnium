@@ -42,7 +42,7 @@
 
 ### Compliance
 
-- [ ] **COMP-01**: Public leaderboard displays only computed scores and rider-chosen display names (no raw Strava data per Nov 2024 API terms)
+- [x] **COMP-01**: Public leaderboard displays only computed scores and rider-chosen display names (no raw Strava data per Nov 2024 API terms)
 - [ ] **COMP-02**: Strava app athlete limit approval submitted with adequate lead time before June 6
 
 ## v2 Requirements
@@ -74,8 +74,8 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| COMP-01 | Phase 1 | Pending |
-| COMP-02 | Phase 1 | Pending |
+| COMP-01 | Phase 1 | Complete |
+| COMP-02 | Phase 1 | Deferred (requires finished UI) |
 | STRA-01 | Phase 3 | Pending |
 | STRA-04 | Phase 3 | Pending |
 | STRA-02 | Phase 4 | Pending |
@@ -104,4 +104,4 @@
 
 ---
 *Requirements defined: 2026-04-02*
-*Last updated: 2026-04-02 after roadmap phase mapping*
+*Last updated: 2026-04-06 after Phase 1 execution*
