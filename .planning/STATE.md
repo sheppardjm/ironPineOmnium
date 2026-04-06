@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 2 of 10 (Netlify Infrastructure)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-04-06 — Completed 02-01-PLAN.md (Netlify infrastructure foundation)
+Last activity: 2026-04-06 — Completed 02-02-PLAN.md (netlify dev + deployed env verification)
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [█░░░░░░░░░] 11%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: ~8 min
-- Total execution time: ~34 min
+- Total plans completed: 5
+- Average duration: ~9 min
+- Total execution time: ~49 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-compliance | 3/4 | ~26 min | ~9 min |
-| 02-netlify-infrastructure | 1/4 | ~8 min | ~8 min |
+| 02-netlify-infrastructure | 2/4 | ~23 min | ~12 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (~8 min), 01-04 (~15 min), 01-03 (~1 min), 01-01 (~10 min)
+- Last 5 plans: 02-02 (~15 min), 02-01 (~8 min), 01-04 (~15 min), 01-03 (~1 min), 01-01 (~10 min)
 - Trend: Consistent 8-10 min/plan
 
 *Updated after each plan completion*
@@ -58,6 +58,9 @@ Recent decisions affecting current work:
 - Phase 1: Strava athlete limit review (01-02) deferred until UI is complete — Strava requires screenshots of finished product before approving
 - 02-01: v1 ESM handler syntax confirmed: `export const handler` (not `export default`, not `exports.handler`)
 - 02-01: health.js boolean-maps 8 required env vars for runtime verification in 02-02
+- 02-02: esbuild overridden to 0.27.7 in pnpm overrides — fixes darwin-arm64 binary mismatch with netlify-cli internals
+- 02-02: netlify dev requires `volta run --node 22.22.2 npx netlify dev` — plain npx uses Node 20 which Astro 6 rejects
+- 02-02: NETLIFY_BUILD_HOOK must exist in Netlify dashboard (not just .env) — deployed functions have no .env access
 
 ### Pending Todos
 
@@ -66,10 +69,11 @@ Recent decisions affecting current work:
 ### Blockers/Concerns
 
 - **[Deferred]**: Strava athlete limit review not yet submitted — 7-10 business day lead time. Submit as soon as UI shows all Strava data touchpoints.
-- **[Note]**: pnpm approve-builds may need to be run interactively before netlify-cli build scripts execute fully. Run `pnpm approve-builds` if netlify dev fails to start.
+- **[Note]**: pnpm approve-builds is interactive-only. Native binaries (esbuild, @parcel/watcher) are already in pnpm store from prior installs — this does not block netlify dev execution.
+- **[Note]**: netlify dev command: `volta run --node 22.22.2 npx netlify dev --no-open` (plain npx uses Node 20, Astro requires >=22.12.0)
 
 ## Session Continuity
 
-Last session: 2026-04-06T15:28Z
-Stopped at: Completed 02-01-PLAN.md. Ready for 02-02 (netlify dev setup and env var wiring).
+Last session: 2026-04-06T12:15Z
+Stopped at: Completed 02-02-PLAN.md. Ready for 02-03 (Strava OAuth functions).
 Resume file: None
