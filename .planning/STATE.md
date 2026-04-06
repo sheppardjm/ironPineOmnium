@@ -10,27 +10,27 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 1 of 10 (Compliance and Prerequisites)
-Plan: 3 of 4 in current phase (01-01 and 01-03 complete; 01-02 drafted; 01-04 pending)
-Status: In progress
-Last activity: 2026-04-06 — Completed 01-01-PLAN.md (data model document, product owner approved)
+Plan: 4 of 4 in current phase (01-01, 01-03, 01-04 complete; 01-02 drafted but not formally closed)
+Status: Phase nearly complete (01-02 SUMMARY.md pending formal closure)
+Last activity: 2026-04-06 — Completed 01-04-PLAN.md (CSV fallback procedure, product owner approved)
 
-Progress: [█░░░░░░░░░] ~5% (2 plans completed of ~40 estimated)
+Progress: [██░░░░░░░░] ~8% (3 plans completed of ~40 estimated)
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: ~1 min
-- Total execution time: 0 hours
+- Total plans completed: 3
+- Average duration: ~9 min
+- Total execution time: ~26 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-compliance | 2/4 | ~11 min | ~5 min |
+| 01-compliance | 3/4 | ~26 min | ~9 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-03 (~1 min), 01-01 (~10 min + checkpoint pause)
+- Last 5 plans: 01-04 (~15 min + checkpoint pause), 01-03 (~1 min), 01-01 (~10 min + checkpoint pause)
 - Trend: —
 
 *Updated after each plan completion*
@@ -53,6 +53,9 @@ Recent decisions affecting current work:
 - 01-01: hometown not collected — RiderResult.hometown must be emptied or removed in Phase 2
 - 01-03: Segment IDs stored as strings (not numbers) — avoids JS precision issues with large Strava IDs
 - 01-03: SEGMENT_LABELS as flat Record (not inline objects) — keeps as-const arrays clean for literal type inference
+- 01-04: Fallback athlete IDs use manual-NNN scheme — string prefix prevents collision with Strava numeric IDs
+- 01-04: activityId set to literal "manual" for fallback entries — scoring/dedup must handle this sentinel
+- 01-04: KOM fallback records per-rider completion flags only — cross-rider ranking computed separately in scoring phase
 
 ### Pending Todos
 
@@ -62,10 +65,10 @@ None yet.
 
 - **[Phase 1]**: Strava athlete limit review has multi-week lead time — must be submitted immediately, not after planning. Approval timeline is entirely outside development control and is the single largest schedule risk before June 6.
 - **[Phase 1]**: Strava November 2024 API ToS display restriction must be resolved before any UI work. Conservative path: display computed scores and rider-chosen names only, no raw Strava fields.
-- **[Phase 1]**: Plan 01-02 has no SUMMARY.md — content drafted but not yet formally closed. Plan 01-04 (CSV fallback) still pending.
+- **[Phase 1]**: Plan 01-02 has no SUMMARY.md — content drafted but not yet formally closed. All other Phase 1 plans are complete.
 
 ## Session Continuity
 
 Last session: 2026-04-06
-Stopped at: Completed 01-01-PLAN.md — DATA-MODEL.md approved by product owner, SUMMARY.md created
+Stopped at: Completed 01-04-PLAN.md — CSV fallback procedure approved by product owner, SUMMARY.md created
 Resume file: None
