@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 4 of 10 (Activity Fetching and Validation)
-Plan: 0 of 5 in current phase
-Status: Ready to plan
-Last activity: 2026-04-06 — Phase 3 verified and complete (3/3 plans)
+Plan: 1 of 5 in current phase
+Status: In progress
+Last activity: 2026-04-06 — Completed 04-01-PLAN.md (strava-fetch-activity function)
 
-Progress: [███░░░░░░░] 30%
+Progress: [███░░░░░░░] 31%
 
 ## Performance Metrics
 
@@ -72,6 +72,10 @@ Recent decisions affecting current work:
 - 03-02: BUFFER_SECONDS=300 (5 min) before token expiry triggers refresh; Strava may rotate refresh_token on each grant
 - 03-03: netlify dev switched to framework=#static — avoids Astro dev server port conflicts in multi-project environments
 - 03-03: Local OAuth testing requires temporarily changing STRAVA_REDIRECT_URI to localhost and Strava callback domain to localhost
+- 04-01: All validation errors (invalid_url, wrong_athlete, wrong_date, etc.) use HTTP 200 with { error } JSON — only session failures use HTTP 401
+- 04-01: Date validation uses start_date_local.slice(0,10) without timezone math — local date portion is correct despite misleading Z suffix
+- 04-01: Duplicate segment efforts keep fastest (lowest elapsed_time) — prevents double-counting for riders who repeat a sector
+- 04-01: Strava 401 after token refresh treated as activity_not_found — valid token + 401 means private/inaccessible activity
 
 ### Pending Todos
 
@@ -87,5 +91,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-04-06
-Stopped at: Phase 3 complete, verified, roadmap updated. Ready for Phase 4.
+Stopped at: Completed 04-01-PLAN.md — strava-fetch-activity function created
 Resume file: None
