@@ -58,13 +58,11 @@ Plans:
 
 > Note: Phase 2 has no dedicated v1 requirement because infrastructure is a prerequisite to every other phase, not a user-facing deliverable. All subsequent phases depend on it.
 
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: Create `netlify.toml` with `/api/*` redirect rules to `/.netlify/functions/*`
-- [ ] 02-02: Configure all environment variables in Netlify dashboard; document variable names and sources
-- [ ] 02-03: Write smoke-test function and verify local + deployed access
-- [ ] 02-04: Add `netlify-cli` to dev dependencies and verify `netlify dev` starts cleanly
+- [ ] 02-01: Create netlify.toml, health function, add netlify-cli, remove hometown field
+- [ ] 02-02: Configure env vars in Netlify dashboard, link site, verify netlify dev
 
 ---
 
