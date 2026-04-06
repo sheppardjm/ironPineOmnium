@@ -112,14 +112,12 @@ Plans:
   2. Before confirming, the rider sees a score preview showing their Day 1 moving time score and Day 2 sector + KOM scores as computed values (not raw Strava numbers)
   3. The score preview includes an inline explanation: each component shows the rider's actual value (e.g., "4:12 moving time") and its point conversion
   4. The rider can cancel the submission from the confirm page and is returned cleanly to the submission entry point
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Create `src/pages/submit.astro` — activity URL input form with Strava auth entry point
-- [ ] 05-02: Create `src/pages/submit-confirm.astro` — decodes base64url payload client-side, renders identity form and score preview
-- [ ] 05-03: Implement score preview rendering with per-component breakdown and inline explanation
-- [ ] 05-04: Add category selector (men/women/non-binary) and first-submission identity fields
-- [ ] 05-05: Add cancel flow and form validation (no empty required fields)
+- [ ] 05-01-PLAN.md — Create submit.astro (URL input, fetch, base64url redirect) + fix OAuth callback redirect to /submit
+- [ ] 05-02-PLAN.md — Create submit-confirm.astro (payload decode, score preview with inline explanation, identity form, cancel flow, validation)
+- [ ] 05-03-PLAN.md — Visual verification checkpoint: build + test full submit flow with synthetic payloads
 
 ---
 
@@ -235,7 +233,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 2. Netlify Infrastructure | 2/2 | Complete | 2026-04-06 |
 | 3. Strava OAuth | 3/3 | Complete | 2026-04-06 |
 | 4. Activity Fetching and Validation | 2/2 | Complete | 2026-04-06 |
-| 5. Submission Form UX | 0/5 | Not started | - |
+| 5. Submission Form UX | 0/3 | Not started | - |
 | 6. Scoring Extraction | 0/5 | Not started | - |
 | 7. Data Persistence | 0/5 | Not started | - |
 | 8. Real Data Leaderboard | 0/5 | Not started | - |
