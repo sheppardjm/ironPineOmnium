@@ -18,13 +18,13 @@
   --color-ember-500: #bc5f40;
   --color-gold-400: #c7a068;
 
-  --font-display: var(--font-display, "Big Caslon", "Cormorant Garamond", serif);
-  --font-sans: var(--font-sans, "Avenir Next", "Sora", sans-serif);
-  --font-mono: var(--font-mono, "JetBrains Mono", "SFMono-Regular", monospace);
+  --font-display: "Spectral", "Cormorant Garamond", serif;
+  --font-sans: "Karla", "Avenir Next", "Sora", sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", monospace;
 
-  --shadow-poster: 0 32px 80px rgba(0, 0, 0, 0.42);
-  --shadow-panel: 0 18px 48px rgba(0, 0, 0, 0.28);
-  --shadow-button: 0 16px 34px rgba(0, 0, 0, 0.3);
+  --shadow-poster: 0 26px 64px rgba(0, 0, 0, 0.26);
+  --shadow-panel: 0 14px 36px rgba(0, 0, 0, 0.18);
+  --shadow-button: 0 12px 24px rgba(0, 0, 0, 0.2);
 
   --animate-rise: rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
   --animate-drift: drift 9s ease-in-out infinite;
@@ -60,6 +60,9 @@
       linear-gradient(180deg, #0a1110 0%, #131b19 38%, #0b100f 100%);
     font-family: var(--font-sans);
     scroll-behavior: smooth;
+    --page-gutter: clamp(1rem, 4vw, 3rem);
+    --content-max: 82rem;
+    --panel-max: 34rem;
   }
 
   html,
@@ -89,17 +92,15 @@
   }
 
   body::before {
-    background:
-      linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.38)),
-      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 120px);
-    opacity: 0.45;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.22));
+    opacity: 0.32;
   }
 
   body::after {
     background:
       radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08), transparent 32%),
       radial-gradient(circle at 78% 20%, rgba(221, 130, 88, 0.12), transparent 22%);
-    opacity: 0.9;
+    opacity: 0.55;
   }
 
   h1,
@@ -137,7 +138,7 @@
     position: fixed;
     inset: 0;
     pointer-events: none;
-    opacity: 0.14;
+    opacity: 0.06;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.75'/%3E%3C/svg%3E");
     mix-blend-mode: soft-light;
     z-index: 0;
@@ -146,9 +147,9 @@
   .page-shell {
     position: relative;
     z-index: 1;
-    width: min(1240px, calc(100% - 1.5rem));
-    margin: 0 auto;
-    padding: 1rem 0 5rem;
+    width: 100%;
+    margin: 0;
+    padding: 0 0 5rem;
   }
 
   .page-shell > * {
@@ -157,15 +158,11 @@
 
   .hero-section {
     position: relative;
-    display: grid;
-    gap: 2rem;
-    align-items: center;
     overflow: hidden;
     isolation: isolate;
-    padding: clamp(3.75rem, 8vw, 6.5rem) clamp(1.2rem, 2.5vw, 2.2rem) 2rem;
-    border: 1px solid rgba(242, 238, 230, 0.08);
-    border-radius: 2.4rem;
-    background: rgba(7, 11, 10, 0.52);
+    min-height: min(58rem, 100svh);
+    padding: clamp(5rem, 10vw, 7.5rem) var(--page-gutter) clamp(2.5rem, 6vw, 3rem);
+    background: rgba(7, 11, 10, 0.26);
   }
 
   .hero-section::before,
@@ -178,31 +175,77 @@
   .hero-section::before {
     inset: 0;
     background:
-      linear-gradient(90deg, rgba(5, 8, 8, 0.88) 0%, rgba(5, 8, 8, 0.62) 42%, rgba(5, 8, 8, 0.74) 100%),
-      linear-gradient(180deg, rgba(10, 17, 16, 0.16), rgba(10, 17, 16, 0.84)),
-      url("/images/mist-treeline.jpg") center center / cover;
+      linear-gradient(90deg, rgba(5, 8, 8, 0.88) 0%, rgba(5, 8, 8, 0.6) 42%, rgba(5, 8, 8, 0.78) 100%),
+      linear-gradient(180deg, rgba(10, 17, 16, 0.08), rgba(10, 17, 16, 0.8)),
+      url("/images/hiawatha-riders.jpg") center 36% / cover;
     transform: scale(1.03);
   }
 
   .hero-section::after {
-    inset: auto -10% -15% 45%;
-    height: 18rem;
+    inset: auto -6% -18% auto;
+    width: 26rem;
+    height: 22rem;
     border-radius: 999px;
-    filter: blur(16px);
-    background: rgba(221, 130, 88, 0.14);
+    filter: blur(18px);
+    background: linear-gradient(140deg, rgba(221, 130, 88, 0.22), rgba(109, 137, 119, 0.08));
   }
 
+  .hero-inner,
+  .section-inner,
   .hero-copy,
   .hero-panel,
-  .content-section {
+  .content-section,
+  .ride-reel-section {
     position: relative;
   }
 
-  .hero-copy,
-  .hero-panel,
-  .manifesto-section > *,
-  .final-cta > * {
+  .hero-inner,
+  .section-inner {
     z-index: 1;
+  }
+
+  .hero-inner {
+    display: grid;
+    gap: 2rem;
+    align-items: end;
+    width: min(100%, var(--content-max));
+    margin: 0 auto;
+  }
+
+  .section-inner {
+    width: min(100%, var(--content-max));
+    margin: 0 auto;
+  }
+
+  .hero-copy {
+    max-width: 54rem;
+  }
+
+  .logo-lockup {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.15rem;
+  }
+
+  .logo-mark {
+    flex: none;
+    width: clamp(4.4rem, 8vw, 6rem);
+    color: rgba(242, 238, 230, 0.88);
+    filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.18));
+  }
+
+  .logo-copy {
+    min-width: 0;
+  }
+
+  .logo-subtitle {
+    color: var(--color-mist-200);
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
   }
 
   .eyebrow,
@@ -235,30 +278,21 @@
     opacity: 0.55;
   }
 
-  .signal-chip {
-    display: inline-flex;
-    margin-top: 1rem;
-    padding: 0.48rem 0.9rem;
-    border: 1px solid rgba(242, 238, 230, 0.12);
-    border-radius: 999px;
-    background: rgba(242, 238, 230, 0.06);
-    color: var(--color-mist-200);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  }
-
   .hero-title {
-    margin-top: 1rem;
-    font-size: clamp(4.5rem, 13vw, 9.5rem);
+    margin-top: 0.25rem;
+    font-size: clamp(3.8rem, 11vw, 7.25rem);
     color: var(--color-mist-50);
     text-wrap: balance;
-    text-shadow: 0 10px 35px rgba(0, 0, 0, 0.35);
+    text-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
   }
 
   .hero-kicker {
     margin-top: 1.1rem;
-    max-width: 17ch;
-    font-size: clamp(1.5rem, 3.8vw, 2.5rem);
-    line-height: 1.04;
+    max-width: 19ch;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.45rem, 3.4vw, 2.3rem);
+    line-height: 1.08;
     color: rgba(242, 238, 230, 0.96);
     text-wrap: balance;
   }
@@ -270,8 +304,7 @@
   .pillar-card p,
   .formula-note,
   .signal-card p,
-  .winner-meta,
-  .rider-hometown {
+  .winner-meta {
     color: var(--color-mist-200);
   }
 
@@ -371,15 +404,15 @@
   .pillar-card,
   .formula-card,
   .leaderboard-shell,
-  .final-cta {
+  .final-cta__inner {
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(242, 238, 230, 0.1);
+    border: 1px solid rgba(242, 238, 230, 0.05);
     border-radius: 1.75rem;
     background:
-      linear-gradient(180deg, rgba(242, 238, 230, 0.07), rgba(242, 238, 230, 0.035)),
-      rgba(11, 16, 15, 0.72);
-    backdrop-filter: blur(18px);
+      linear-gradient(180deg, rgba(242, 238, 230, 0.04), rgba(242, 238, 230, 0.02)),
+      rgba(11, 16, 15, 0.54);
+    backdrop-filter: blur(10px);
     box-shadow: var(--shadow-panel);
   }
 
@@ -387,13 +420,7 @@
   .manifesto-card::before,
   .event-card::before,
   .pillar-card::before {
-    content: "";
-    position: absolute;
-    inset: 0 auto auto 0;
-    width: 5rem;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(242, 238, 230, 0.8), transparent);
-    opacity: 0.6;
+    display: none;
   }
 
   .signal-card {
@@ -412,6 +439,8 @@
   .hero-panel {
     display: grid;
     gap: 1rem;
+    width: min(100%, var(--panel-max));
+    justify-self: end;
     justify-items: stretch;
   }
 
@@ -419,11 +448,12 @@
     position: relative;
     overflow: hidden;
     padding: 1.5rem;
-    border: 1px solid rgba(242, 238, 230, 0.1);
+    border: 1px solid rgba(242, 238, 230, 0.06);
     border-radius: 2rem;
     background:
-      linear-gradient(160deg, rgba(34, 50, 45, 0.82), rgba(10, 17, 16, 0.9)),
-      rgba(10, 17, 16, 0.92);
+      linear-gradient(180deg, rgba(6, 9, 8, 0.12), rgba(6, 9, 8, 0.74)),
+      linear-gradient(160deg, rgba(34, 50, 45, 0.38), rgba(10, 17, 16, 0.82)),
+      url("/images/mkultra-riders.jpg") center center / cover;
     box-shadow: var(--shadow-poster);
     isolation: isolate;
   }
@@ -439,15 +469,14 @@
 
   .hero-poster::before {
     background:
-      radial-gradient(circle at 84% 16%, rgba(221, 130, 88, 0.26), transparent 22%),
-      linear-gradient(140deg, rgba(109, 137, 119, 0.22), transparent 44%);
+      radial-gradient(circle at 84% 16%, rgba(221, 130, 88, 0.18), transparent 22%),
+      linear-gradient(140deg, rgba(109, 137, 119, 0.16), transparent 44%);
   }
 
   .hero-poster::after {
     background:
-      linear-gradient(180deg, transparent 0%, rgba(6, 9, 8, 0.55) 100%),
-      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 74px);
-    opacity: 0.65;
+      linear-gradient(180deg, transparent 0%, rgba(6, 9, 8, 0.42) 100%);
+    opacity: 0.55;
   }
 
   .poster-overline {
@@ -507,15 +536,9 @@
 
   .route-card {
     padding: 1.15rem 1.2rem;
-    border: 1px solid rgba(242, 238, 230, 0.09);
+    border: 1px solid rgba(242, 238, 230, 0.05);
     border-radius: 1.35rem;
-    background: rgba(242, 238, 230, 0.055);
-  }
-
-  .route-card--ember {
-    background:
-      linear-gradient(180deg, rgba(221, 130, 88, 0.12), rgba(242, 238, 230, 0.05)),
-      rgba(242, 238, 230, 0.03);
+    background: rgba(242, 238, 230, 0.038);
   }
 
   .route-card h3 {
@@ -533,47 +556,40 @@
     margin-top: 1rem;
   }
 
-  .badge-cluster {
-    justify-content: flex-end;
-  }
-
-  .floating-badge {
-    padding: 0.55rem 0.95rem;
-    border-radius: 999px;
-    border: 1px solid rgba(242, 238, 230, 0.12);
-    font-size: 0.8rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    animation: var(--animate-drift);
-  }
-
-  .floating-badge--mist {
-    background: rgba(242, 238, 230, 0.08);
-    color: var(--color-mist-50);
-  }
-
-  .floating-badge--ember {
-    background: rgba(221, 130, 88, 0.16);
-    color: #f6d8c8;
-    animation-delay: 220ms;
-  }
-
-  .floating-badge--fern {
-    background: rgba(109, 137, 119, 0.18);
-    color: #dce8df;
-    animation-delay: 420ms;
-  }
-
   .content-section {
-    margin-top: 1.75rem;
+    margin-top: 1rem;
     position: relative;
     overflow: hidden;
     isolation: isolate;
-    padding: clamp(1.4rem, 2vw, 2rem);
-    border: 1px solid rgba(242, 238, 230, 0.08);
-    border-radius: 2rem;
-    background: rgba(9, 14, 13, 0.5);
-    backdrop-filter: blur(14px);
+    padding: clamp(1.8rem, 4vw, 2.6rem) var(--page-gutter);
+    background:
+      linear-gradient(180deg, rgba(9, 14, 13, 0.44), rgba(9, 14, 13, 0.24)),
+      rgba(9, 14, 13, 0.34);
+    backdrop-filter: blur(8px);
+  }
+
+  .ride-reel-section {
+    margin-top: 1rem;
+    overflow: hidden;
+    isolation: isolate;
+    padding: clamp(1.8rem, 4vw, 2.8rem) var(--page-gutter);
+    background: linear-gradient(180deg, rgba(6, 9, 8, 0.5), rgba(6, 9, 8, 0.3));
+  }
+
+  .ride-reel-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.1;
+    background:
+      linear-gradient(180deg, rgba(6, 9, 8, 0.92), rgba(6, 9, 8, 0.78)),
+      url("/images/mkultra-puddle.jpg") center center / cover;
+  }
+
+  .ride-reel-inner {
+    display: grid;
+    gap: 1.75rem;
   }
 
   .section-heading {
@@ -616,66 +632,68 @@
     margin-top: 1.75rem;
   }
 
-  .terrain-section {
-    margin-top: 1.75rem;
-  }
-
-  .terrain-grid {
+  .ride-reel-grid {
     display: grid;
     gap: 1rem;
   }
 
-  .terrain-card {
+  .ride-frame {
     position: relative;
     overflow: hidden;
-    min-height: 18rem;
-    border: 1px solid rgba(242, 238, 230, 0.08);
-    border-radius: 2rem;
+    min-height: 20rem;
+    border: 1px solid rgba(242, 238, 230, 0.05);
+    border-radius: 1.9rem;
     background-color: rgba(9, 14, 13, 0.68);
     box-shadow: var(--shadow-panel);
     isolation: isolate;
   }
 
-  .terrain-card::before,
-  .terrain-card::after {
-    content: "";
+  .ride-frame img,
+  .ride-frame::after {
     position: absolute;
     inset: 0;
-    z-index: -1;
   }
 
-  .terrain-card::before {
-    background-position: center;
-    background-size: cover;
+  .ride-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     transform: scale(1.02);
   }
 
-  .terrain-card::after {
+  .ride-frame::after {
+    content: "";
     background:
-      linear-gradient(180deg, rgba(6, 9, 8, 0.12), rgba(6, 9, 8, 0.78) 72%, rgba(6, 9, 8, 0.92) 100%);
+      linear-gradient(180deg, rgba(6, 9, 8, 0.08), rgba(6, 9, 8, 0.32) 46%, rgba(6, 9, 8, 0.86) 100%);
   }
 
-  .terrain-card--mist::before {
-    background-image: url("/images/mist-treeline.jpg");
+  .ride-frame--feature img {
+    object-position: center 36%;
   }
 
-  .terrain-card--forest::before {
-    background-image: url("/images/fog-forest.jpg");
+  .ride-frame--conditions img {
+    object-position: center 55%;
   }
 
-  .terrain-card--ridge::before {
-    background-image: url("/images/cloud-ridge.jpg");
+  .ride-frame--ride img {
+    object-position: center 45%;
   }
 
-  .terrain-card__body {
+  .ride-frame--rough img {
+    object-position: center 52%;
+  }
+
+  .ride-frame__body {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    min-height: 18rem;
+    min-height: 20rem;
     padding: 1.3rem;
   }
 
-  .terrain-label {
+  .ride-frame__label {
     font-family: var(--font-mono);
     font-size: 0.76rem;
     letter-spacing: 0.12em;
@@ -683,16 +701,16 @@
     color: var(--color-mist-200);
   }
 
-  .terrain-card h3 {
+  .ride-frame h3 {
     margin-top: 0.6rem;
-    max-width: 10ch;
+    max-width: 11ch;
     font-size: clamp(2.2rem, 4vw, 3.25rem);
     color: var(--color-mist-50);
   }
 
-  .terrain-card p:last-child {
+  .ride-frame p:last-child {
     margin-top: 0.75rem;
-    max-width: 28rem;
+    max-width: 32rem;
     color: var(--color-mist-200);
   }
 
@@ -746,7 +764,7 @@
 
   .formula-card,
   .leaderboard-shell,
-  .final-cta {
+  .final-cta__inner {
     margin-top: 1.75rem;
     padding: 1.45rem;
   }
@@ -885,16 +903,15 @@
     color: var(--color-mist-50);
   }
 
-  .rider-hometown {
-    margin-top: 0.18rem;
-    font-size: 0.92rem;
+  .final-cta {
+    margin-bottom: 2rem;
   }
 
-  .final-cta {
+  .final-cta__inner {
+    margin-top: 0;
     display: grid;
     gap: 1.25rem;
     align-items: center;
-    margin-bottom: 2rem;
   }
 
   .final-cta::before {
@@ -921,9 +938,8 @@
   }
 
   @media (min-width: 760px) {
-    .hero-section {
+    .hero-inner {
       grid-template-columns: minmax(0, 1.05fr) minmax(340px, 0.95fr);
-      min-height: 88vh;
     }
 
     .signal-grid,
@@ -936,14 +952,33 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .terrain-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
     .event-grid,
     .pillar-grid,
-    .final-cta {
+    .final-cta__inner {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ride-reel-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .ride-frame--feature {
+      grid-column: span 7;
+      grid-row: span 2;
+      min-height: 34rem;
+    }
+
+    .ride-frame--feature .ride-frame__body {
+      min-height: 34rem;
+    }
+
+    .ride-frame--conditions {
+      grid-column: span 5;
+    }
+
+    .ride-frame--ride,
+    .ride-frame--rough {
+      grid-column: span 6;
     }
 
     .leaderboard-head {
@@ -958,10 +993,6 @@
   }
 
   @media (min-width: 1080px) {
-    .page-shell {
-      width: min(1320px, calc(100% - 3rem));
-    }
-
     .route-stack {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }

@@ -11,7 +11,6 @@ export const categoryLabels: Record<CategoryId, string> = {
 export interface RiderResult {
   id: string;
   name: string;
-  hometown: string;
   category: CategoryId;
   day1MovingTimeSeconds: number;
   day2SectorTimesSeconds: number[];

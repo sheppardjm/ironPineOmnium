@@ -47,7 +47,7 @@ const scoreFormatter = new Intl.NumberFormat("en-US", {
           <div>
             <p class="winner-label">Projected category winner</p>
             <h4 class="winner-name">{winner.rider.name}</h4>
-            <p class="winner-meta">{winner.rider.hometown} · {scoreFormatter.format(winner.totalScore)} total points</p>
+            <p class="winner-meta">{scoreFormatter.format(winner.totalScore)} total points</p>
           </div>
           <div class="benchmark-grid">
             <div>
@@ -85,7 +85,6 @@ const scoreFormatter = new Intl.NumberFormat("en-US", {
                   </td>
                   <td>
                     <div class="rider-name">{entry.rider.name}</div>
-                    <div class="rider-hometown">{entry.rider.hometown}</div>
                   </td>
                   <td>
                     <strong>{scoreFormatter.format(entry.day1Score)}</strong>

@@ -1,11 +1,13 @@
 {
   "name": "iron-pine-omnium",
   "type": "module",
+  "packageManager": "pnpm@10.14.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "netlify:dev": "netlify dev"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
@@ -14,10 +16,12 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
+    "netlify-cli": "^24.10.0",
     "typescript": "^5.9.3"
   },
   "volta": {
-    "node": "22.22.2"
+    "node": "22.22.2",
+    "pnpm": "10.14.0"
   },
   "overrides": {
     "vite": "^7"

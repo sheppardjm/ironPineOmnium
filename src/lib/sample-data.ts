@@ -4,7 +4,6 @@ export const sampleRiders: RiderResult[] = [
   {
     id: "men-rowan-beck",
     name: "Rowan Beck",
-    hometown: "Marquette, MI",
     category: "men",
     day1MovingTimeSeconds: 20260,
     day2SectorTimesSeconds: [714, 853, 603, 799],
@@ -13,7 +12,6 @@ export const sampleRiders: RiderResult[] = [
   {
     id: "men-eli-madsen",
     name: "Eli Madsen",
-    hometown: "Ishpeming, MI",
     category: "men",
     day1MovingTimeSeconds: 19930,
     day2SectorTimesSeconds: [720, 861, 598, 785],
@@ -22,7 +20,6 @@ export const sampleRiders: RiderResult[] = [
   {
     id: "men-theo-carter",
     name: "Theo Carter",
-    hometown: "Munising, MI",
     category: "men",
     day1MovingTimeSeconds: 20645,
     day2SectorTimesSeconds: [701, 845, 612, 772],
@@ -31,7 +28,6 @@ export const sampleRiders: RiderResult[] = [
   {
     id: "men-mason-duval",
     name: "Mason Duval",
-    hometown: "Negaunee, MI",
     category: "men",
     day1MovingTimeSeconds: 20955,
     day2SectorTimesSeconds: [736, 872, 621, 806],
@@ -40,7 +36,6 @@ export const sampleRiders: RiderResult[] = [
   {
     id: "women-ada-keene",
     name: "Ada Keene",
-    hometown: "Marquette, MI",
     category: "women",
     day1MovingTimeSeconds: 21704,
     day2SectorTimesSeconds: [765, 902, 645, 830],
@@ -49,7 +44,6 @@ export const sampleRiders: RiderResult[] = [
   {
     id: "women-maris-holm",
     name: "Maris Holm",
-    hometown: "Harvey, MI",
     category: "women",
     day1MovingTimeSeconds: 21502,
     day2SectorTimesSeconds: [758, 915, 639, 818],
@@ -58,7 +52,6 @@ export const sampleRiders: RiderResult[] = [
   {
     id: "women-june-arquette",
     name: "June Arquette",
-    hometown: "Munising, MI",
     category: "women",
     day1MovingTimeSeconds: 21911,
     day2SectorTimesSeconds: [749, 899, 633, 811],
@@ -67,7 +60,6 @@ export const sampleRiders: RiderResult[] = [
   {
     id: "women-pilar-soto",
     name: "Pilar Soto",
-    hometown: "Escanaba, MI",
     category: "women",
     day1MovingTimeSeconds: 22338,
     day2SectorTimesSeconds: [779, 921, 654, 842],
@@ -76,7 +68,6 @@ export const sampleRiders: RiderResult[] = [
   {
     id: "nonbinary-avery-bloom",
     name: "Avery Bloom",
-    hometown: "Marquette, MI",
     category: "non-binary",
     day1MovingTimeSeconds: 21319,
     day2SectorTimesSeconds: [744, 881, 628, 801],
@@ -85,7 +76,6 @@ export const sampleRiders: RiderResult[] = [
   {
     id: "nonbinary-kit-mercer",
     name: "Kit Mercer",
-    hometown: "Grand Marais, MI",
     category: "non-binary",
     day1MovingTimeSeconds: 21835,
     day2SectorTimesSeconds: [738, 875, 621, 796],
@@ -94,7 +84,6 @@ export const sampleRiders: RiderResult[] = [
   {
     id: "nonbinary-river-saint",
     name: "River Saint",
-    hometown: "Gwinn, MI",
     category: "non-binary",
     day1MovingTimeSeconds: 22023,
     day2SectorTimesSeconds: [752, 889, 635, 802],
@@ -103,7 +92,6 @@ export const sampleRiders: RiderResult[] = [
   {
     id: "nonbinary-phoenix-hale",
     name: "Phoenix Hale",
-    hometown: "Munising, MI",
     category: "non-binary",
     day1MovingTimeSeconds: 21548,
     day2SectorTimesSeconds: [747, 884, 626, 808],
