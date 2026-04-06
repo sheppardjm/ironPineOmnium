@@ -8,8 +8,8 @@
 ### Strava Integration
 
 - [x] **STRA-01**: Rider can sign in with Strava OAuth and grant `activity:read_all` scope
-- [ ] **STRA-02**: Rider can paste a Strava activity URL and system extracts the activity ID and fetches data via API
-- [ ] **STRA-03**: System validates activity date falls within event weekend (June 6-7, 2026) and shows clear error if not
+- [x] **STRA-02**: Rider can paste a Strava activity URL and system extracts the activity ID and fetches data via API
+- [x] **STRA-03**: System validates activity date falls within event weekend (June 6-7, 2026) and shows clear error if not
 - [x] **STRA-04**: System silently refreshes expired OAuth tokens during submission flow
 
 ### Submission Flow
@@ -78,8 +78,8 @@
 | COMP-02 | Phase 1 | Deferred (requires finished UI) |
 | STRA-01 | Phase 3 | Complete |
 | STRA-04 | Phase 3 | Complete |
-| STRA-02 | Phase 4 | Pending |
-| STRA-03 | Phase 4 | Pending |
+| STRA-02 | Phase 4 | Complete |
+| STRA-03 | Phase 4 | Complete |
 | SUBM-01 | Phase 5 | Pending |
 | SUBM-03 | Phase 5 | Pending |
 | SUBM-04 | Phase 5 | Pending |
@@ -104,4 +104,4 @@
 
 ---
 *Requirements defined: 2026-04-02*
-*Last updated: 2026-04-06 after Phase 3 execution*
+*Last updated: 2026-04-06 after Phase 4 execution*

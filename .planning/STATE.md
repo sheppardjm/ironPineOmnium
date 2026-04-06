@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** Phase 4 — Activity Fetching and Validation
+**Current focus:** Phase 5 — Submission Form UX
 
 ## Current Position
 
-Phase: 4 of 10 (Activity Fetching and Validation)
-Plan: 2 of 5 in current phase
-Status: In progress
-Last activity: 2026-04-06 — Completed 04-02-PLAN.md (end-to-end activity fetch verification)
+Phase: 5 of 10 (Submission Form UX)
+Plan: 0 of 5 in current phase
+Status: Ready to plan
+Last activity: 2026-04-06 — Phase 4 verified and complete (2/2 plans)
 
-Progress: [███░░░░░░░] 33%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: ~9 min
-- Total execution time: ~90 min
+- Total execution time: ~97 min
 
 **By Phase:**
 
@@ -30,7 +30,7 @@ Progress: [███░░░░░░░] 33%
 | 01-compliance | 3/4 | ~26 min | ~9 min |
 | 02-netlify-infrastructure | 2/2 | ~23 min | ~12 min |
 | 03-strava-oauth | 3/3 | ~26 min | ~9 min |
-| 04-activity-fetching | 2/5 | ~16 min | ~8 min |
+| 04-activity-fetching | 2/2 | ~16 min | ~8 min |
 
 **Recent Trend:**
 - Last 5 plans: 04-02 (~15 min), 04-01 (~1 min), 03-03 (~15 min), 03-02 (~3 min), 03-01 (~8 min)
@@ -92,5 +92,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-04-06
-Stopped at: Completed 04-02-PLAN.md — end-to-end activity fetch verification passed
+Stopped at: Phase 4 complete, verified, roadmap updated. Ready for Phase 5.
 Resume file: None

@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Compliance and Prerequisites** - Resolve Strava ToS, initiate athlete limit review, map segment IDs *(01-02 deferred: Strava review requires finished UI)*
 - [x] **Phase 2: Netlify Infrastructure** - netlify.toml routing, environment variables, local dev working
 - [x] **Phase 3: Strava OAuth** - OAuth round-trip with CSRF protection, token management, athlete verification
-- [ ] **Phase 4: Activity Fetching and Validation** - URL parsing, activity fetch, date validation, scope handling
+- [x] **Phase 4: Activity Fetching and Validation** - URL parsing, activity fetch, date validation, scope handling
 - [ ] **Phase 5: Submission Form UX** - Rider identity capture, score preview, inline explanation, consent step
 - [ ] **Phase 6: Scoring Extraction** - Day 1 moving time, Day 2 sector efforts, KOM points from segment comparison
 - [ ] **Phase 7: Data Persistence** - GitHub Contents API write, Netlify rebuild hook, deauth webhook
@@ -234,7 +234,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 1. Compliance and Prerequisites | 3/4 | Complete (01-02 deferred) | 2026-04-06 |
 | 2. Netlify Infrastructure | 2/2 | Complete | 2026-04-06 |
 | 3. Strava OAuth | 3/3 | Complete | 2026-04-06 |
-| 4. Activity Fetching and Validation | 0/2 | Planned | - |
+| 4. Activity Fetching and Validation | 2/2 | Complete | 2026-04-06 |
 | 5. Submission Form UX | 0/5 | Not started | - |
 | 6. Scoring Extraction | 0/5 | Not started | - |
 | 7. Data Persistence | 0/5 | Not started | - |
@@ -244,4 +244,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-06 after Phase 4 planning*
+*Last updated: 2026-04-06 after Phase 4 execution*
