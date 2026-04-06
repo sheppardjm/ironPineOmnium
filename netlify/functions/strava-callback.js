@@ -108,7 +108,7 @@ export const handler = async (event, context) => {
   // Using headers['Set-Cookie'] would only keep the last value.
   return {
     statusCode: 302,
-    headers: { Location: "/", "Cache-Control": "no-cache" },
+    headers: { Location: "/submit", "Cache-Control": "no-cache" },
     multiValueHeaders: { "Set-Cookie": [sessionCookie, clearCsrf] },
     body: "",
   };
