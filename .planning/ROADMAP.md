@@ -76,14 +76,12 @@ Plans:
   3. An expired OAuth token is silently refreshed using the stored refresh token before any activity fetch, without prompting the rider to re-authorize
   4. The authenticated Strava athlete ID is accessible to subsequent functions in the same submission session
   5. A rider who denies Strava consent is redirected to an error page with a clear explanation
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: Implement `netlify/functions/strava-auth.js` — URL validation, CSRF nonce generation, HttpOnly cookie, Strava redirect
-- [ ] 03-02: Implement `netlify/functions/strava-callback.js` — CSRF nonce verification, authorization code exchange, token storage
-- [ ] 03-03: Implement silent token refresh logic in callback function
-- [ ] 03-04: Add OAuth denial and error handling with user-facing error page
-- [ ] 03-05: End-to-end test: full OAuth round-trip locally with a real Strava test account
+- [ ] 03-01-PLAN.md — Install cookie-es, create strava-auth.js (CSRF nonce + Strava redirect), create error.astro page
+- [ ] 03-02-PLAN.md — Create strava-callback.js (CSRF verify, scope check, code exchange, session cookie) + strava-tokens.js refresh utility
+- [ ] 03-03-PLAN.md — End-to-end OAuth round-trip test with real Strava account (checkpoint)
 
 ---
 
@@ -238,7 +236,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 |-------|----------------|--------|-----------|
 | 1. Compliance and Prerequisites | 3/4 | ✓ Complete (01-02 deferred) | 2026-04-06 |
 | 2. Netlify Infrastructure | 2/2 | ✓ Complete | 2026-04-06 |
-| 3. Strava OAuth | 0/5 | Not started | - |
+| 3. Strava OAuth | 0/3 | Planned | - |
 | 4. Activity Fetching and Validation | 0/5 | Not started | - |
 | 5. Submission Form UX | 0/5 | Not started | - |
 | 6. Scoring Extraction | 0/5 | Not started | - |
