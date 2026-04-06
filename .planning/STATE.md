@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** Phase 3 — Strava OAuth
+**Current focus:** Phase 4 — Activity Fetching and Validation
 
 ## Current Position
 
-Phase: 3 of 10 (Strava OAuth)
-Plan: 2 of 3 in current phase (03-01 and 03-02 complete)
-Status: In progress
-Last activity: 2026-04-06 — Completed 03-02-PLAN.md (OAuth callback + token refresh utility)
+Phase: 4 of 10 (Activity Fetching and Validation)
+Plan: 0 of 5 in current phase
+Status: Ready to plan
+Last activity: 2026-04-06 — Phase 3 verified and complete (3/3 plans)
 
-Progress: [███░░░░░░░] 27%
+Progress: [███░░░░░░░] 30%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
+- Total plans completed: 8
 - Average duration: ~9 min
-- Total execution time: ~49 min
+- Total execution time: ~75 min
 
 **By Phase:**
 
@@ -29,9 +29,10 @@ Progress: [███░░░░░░░] 27%
 |-------|-------|-------|----------|
 | 01-compliance | 3/4 | ~26 min | ~9 min |
 | 02-netlify-infrastructure | 2/2 | ~23 min | ~12 min |
+| 03-strava-oauth | 3/3 | ~26 min | ~9 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-02 (~15 min), 02-01 (~8 min), 01-04 (~15 min), 01-03 (~1 min), 01-01 (~10 min)
+- Last 5 plans: 03-03 (~15 min), 03-02 (~3 min), 03-01 (~8 min), 02-02 (~15 min), 02-01 (~8 min)
 - Trend: Consistent 8-10 min/plan
 
 *Updated after each plan completion*
@@ -69,6 +70,8 @@ Recent decisions affecting current work:
 - 03-02: lib/ subdirectory in netlify/functions/ for shared utilities — no handler export, not exposed as endpoints
 - 03-02: getValidAccessToken() returns { updated: boolean } — callers re-serialize session cookie when true
 - 03-02: BUFFER_SECONDS=300 (5 min) before token expiry triggers refresh; Strava may rotate refresh_token on each grant
+- 03-03: netlify dev switched to framework=#static — avoids Astro dev server port conflicts in multi-project environments
+- 03-03: Local OAuth testing requires temporarily changing STRAVA_REDIRECT_URI to localhost and Strava callback domain to localhost
 
 ### Pending Todos
 
@@ -79,9 +82,10 @@ Recent decisions affecting current work:
 - **[Deferred]**: Strava athlete limit review not yet submitted — 7-10 business day lead time. Submit as soon as UI shows all Strava data touchpoints.
 - **[Note]**: pnpm approve-builds is interactive-only. Native binaries (esbuild, @parcel/watcher) are already in pnpm store from prior installs — this does not block netlify dev execution.
 - **[Note]**: netlify dev command: `volta run --node 22.22.2 npx netlify dev --no-open` (plain npx uses Node 20, Astro requires >=22.12.0)
+- **[Note]**: STRAVA_REDIRECT_URI in .env is production URL — must be temporarily changed for local OAuth testing
 
 ## Session Continuity
 
-Last session: 2026-04-06T16:46:23Z
-Stopped at: Completed 03-02-PLAN.md (strava-callback.js + strava-tokens.js)
+Last session: 2026-04-06
+Stopped at: Phase 3 complete, verified, roadmap updated. Ready for Phase 4.
 Resume file: None
