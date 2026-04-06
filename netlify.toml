@@ -1,0 +1,20 @@
+[build]
+  command = "pnpm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
+[dev]
+  command = "pnpm run dev"
+  targetPort = 4321
+  port = 8888
+  publish = "dist"
+  framework = "#custom"
