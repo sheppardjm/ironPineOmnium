@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 5 of 10 (Submission Form UX)
-Plan: 1 of 5 in current phase
+Plan: 2 of 5 in current phase
 Status: In progress
-Last activity: 2026-04-06 — Completed 05-01-PLAN.md (submit page + OAuth callback fix)
+Last activity: 2026-04-06 — Completed 05-02-PLAN.md (submit-confirm page with score preview + identity form)
 
 Progress: [████░░░░░░] 40%
 
@@ -80,6 +80,10 @@ Recent decisions affecting current work:
 - 05-01: btoa() used directly for base64url encoding — payload fields are all ASCII-safe (numeric IDs, ISO dates, number values)
 - 05-01: Astro script tag (not is:inline) used for TypeScript type safety and Vite bundling on submit page
 - 05-01: OAuth callback now redirects to /submit after success (was /)
+- 05-02: fromBase64url decode is exact inverse of btoa encoding (05-01) — replace -→+ _→/ pad = then atob+JSON.parse
+- 05-02: Missing/malformed payload on /submit-confirm silently redirects to /submit (no error page needed)
+- 05-02: sectorEfforts and komSegmentIds JSON.stringify-d into hidden inputs for Phase 7 form POST
+- 05-02: Score preview uses innerHTML assignment in DOMContentLoaded — Astro template is static skeleton only
 
 ### Pending Todos
 
@@ -94,6 +98,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-06T22:14:56Z
-Stopped at: Completed 05-01-PLAN.md — /submit page and OAuth callback redirect
+Last session: 2026-04-06T22:19:44Z
+Stopped at: Completed 05-02-PLAN.md — /submit-confirm page with score preview and identity form
 Resume file: None
