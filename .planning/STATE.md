@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** Phase 2 — Netlify Infrastructure
+**Current focus:** Phase 3 — Strava OAuth
 
 ## Current Position
 
-Phase: 2 of 10 (Netlify Infrastructure)
-Plan: 2 of 4 in current phase
-Status: In progress
-Last activity: 2026-04-06 — Completed 02-02-PLAN.md (netlify dev + deployed env verification)
+Phase: 3 of 10 (Strava OAuth)
+Plan: 0 of 5 in current phase
+Status: Ready to plan
+Last activity: 2026-04-06 — Phase 2 verified and complete (2/2 plans)
 
-Progress: [█░░░░░░░░░] 11%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
@@ -28,7 +28,7 @@ Progress: [█░░░░░░░░░] 11%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-compliance | 3/4 | ~26 min | ~9 min |
-| 02-netlify-infrastructure | 2/4 | ~23 min | ~12 min |
+| 02-netlify-infrastructure | 2/2 | ~23 min | ~12 min |
 
 **Recent Trend:**
 - Last 5 plans: 02-02 (~15 min), 02-01 (~8 min), 01-04 (~15 min), 01-03 (~1 min), 01-01 (~10 min)
@@ -74,6 +74,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-06T12:15Z
-Stopped at: Completed 02-02-PLAN.md. Ready for 02-03 (Strava OAuth functions).
+Last session: 2026-04-06
+Stopped at: Phase 2 complete, verified, roadmap updated. Ready for Phase 3.
 Resume file: None
