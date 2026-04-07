@@ -166,11 +166,22 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <p class="preview-explain">Your combined sector time counts for <strong>45%</strong> of your overall score, benchmarked against the fastest aggregate in your category.</p>
           `;
         } else {
-          sectorsEl.innerHTML = `
-            <p class="preview-label">Day 2 · Timed Sectors</p>
-            <p class="preview-value">—</p>
-            <p class="preview-explain">No timed sectors matched for this activity.</p>
-          `;
+          const isDay2 = payload.startDateLocal === "2026-06-07";
+          if (isDay2) {
+            sectorsEl.innerHTML = `
+              <div class="zero-match-warning">
+                <p class="preview-label">Day 2 · Timed Sectors</p>
+                <p class="preview-value warning-value">0 of 7 sectors matched</p>
+                <p class="preview-explain warning-explain">This activity had no recognized timed sectors. Your Day 2 sector score will be zero (45% of your overall score). This is unusual — double-check that you submitted the correct MK Ultra Gravel activity.</p>
+              </div>
+            `;
+          } else {
+            sectorsEl.innerHTML = `
+              <p class="preview-label">Day 2 · Timed Sectors</p>
+              <p class="preview-value">—</p>
+              <p class="preview-explain">Not applicable for Day 1 activities.</p>
+            `;
+          }
         }
       }
 
@@ -192,11 +203,22 @@ import BaseLayout from "../layouts/BaseLayout.astro";
             <p class="preview-explain">KOM points count for <strong>20%</strong> of your overall score, based on how your climb times compare to other riders.</p>
           `;
         } else {
-          komEl.innerHTML = `
-            <p class="preview-label">Day 2 · KOM Points</p>
-            <p class="preview-value">—</p>
-            <p class="preview-explain">No KOM segments matched for this activity.</p>
-          `;
+          const isDay2 = payload.startDateLocal === "2026-06-07";
+          if (isDay2) {
+            komEl.innerHTML = `
+              <div class="zero-match-warning">
+                <p class="preview-label">Day 2 · KOM Points</p>
+                <p class="preview-value warning-value">0 of 3 KOM segments matched</p>
+                <p class="preview-explain warning-explain">No KOM climb segments were found in this activity. Your KOM score will be zero (20% of your overall score).</p>
+              </div>
+            `;
+          } else {
+            komEl.innerHTML = `
+              <p class="preview-label">Day 2 · KOM Points</p>
+              <p class="preview-value">—</p>
+              <p class="preview-explain">Not applicable for Day 1 activities.</p>
+            `;
+          }
         }
       }
     }
@@ -409,6 +431,22 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       font-style: italic;
       margin-top: 0.5rem;
       margin-bottom: 0;
+    }
+
+    /* Zero-match warning for Day 2 activities */
+    .zero-match-warning {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .warning-value {
+      color: var(--color-ember-400, #dd8258) !important;
+    }
+
+    .warning-explain {
+      color: var(--color-ember-400, #dd8258) !important;
+      opacity: 0.85;
     }
 
     /* Identity form */
