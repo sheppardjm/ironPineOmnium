@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Strava OAuth** - OAuth round-trip with CSRF protection, token management, athlete verification
 - [x] **Phase 4: Activity Fetching and Validation** - URL parsing, activity fetch, date validation, scope handling
 - [x] **Phase 5: Submission Form UX** - Rider identity capture, score preview, inline explanation, consent step
-- [ ] **Phase 6: Scoring Extraction** - Day 1 moving time, Day 2 sector efforts, KOM points from segment comparison
+- [ ] **Phase 6: Scoring Extraction** - Extend KOM extraction to capture elapsed times, wire through payload, add Day 2 zero-match warning
 - [ ] **Phase 7: Data Persistence** - GitHub Contents API write, Netlify rebuild hook, deauth webhook
 - [ ] **Phase 8: Real Data Leaderboard** - Replace sample data, day association, live/sample indicator
 - [ ] **Phase 9: Leaderboard Enhancements** - Per-component columns, name search, mobile validation
@@ -132,14 +132,11 @@ Plans:
   3. KOM points are computed by comparing the submitted rider's effort times against all previously submitted Day 2 times for each segment — not from Strava's `kom_rank` field (which is null for non-subscribers)
   4. A Day 2 activity with no matching segment efforts (rider missed all timed sectors) returns a zero sector score with a rider-visible warning rather than an error
   5. Scoring weights (35% / 45% / 20%) are read from the existing configurable scoring engine, not hardcoded in the extraction functions
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: Implement Day 1 moving time extraction and score computation in callback payload
-- [ ] 06-02: Implement Day 2 segment effort extraction by hardcoded segment ID from activity data
-- [ ] 06-03: Implement internal KOM ranking logic in `submit-result.js` — compare new effort times against existing athlete files
-- [ ] 06-04: Wire extraction output into the base64url callback payload schema
-- [ ] 06-05: Add zero-match warning path for Day 2 activities with no recognized segment efforts
+- [ ] 06-01-PLAN.md — Extend KOM extraction to capture elapsed times, wire komEfforts through confirm page payload and display
+- [ ] 06-02-PLAN.md — Add Day 2 zero-match warning with amber styling for activities with no recognized sector/KOM efforts
 
 ---
 
@@ -235,7 +232,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 3. Strava OAuth | 3/3 | Complete | 2026-04-06 |
 | 4. Activity Fetching and Validation | 2/2 | Complete | 2026-04-06 |
 | 5. Submission Form UX | 4/4 | Complete | 2026-04-07 |
-| 6. Scoring Extraction | 0/5 | Not started | - |
+| 6. Scoring Extraction | 0/2 | Not started | - |
 | 7. Data Persistence | 0/5 | Not started | - |
 | 8. Real Data Leaderboard | 0/5 | Not started | - |
 | 9. Leaderboard Enhancements | 0/4 | Not started | - |
