@@ -18,6 +18,15 @@ const scoreFormatter = new Intl.NumberFormat("en-US", {
       <h3 class="leaderboard-title">Overall winners are calculated inside each category.</h3>
     </div>
     {hasLiveData && (
+      <input
+        type="search"
+        class="search-input"
+        placeholder="Search riders..."
+        aria-label="Search leaderboard by rider name"
+        data-search
+      />
+    )}
+    {hasLiveData && (
       <div class="tab-list" role="tablist" aria-label="Leaderboard categories">
         {leaderboards.map((board, index) => (
           <button
@@ -147,6 +156,19 @@ const scoreFormatter = new Intl.NumberFormat("en-US", {
           if (panel instanceof HTMLElement) {
             panel.hidden = panel.getAttribute("data-panel") !== target;
           }
+        }
+      });
+    }
+
+    const searchInput = leaderboard.querySelector<HTMLInputElement>('[data-search]');
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim().toLowerCase();
+        const allRows = leaderboard.querySelectorAll<HTMLTableRowElement>('tbody tr');
+        for (const row of allRows) {
+          const name = row.querySelector('.rider-name')?.textContent?.toLowerCase() ?? '';
+          const matches = query === '' || name.includes(query);
+          row.classList.toggle('search-hidden', !matches);
         }
       });
     }
