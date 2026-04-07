@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 8 of 10 (Real Data Leaderboard) — In Progress
-Plan: 1 of 4 in phase 8
+Plan: 2 of 4 in phase 8
 Status: In progress
-Last activity: 2026-04-07 — Completed 08-01-PLAN.md (athlete-loader.ts)
+Last activity: 2026-04-07 — Completed 08-02-PLAN.md (real data leaderboard UI + status badge)
 
 Progress: [████████░░] 75%
 
@@ -110,6 +110,9 @@ Recent decisions affecting current work:
 - 08-01: KOM scoring uses Approach A (time-based ranking) when komEfforts is non-empty; Approach B (komSegmentIds.length) for CSV fallback
 - 08-01: computeKomPoints receives pre-filtered peersInCategory — KOM rank comparison is always within-category only
 - 08-01: loadAthleteResults() returns { riders, hasLiveData } — hasLiveData = riders.length > 0, computed at build time; scoring weights NOT applied in this layer
+- 08-02: Tab list rendered conditionally — only when hasLiveData is true (no empty tabs shown with zero riders)
+- 08-02: Winner banner board.entries[0] access guarded by board.entries.length > 0 conditional — no crash on zero-rider category
+- 08-02: Status badge uses Astro class:list pattern for green "Live results" / amber "Awaiting submissions" toggle
 
 ### Pending Todos
 
@@ -125,6 +128,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-07T18:52:59Z
-Stopped at: Completed 08-01-PLAN.md — athlete-loader.ts created
+Last session: 2026-04-07T18:57:36Z
+Stopped at: Completed 08-02-PLAN.md — real data leaderboard UI + status badge
 Resume file: None
