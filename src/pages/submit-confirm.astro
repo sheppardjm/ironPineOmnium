@@ -16,6 +16,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <div class="confirm-card">
         <p class="eyebrow" aria-hidden="true">Confirm Submission</p>
         <h1 class="confirm-heading">Review your activity</h1>
+        <p class="athlete-identity" id="athlete-identity"></p>
         <p class="confirm-date" id="activity-date"></p>
 
         <div class="score-preview" id="score-preview">
@@ -59,6 +60,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <input type="hidden" name="startDateLocal" id="h-startDateLocal" />
           <input type="hidden" name="sectorEfforts" id="h-sectorEfforts" />
           <input type="hidden" name="komSegmentIds" id="h-komSegmentIds" />
+          <input type="hidden" name="athleteFirstname" id="h-athleteFirstname" />
+          <input type="hidden" name="athleteLastname" id="h-athleteLastname" />
 
           <div class="form-actions">
             <button type="submit" class="primary-button" id="confirm-btn">
@@ -91,6 +94,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     type Payload = {
       activityId?: string | number;
       athleteId?: string | number;
+      athleteFirstname?: string;
+      athleteLastname?: string;
       movingTimeSeconds?: number;
       startDateLocal?: string;
       sectorEfforts?: Record<string, number>;
@@ -98,6 +103,19 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     };
 
     function renderPreview(payload: Payload): void {
+      // Strava identity display
+      const identityEl = document.getElementById("athlete-identity");
+      if (identityEl) {
+        const first = (payload.athleteFirstname ?? "").trim();
+        const last = (payload.athleteLastname ?? "").trim();
+        const fullName = [first, last].filter(Boolean).join(" ");
+        if (fullName) {
+          identityEl.textContent = "Connected as " + fullName;
+        } else {
+          identityEl.textContent = "Connected as Athlete #" + (payload.athleteId ?? "unknown");
+        }
+      }
+
       // Date display
       const dateEl = document.getElementById("activity-date");
       if (dateEl) {
@@ -111,7 +129,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         }
       }
 
-      // Day 1 preview — moving time (35% weight)
+      // Moving time preview (35% weight) — Day 1 / Hiawatha's Revenge
       const day1El = document.getElementById("day1-preview");
       if (day1El) {
         const movingTime = payload.movingTimeSeconds ?? 0;
@@ -130,7 +148,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         }
       }
 
-      // Day 2 Sectors preview — timed sectors (45% weight)
+      // Sectors preview (45% weight) — Day 2 / MK Ultra
       const sectorsEl = document.getElementById("sectors-preview");
       if (sectorsEl) {
         const sectorEfforts = payload.sectorEfforts ?? {};
@@ -154,7 +172,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         }
       }
 
-      // Day 2 KOM preview — KOM segments (20% weight)
+      // KOM preview (20% weight) — Day 2 / MK Ultra
       const komEl = document.getElementById("kom-preview");
       if (komEl) {
         const komCount = (payload.komSegmentIds ?? []).length;
@@ -188,6 +206,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       set("h-startDateLocal", payload.startDateLocal);
       set("h-sectorEfforts", payload.sectorEfforts ?? {});
       set("h-komSegmentIds", payload.komSegmentIds ?? []);
+      set("h-athleteFirstname", payload.athleteFirstname);
+      set("h-athleteLastname", payload.athleteLastname);
     }
 
     function setupForm(): void {
@@ -301,6 +321,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       font-size: 1rem;
       color: var(--color-fern-500, #6d8977);
       font-weight: 600;
+      margin: 0;
+    }
+
+    .athlete-identity {
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      color: var(--color-fern-500, #6d8977);
       margin: 0;
     }
 
