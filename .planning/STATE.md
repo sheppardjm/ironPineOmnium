@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 9 of 10 (Leaderboard Enhancements) — In progress
-Plan: 1 of 3 in phase 9 (09-01 complete)
+Plan: 2 of 3 in phase 9 (09-02 complete)
 Status: In progress
-Last activity: 2026-04-07 — Completed 09-01-PLAN.md (column headers + search input)
+Last activity: 2026-04-07 — Completed 09-02-PLAN.md (mobile layout + sticky column + touch targets)
 
 Progress: [█████████░] 85%
 
@@ -117,6 +117,12 @@ Recent decisions affecting current work:
 - 09-01: search-hidden uses classList.toggle (not row.hidden) to avoid conflicting with tab panel [hidden] attribute
 - 09-01: Search input queries all tbody tr across entire [data-leaderboard] element — filtering is global across all three category panels simultaneously
 - 09-01: Search input conditionally rendered only when hasLiveData is true — not rendered in empty-state leaderboard
+- 09-02: :nth-child(2) selector targets Rider column for sticky — no markup changes needed to Leaderboard.astro
+- 09-02: background-color: var(--color-night-950) on sticky cells prevents bleed-through at all viewport widths
+- 09-02: First-row amber gradient approximated with #0e1513 on sticky cell to avoid jarring contrast
+- 09-02: SC-4 (no accidental row tap) satisfied structurally — tr elements have zero onclick handlers
+- 09-02: white-space: nowrap on mobile cells keeps score values on one line without column-width constraints
+- 09-02: touch-action: manipulation on .tab-button and .search-input eliminates 300ms tap delay on mobile
 
 ### Pending Todos
 
@@ -132,6 +138,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-07T19:31:51Z
-Stopped at: Completed 09-01-PLAN.md — column headers + rider name search
+Last session: 2026-04-07T19:36:09Z
+Stopped at: Completed 09-02-PLAN.md — mobile layout, sticky column, touch targets
 Resume file: None
