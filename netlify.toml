@@ -1,6 +1,7 @@
 [build]
   command = "pnpm run build"
   publish = "dist"
+  environment = { SECRETS_SCAN_OMIT_KEYS = "GITHUB_OWNER,GITHUB_REPO" }
 
 [functions]
   directory = "netlify/functions"
