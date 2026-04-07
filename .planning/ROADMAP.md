@@ -112,17 +112,18 @@ Plans:
   2. Before confirming, the rider sees a score preview showing their Day 1 moving time score and Day 2 sector + KOM scores as computed values (not raw Strava numbers)
   3. The score preview includes an inline explanation: each component shows the rider's actual value (e.g., "4:12 moving time") and its point conversion
   4. The rider can cancel the submission from the confirm page and is returned cleanly to the submission entry point
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
 - [ ] 05-01-PLAN.md — Create submit.astro (URL input, fetch, base64url redirect) + fix OAuth callback redirect to /submit
 - [ ] 05-02-PLAN.md — Create submit-confirm.astro (payload decode, score preview with inline explanation, identity form, cancel flow, validation)
 - [ ] 05-03-PLAN.md — Visual verification checkpoint: build + test full submit flow with synthetic payloads
+- [ ] 05-04-PLAN.md — Gap closure: thread Strava athlete name from OAuth through session to confirm page display
 
 ---
 
 ### Phase 6: Scoring Extraction
-**Goal**: The system correctly extracts Day 1 moving time and Day 2 segment efforts from Strava activity data, computes sector scores, and determines KOM points by comparing submitted effort times across all riders
+**Goal**: The system correctly extracts Day 1 moving time from Hiawatha's Revenge activity data, and Day 2 segment efforts and KOM points from MK Ultra Gravel activity data
 **Depends on**: Phase 4
 **Requirements**: SUBM-05, SUBM-06, DATA-03
 **Success Criteria** (what must be TRUE):
@@ -135,7 +136,7 @@ Plans:
 
 Plans:
 - [ ] 06-01: Implement Day 1 moving time extraction and score computation in callback payload
-- [ ] 06-02: Implement Day 2 segment effort extraction by hardcoded segment ID from `strava-callback.js`
+- [ ] 06-02: Implement Day 2 segment effort extraction by hardcoded segment ID from activity data
 - [ ] 06-03: Implement internal KOM ranking logic in `submit-result.js` — compare new effort times against existing athlete files
 - [ ] 06-04: Wire extraction output into the base64url callback payload schema
 - [ ] 06-05: Add zero-match warning path for Day 2 activities with no recognized segment efforts
