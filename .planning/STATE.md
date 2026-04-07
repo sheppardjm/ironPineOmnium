@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 6 of 10 (Scoring Extraction) — In progress
-Plan: 1 of 3 in phase 6
+Plan: 2 of 3 in phase 6
 Status: In progress
-Last activity: 2026-04-07 — Completed 06-01-PLAN.md (komEfforts extraction)
+Last activity: 2026-04-07 — Completed 06-02-PLAN.md (Day 2 zero-match warning)
 
 Progress: [█████░░░░░] 50%
 
@@ -91,6 +91,8 @@ Recent decisions affecting current work:
 - 06-01: komEfforts uses same deduplication pattern as sectorEfforts (keep fastest elapsed_time per KOM segment)
 - 06-01: komSegmentIds retained alongside komEfforts for backward compatibility (presence list + time map serve complementary purposes)
 - 06-01: KOM time display conditioned on komTimeTotal > 0 to handle payloads missing komEfforts gracefully
+- 06-02: 2026-06-07 used as client-side literal for Day 2 detection — EVENT_DATES server-side constant not accessible in browser script block
+- 06-02: Day 1 neutral text updated to "Not applicable for Day 1 activities" (was "No timed sectors matched") for clarity
 
 ### Pending Todos
 
@@ -105,6 +107,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-07T17:26:33Z
-Stopped at: Completed 06-01-PLAN.md — komEfforts extraction and confirm page wiring
+Last session: 2026-04-07T17:29:31Z
+Stopped at: Completed 06-02-PLAN.md — Day 2 zero-match warning with amber styling
 Resume file: None
