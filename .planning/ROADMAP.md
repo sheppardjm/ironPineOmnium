@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Submission Form UX** - Rider identity capture, score preview, inline explanation, consent step
 - [x] **Phase 6: Scoring Extraction** - Extend KOM extraction to capture elapsed times, wire through payload, add Day 2 zero-match warning
 - [x] **Phase 7: Data Persistence** - GitHub Contents API write, Netlify rebuild hook, deauth webhook
-- [ ] **Phase 8: Real Data Leaderboard** - Replace sample data, day association, live/sample indicator
+- [x] **Phase 8: Real Data Leaderboard** - Replace sample data, day association, live/sample indicator
 - [ ] **Phase 9: Leaderboard Enhancements** - Per-component columns, name search, mobile validation
 - [ ] **Phase 10: Design Polish and Companion Links** - Event-ready UI, submission form visual language, companion site links
 
@@ -235,10 +235,10 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 5. Submission Form UX | 4/4 | Complete | 2026-04-07 |
 | 6. Scoring Extraction | 2/2 | Complete | 2026-04-07 |
 | 7. Data Persistence | 3/3 | Complete | 2026-04-07 |
-| 8. Real Data Leaderboard | 0/3 | Not started | - |
+| 8. Real Data Leaderboard | 3/3 | Complete | 2026-04-07 |
 | 9. Leaderboard Enhancements | 0/4 | Not started | - |
 | 10. Design Polish and Companion Links | 0/5 | Not started | - |
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-07 after Phase 7 execution complete (5/5 must-haves verified)*
+*Last updated: 2026-04-07 after Phase 8 execution complete (7/7 must-haves verified)*

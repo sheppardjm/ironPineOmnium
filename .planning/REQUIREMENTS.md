@@ -26,19 +26,19 @@
 - [ ] **LEAD-01**: Leaderboard displays per-component score columns (Day 1 / Day 2 sectors / KOM) alongside total
 - [ ] **LEAD-02**: Rider can search/filter leaderboard by athlete name
 - [ ] **LEAD-03**: Leaderboard is mobile-readable and validated for phone-sized screens
-- [ ] **LEAD-04**: Leaderboard displays real rider data from submissions (replacing sample data)
+- [x] **LEAD-04**: Leaderboard displays real rider data from submissions (replacing sample data)
 
 ### Data Pipeline
 
 - [ ] **DATA-01**: Rider submissions persist via GitHub Contents API (one JSON file per rider)
 - [ ] **DATA-02**: Leaderboard rebuilds with current submission data (via build hook or SSR)
-- [ ] **DATA-03**: KOM points computed internally by comparing submitted effort times (not Strava's `kom_rank`)
+- [x] **DATA-03**: KOM points computed internally by comparing submitted effort times (not Strava's `kom_rank`)
 
 ### Design & Polish
 
 - [ ] **DSGN-01**: Submission form UI matches site's visual language (Cormorant Garamond / Sora, existing color palette)
 - [ ] **DSGN-02**: Companion sites (mkUltraGravel, hiawathasRevenge) link to this site for submissions and results
-- [ ] **DSGN-03**: Clear visual indicator distinguishes sample data from live results on leaderboard
+- [x] **DSGN-03**: Clear visual indicator distinguishes sample data from live results on leaderboard
 
 ### Compliance
 
@@ -85,12 +85,12 @@
 | SUBM-04 | Phase 5 | Complete |
 | SUBM-05 | Phase 6 | Complete |
 | SUBM-06 | Phase 6 | Complete |
-| DATA-03 | Phase 6 | Partial (raw capture; ranking in Phase 8) |
+| DATA-03 | Phase 8 | Complete |
 | DATA-01 | Phase 7 | Complete |
 | DATA-02 | Phase 7 | Complete |
 | SUBM-02 | Phase 7 | Complete |
-| LEAD-04 | Phase 8 | Pending |
-| DSGN-03 | Phase 8 | Pending |
+| LEAD-04 | Phase 8 | Complete |
+| DSGN-03 | Phase 8 | Complete |
 | LEAD-01 | Phase 9 | Pending |
 | LEAD-02 | Phase 9 | Pending |
 | LEAD-03 | Phase 9 | Pending |
