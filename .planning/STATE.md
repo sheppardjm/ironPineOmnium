@@ -9,10 +9,10 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 
 ## Current Position
 
-Phase: 5 of 10 (Submission Form UX) — COMPLETE
-Plan: 4 of 4 in phase 5
-Status: Phase 5 verified and complete
-Last activity: 2026-04-07 — Phase 5 verified (5/5 must-haves passed)
+Phase: 6 of 10 (Scoring Extraction) — In progress
+Plan: 1 of 3 in phase 6
+Status: In progress
+Last activity: 2026-04-07 — Completed 06-01-PLAN.md (komEfforts extraction)
 
 Progress: [█████░░░░░] 50%
 
@@ -88,6 +88,9 @@ Recent decisions affecting current work:
 - 05-04: athleteFirstname/athleteLastname only available from tokenData.athlete during authorization_code exchange — captured once at that point and persisted in session cookie
 - 05-04: Token refresh explicitly carries athleteFirstname/athleteLastname from original session into updatedPayload — Strava refresh response never includes athlete object
 - 05-04: UI fallback chain for identity display: name fields -> "Athlete #[id]" -> "unknown"
+- 06-01: komEfforts uses same deduplication pattern as sectorEfforts (keep fastest elapsed_time per KOM segment)
+- 06-01: komSegmentIds retained alongside komEfforts for backward compatibility (presence list + time map serve complementary purposes)
+- 06-01: KOM time display conditioned on komTimeTotal > 0 to handle payloads missing komEfforts gracefully
 
 ### Pending Todos
 
@@ -102,6 +105,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-07T16:57:00Z
-Stopped at: Phase 5 complete and verified — all 4 plans executed, 5/5 must-haves passed
+Last session: 2026-04-07T17:26:33Z
+Stopped at: Completed 06-01-PLAN.md — komEfforts extraction and confirm page wiring
 Resume file: None
