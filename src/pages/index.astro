@@ -1,78 +1,99 @@
 ---
 import Leaderboard from "../components/Leaderboard.astro";
+import LogoMark from "../components/LogoMark.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { defaultScoringConfig } from "../lib/scoring";
+import { loadAthleteResults } from "../lib/athlete-loader";
+
+const { hasLiveData } = loadAthleteResults();
 
 const eventLinks = [
   {
-    label: "Day 1 · MK Ultra Gravel",
-    href: "file:///Users/Sheppardjm/Repos/mkUltraGravel/dist/index.html",
-    marker: "Fondo opener",
-    vibe: "Long miles, rolling pace lines, and a moving-time benchmark that still bites.",
-    detail: "An all-day fondo-style group ride where moving time matters without flattening the opener into a pure race.",
+    label: "Day 1 · Hiawatha's Revenge",
+    href: "file:///Users/Sheppardjm/Repos/hiawathasRevenge/dist/index.html",
+    marker: "Saturday",
+    vibe: "Long fondo day with moving time counted toward the overall.",
+    detail: "Hiawatha's Revenge opens the weekend with the bigger miles and sets the baseline for the omnium.",
   },
   {
-    label: "Day 2 · Hiawatha's Revenge",
-    href: "file:///Users/Sheppardjm/Repos/hiawathasRevenge/dist/index.html",
-    marker: "Grinduro closer",
-    vibe: "Timed gravel sectors, climb points, and the selective day that settles the omnium.",
-    detail: "A grinduro-style day across Alger and Marquette County where gravel sectors and KOM points decide the weekend.",
+    label: "Day 2 · MK Ultra Gravel",
+    href: "file:///Users/Sheppardjm/Repos/mkUltraGravel/dist/index.html",
+    marker: "Sunday",
+    vibe: "Timed sectors and KOM points decide more of the table.",
+    detail: "MK Ultra Gravel closes the weekend with the sharper efforts and carries the heaviest scoring weight.",
   },
 ];
 
 const sceneSignals = [
   {
-    title: "Dark hoodie weather",
-    body: "Cold-start air, charcoal layers, and the kind of parking-lot atmosphere that feels better under cloud cover.",
+    title: "Saturday ride",
+    body: "Start with distance and moving time on the fondo.",
   },
   {
-    title: "Women set the tone",
-    body: "The women’s field is treated like a real headliner here, with equal standing in the story and the scoring.",
+    title: "Sunday push",
+    body: "Finish with timed sectors, climbs, and a harder sort.",
   },
   {
-    title: "Real omnium pressure",
-    body: "One day stretches the group. One day detonates it. The table rewards whoever can carry form across both.",
+    title: "Separate standings",
+    body: "Women, men, and non-binary riders each get their own overall table.",
   },
 ];
 
 const gatheringNotes = [
   {
-    title: "Pacific Northwest palette",
-    body: "Deep fir greens, wet-stone neutrals, ember accents, and cream text that reads like a poster taped up in a bike shop window.",
+    title: "Forest roads",
+    body: "The route photos do most of the talking: pines, water, hardpack, and loose rock.",
   },
   {
-    title: "More scene than expo",
-    body: "The page now leans toward underground event-flyer energy instead of generic race brochure polish.",
+    title: "Simple weekend shape",
+    body: "Two established events, one combined result, and an easy page to check between ride days.",
   },
   {
-    title: "Still grounded in the math",
-    body: "The moody visuals do not replace the weekend logic. They frame the scoring system and the category-based leaderboard more clearly.",
+    title: "Stay around",
+    body: "It should feel like a ride weekend people want to hang around for, not just race through.",
   },
 ];
 
-const terrainPanels = [
+const rideFrames = [
   {
-    title: "Mist line",
-    body: "Cold air hanging over fir tops, the kind of weather that makes the whole start grid feel quieter and more serious.",
-    modifier: "terrain-card--mist",
+    label: "Day 1 · Hiawatha's Revenge",
+    title: "Pine-lined stretch",
+    body: "Hiawatha opens the weekend with the longer forest-road miles.",
+    src: "/images/hiawatha-riders.jpg",
+    alt: "Two gravel cyclists riding on a pine-lined road during Hiawatha's Revenge.",
+    modifier: "ride-frame--feature",
   },
   {
-    title: "Timber stand",
-    body: "A straight-run forest corridor, wet grass under the trees, and the visual texture the page was missing.",
-    modifier: "terrain-card--forest",
+    label: "Day 1 · Rough Surface",
+    title: "Loose rock",
+    body: "The rougher surface shows up early in the weekend.",
+    src: "/images/hiawatha-rock-garden.jpg",
+    alt: "A gravel bike on a rough, rock-strewn forest road during Hiawatha's Revenge.",
+    modifier: "ride-frame--conditions",
   },
   {
-    title: "Cloud shelf",
-    body: "Dark ridges and swallowed horizons so the event feels like it belongs outside, not just inside panels and type.",
-    modifier: "terrain-card--ridge",
+    label: "Day 2 · MK Ultra Gravel",
+    title: "Rolling start",
+    body: "Sunday brings the timed sectors and sharper efforts through the forest.",
+    src: "/images/mkultra-riders.jpg",
+    alt: "Two gravel cyclists riding on a wooded road during MK Ultra Gravel.",
+    modifier: "ride-frame--ride",
+  },
+  {
+    label: "Day 2 · Conditions",
+    title: "Wet section",
+    body: "The route stays honest when the water sits on top of the road.",
+    src: "/images/mkultra-puddle.jpg",
+    alt: "Two gravel bikes laid beside a large puddle on a forest road during MK Ultra Gravel.",
+    modifier: "ride-frame--conditions",
   },
 ];
 
 const scoringPillars = [
   {
     title: "Day 1 moving time",
-    weight: `${Math.round(defaultScoringConfig.day1Weight * 100)}%`,
-    body: "Each rider is benchmarked against the fastest moving time in their category. The opener matters, but it does not overpower the rest of the weekend.",
+    weight: `${Math.round(defaultScoringConfig.movingTimeWeight * 100)}%`,
+    body: "Each rider is benchmarked against the fastest moving time in their category. The fondo matters, but it does not overpower the rest of the weekend.",
   },
   {
     title: "Day 2 gravel sectors",
@@ -89,190 +110,219 @@ const scoringPillars = [
 
 <BaseLayout
   title="Iron & Pine Omnium | Two Days of Gravel in the Hiawatha National Forest"
-  description="A moody forest-night landing page for Iron & Pine Omnium, a two-day gravel series in Alger and Marquette County, Michigan."
+  description="A simple landing page for Iron & Pine Omnium, a two-day gravel weekend in Michigan's Upper Peninsula."
 >
   <main class="page-shell">
     <section class="hero-section">
-      <div class="hero-copy">
-        <p class="eyebrow">June 6 to 7, 2026 · Hiawatha National Forest</p>
-        <p class="signal-chip">Pacific Northwest mood, Upper Peninsula dirt.</p>
-        <h1 class="hero-title">Iron & Pine Omnium</h1>
-        <p class="hero-kicker">
-          A gravel weekend for dark hoodies, cold starts, and a women’s field that helps set the tone.
-        </p>
-        <p class="hero-body">
-          Think mist, pine sap, camera flash, and a staging area that feels like a scene instead of a generic expo. Day one is a fondo-style group ride. Day two flips into timed sectors and KOM chases. Overall winners are still calculated separately for men, women, and non-binary riders.
-        </p>
-
-        <div class="cta-row">
-          <a class="primary-button" href="#leaderboard">See the Omnium Leaderboard</a>
-          <a class="secondary-button" href="#format">How the weekend works</a>
-        </div>
-
-        <div class="signal-grid">
-          {sceneSignals.map((signal) => (
-            <article class="signal-card">
-              <h3>{signal.title}</h3>
-              <p>{signal.body}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-
-      <div class="hero-panel">
-        <div class="hero-poster">
-          <p class="poster-overline">Forest Flyer · 2026</p>
-          <h2 class="poster-title">Fog in the lot. Fir shadows on the course. Two days to earn the table.</h2>
-
-          <div class="poster-grid">
-            <div>
-              <span>Format</span>
-              <strong>Fondo + Grinduro</strong>
-            </div>
-            <div>
-              <span>Scoring</span>
-              <strong>Moving time · sectors · KOM</strong>
-            </div>
-            <div>
-              <span>Fields</span>
-              <strong>Women · Men · Non-Binary</strong>
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow">June 6 to 7, 2026 · Hiawatha National Forest</p>
+          <div class="logo-lockup">
+            <LogoMark class="logo-mark" />
+            <div class="logo-copy">
+              <p class="logo-subtitle">Two-day gravel omnium</p>
+              <h1 class="hero-title">Iron & Pine Omnium</h1>
             </div>
           </div>
+          <p class="hero-kicker">
+            Two days of gravel riding in the Upper Peninsula.
+          </p>
+          <p class="hero-body">
+            Saturday starts with Hiawatha&apos;s Revenge and its moving time counted toward the overall. Sunday finishes at MK Ultra Gravel with timed sectors and KOM points. The omnium keeps separate overall standings for women, men, and non-binary riders.
+          </p>
 
-          <div class="route-stack">
-            {eventLinks.map((event, index) => (
-              <article class:list={{ "route-card": true, "route-card--ember": index === 1 }}>
-                <p class="route-marker">{event.marker}</p>
-                <h3>{event.label}</h3>
-                <p class="route-vibe">{event.vibe}</p>
-                <a class="inline-link" href={event.href}>Open companion site</a>
+          <div class="cta-row">
+            <a class="primary-button" href="#leaderboard">See the Omnium Leaderboard</a>
+            <a class="secondary-button" href="#format">How the weekend works</a>
+          </div>
+
+          <div class="signal-grid">
+            {sceneSignals.map((signal) => (
+              <article class="signal-card">
+                <h3>{signal.title}</h3>
+                <p>{signal.body}</p>
               </article>
             ))}
           </div>
         </div>
 
-        <div class="badge-cluster" aria-hidden="true">
-          <div class="floating-badge floating-badge--mist">Hoodie weather</div>
-          <div class="floating-badge floating-badge--ember">Forest pressure</div>
-          <div class="floating-badge floating-badge--fern">Women lead out</div>
+        <div class="hero-panel">
+          <div class="hero-poster">
+            <p class="poster-overline">Weekend overview</p>
+            <h2 class="poster-title">Ride Saturday. Push Sunday. Add it up at the end.</h2>
+
+            <div class="poster-grid">
+              <div>
+                <span>Format</span>
+                <strong>Fondo + Grinduro</strong>
+              </div>
+              <div>
+                <span>Scoring</span>
+                <strong>Moving time · sectors · KOM</strong>
+              </div>
+              <div>
+                <span>Fields</span>
+                <strong>Women · Men · Non-Binary</strong>
+              </div>
+            </div>
+
+            <div class="route-stack">
+              {eventLinks.map((event) => (
+                <article class="route-card">
+                  <p class="route-marker">{event.marker}</p>
+                  <h3>{event.label}</h3>
+                  <p class="route-vibe">{event.vibe}</p>
+                  <a class="inline-link" href={event.href}>Open companion site</a>
+                </article>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
     <section class="content-section manifesto-section">
-      <div class="section-heading">
-        <p class="eyebrow">Scene Setting</p>
-        <h2>Built like the flyer for the gravel weekend everybody wanted to be seen at.</h2>
-        <p class="section-copy">
-          This version keeps the Hiawatha terrain intact and shifts the visual language: darker, colder, more cinematic, and more specific about the culture around the ride. Less generic race brochure, more forest-night event identity.
-        </p>
-      </div>
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="eyebrow">What To Expect</p>
+          <h2>A simple page for a two-day ride weekend.</h2>
+          <p class="section-copy">
+            The companion sites carry the route details. This page keeps the overview, the combined scoring, and photos that actually show the roads.
+          </p>
+        </div>
 
-      <div class="manifesto-grid">
-        {gatheringNotes.map((note) => (
-          <article class="manifesto-card">
-            <h3>{note.title}</h3>
-            <p>{note.body}</p>
-          </article>
-        ))}
+        <div class="manifesto-grid">
+          {gatheringNotes.map((note) => (
+            <article class="manifesto-card">
+              <h3>{note.title}</h3>
+              <p>{note.body}</p>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
 
-    <section class="terrain-section" aria-label="Landscape atmosphere">
-      <div class="terrain-grid">
-        {terrainPanels.map((panel) => (
-          <article class:list={["terrain-card", panel.modifier]}>
-            <div class="terrain-card__body">
-              <p class="terrain-label">Outdoor note</p>
-              <h3>{panel.title}</h3>
-              <p>{panel.body}</p>
-            </div>
-          </article>
-        ))}
+    <section class="ride-reel-section" aria-label="Ride photography from the event routes">
+      <div class="section-inner ride-reel-inner">
+        <div class="section-heading ride-reel-heading">
+          <p class="eyebrow">From The Route</p>
+          <h2>Photos from both days.</h2>
+          <p class="section-copy">
+            Pulled directly from the MK Ultra Gravel and Hiawatha&apos;s Revenge sites.
+          </p>
+        </div>
+
+        <div class="ride-reel-grid">
+          {rideFrames.map((frame) => (
+            <figure class:list={["ride-frame", frame.modifier]}>
+              <img src={frame.src} alt={frame.alt} loading="lazy" decoding="async" />
+              <figcaption class="ride-frame__body">
+                <p class="ride-frame__label">{frame.label}</p>
+                <h3>{frame.title}</h3>
+                <p>{frame.body}</p>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
       </div>
     </section>
 
     <section id="format" class="content-section">
-      <div class="section-heading">
-        <p class="eyebrow">Weekend Flow</p>
-        <h2>Two linked ride days. One final ranking.</h2>
-        <p class="section-copy">
-          The opener establishes moving-time pressure without turning the weekend into a single stopwatch contest. The closer is where sectors and climbs sort the field.
-        </p>
-      </div>
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="eyebrow">Weekend Flow</p>
+          <h2>Start sharp, finish long.</h2>
+          <p class="section-copy">
+            The first day rewards steady riding across the fondo. The second day puts weight on timed sectors and climbing.
+          </p>
+        </div>
 
-      <div class="event-grid">
-        {eventLinks.map((event, index) => (
-          <article class="event-card">
-            <p class="event-marker">{event.marker}</p>
-            <h3>{event.label}</h3>
-            <p class:list={{ "event-vibe": true, "event-vibe--ember": index === 1 }}>{event.vibe}</p>
-            <p>{event.detail}</p>
-            <a class="inline-link" href={event.href}>Visit companion site</a>
-          </article>
-        ))}
+        <div class="event-grid">
+          {eventLinks.map((event) => (
+            <article class="event-card">
+              <p class="event-marker">{event.marker}</p>
+              <h3>{event.label}</h3>
+              <p class="event-vibe">{event.vibe}</p>
+              <p>{event.detail}</p>
+              <a class="inline-link" href={event.href}>Visit companion site</a>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
 
     <section class="content-section scoring-section">
-      <div class="section-heading">
-        <p class="eyebrow">Scoring System</p>
-        <h2>The mood is cinematic. The math stays blunt.</h2>
-        <p class="section-copy">
-          Fastest category benchmarks are normalized to 100, then weighted across the weekend. The visuals got moodier, but the logic remains strict and readable.
-        </p>
-      </div>
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="eyebrow">Scoring System</p>
+          <h2>Straightforward scoring.</h2>
+          <p class="section-copy">
+            Each category is benchmarked against its fastest rider, then weighted across the weekend.
+          </p>
+        </div>
 
-      <div class="pillar-grid">
-        {scoringPillars.map((pillar) => (
-          <article class="pillar-card">
-            <div class="pill-row">
-              <span class="score-pill">{pillar.weight}</span>
-              <span class="mini-label">weighted contribution</span>
-            </div>
-            <h3>{pillar.title}</h3>
-            <p>{pillar.body}</p>
-          </article>
-        ))}
-      </div>
+        <div class="pillar-grid">
+          {scoringPillars.map((pillar) => (
+            <article class="pillar-card">
+              <div class="pill-row">
+                <span class="score-pill">{pillar.weight}</span>
+                <span class="mini-label">weighted contribution</span>
+              </div>
+              <h3>{pillar.title}</h3>
+              <p>{pillar.body}</p>
+            </article>
+          ))}
+        </div>
 
-      <div class="formula-card">
-        <p class="eyebrow">Formula</p>
-        <p class="formula-text">
-          Overall score = day 1 benchmark ratio × {Math.round(defaultScoringConfig.day1Weight * 100)} +
-          day 2 sector benchmark ratio × {Math.round(defaultScoringConfig.sectorWeight * 100)} +
-          KOM benchmark ratio × {Math.round(defaultScoringConfig.komWeight * 100)}
-        </p>
-        <p class="formula-note">
-          Each category is ranked independently. The leaderboard below uses sample rider data so the model and UI can be validated before importing real results.
-        </p>
+        <div class="formula-card">
+          <p class="eyebrow">Formula</p>
+          <p class="formula-text">
+            Overall score = moving time ratio × {Math.round(defaultScoringConfig.movingTimeWeight * 100)} +
+            sector ratio × {Math.round(defaultScoringConfig.sectorWeight * 100)} +
+            KOM ratio × {Math.round(defaultScoringConfig.komWeight * 100)}
+          </p>
+          <p class="formula-note">
+            Each category is ranked independently.{hasLiveData
+              ? " The leaderboard below shows live results from submitted activities."
+              : " The leaderboard will show results once riders begin submitting."}
+          </p>
+        </div>
       </div>
     </section>
 
     <section id="leaderboard" class="content-section leaderboard-section">
-      <div class="section-heading">
-        <p class="eyebrow">Leaderboard</p>
-        <h2>Three categories. Three score inputs. One winner in each field.</h2>
-        <p class="section-copy">
-          The leaderboard below still runs on sample data, but the presentation now matches the event identity instead of dropping into a generic utility table.
-        </p>
-      </div>
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="eyebrow">Leaderboard</p>
+          <span class:list={["status-badge", hasLiveData ? "status-live" : "status-pending"]}>
+            {hasLiveData ? "Live results" : "Awaiting submissions"}
+          </span>
+          <h2>{hasLiveData ? "Current standings." : "Awaiting submissions."}</h2>
+          <p class="section-copy">
+            {hasLiveData
+              ? "Combined scores across both days, updated after each submission."
+              : "The leaderboard will populate as riders submit their Strava activities."}
+          </p>
+        </div>
 
-      <Leaderboard />
+        <Leaderboard />
+      </div>
     </section>
 
     <section class="content-section final-cta">
-      <div>
-        <p class="eyebrow">Open The Ride Pages</p>
-        <h2>Start with the routes, then bring the results back to the omnium.</h2>
-        <p class="section-copy">
-          The individual event sites hold the ride-day details. This page is the shared poster, scoreboard, and weekend summary.
-        </p>
-      </div>
-      <div class="cta-stack">
-        {eventLinks.map((event) => (
-          <a class="secondary-button w-full justify-center" href={event.href}>{event.label}</a>
-        ))}
+      <div class="section-inner final-cta__inner">
+        <div>
+          <p class="eyebrow">Ride Pages</p>
+          <h2>See each day on its own.</h2>
+          <p class="section-copy">
+            Route details and ride-day specifics live on the two event sites.
+          </p>
+        </div>
+        <div class="cta-stack">
+          {eventLinks.map((event) => (
+            <a class="secondary-button w-full justify-center" href={event.href}>{event.label}</a>
+          ))}
+        </div>
       </div>
     </section>
   </main>
