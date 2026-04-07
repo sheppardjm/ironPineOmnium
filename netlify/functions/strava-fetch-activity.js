@@ -57,6 +57,8 @@ export const handler = async (event, _context) => {
     const isLocal = process.env.NETLIFY_DEV === "true";
     const updatedPayload = JSON.stringify({
       athleteId: session.athleteId,
+      athleteFirstname: session.athleteFirstname || "",
+      athleteLastname: session.athleteLastname || "",
       accessToken,
       refreshToken,
       expiresAt,
@@ -199,6 +201,8 @@ export const handler = async (event, _context) => {
     body: JSON.stringify({
       activityId: String(activity.id),
       athleteId: session.athleteId,
+      athleteFirstname: session.athleteFirstname || "",
+      athleteLastname: session.athleteLastname || "",
       movingTimeSeconds: activity.moving_time,
       startDateLocal: localDateStr,
       sectorEfforts,

@@ -79,6 +79,8 @@ export const handler = async (event, context) => {
   // The athlete object is ONLY present in the initial authorization_code exchange response.
   // It is never included in token refresh responses.
   const athleteId = String(tokenData.athlete.id);
+  const athleteFirstname = tokenData.athlete.firstname || "";
+  const athleteLastname = tokenData.athlete.lastname || "";
   const accessToken = tokenData.access_token;
   const refreshToken = tokenData.refresh_token;
   const expiresAt = tokenData.expires_at;
@@ -86,7 +88,7 @@ export const handler = async (event, context) => {
   // Step 5: Set session cookie and clear CSRF cookie
   const isLocal = process.env.NETLIFY_DEV === "true";
 
-  const sessionPayload = JSON.stringify({ athleteId, accessToken, refreshToken, expiresAt });
+  const sessionPayload = JSON.stringify({ athleteId, athleteFirstname, athleteLastname, accessToken, refreshToken, expiresAt });
 
   const sessionCookie = serialize("strava_session", sessionPayload, {
     httpOnly: true,
