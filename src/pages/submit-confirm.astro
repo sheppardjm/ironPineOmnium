@@ -60,6 +60,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <input type="hidden" name="startDateLocal" id="h-startDateLocal" />
           <input type="hidden" name="sectorEfforts" id="h-sectorEfforts" />
           <input type="hidden" name="komSegmentIds" id="h-komSegmentIds" />
+          <input type="hidden" name="komEfforts" id="h-komEfforts" />
           <input type="hidden" name="athleteFirstname" id="h-athleteFirstname" />
           <input type="hidden" name="athleteLastname" id="h-athleteLastname" />
 
@@ -100,6 +101,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       startDateLocal?: string;
       sectorEfforts?: Record<string, number>;
       komSegmentIds?: string[];
+      komEfforts?: Record<string, number>;
     };
 
     function renderPreview(payload: Payload): void {
@@ -176,10 +178,17 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       const komEl = document.getElementById("kom-preview");
       if (komEl) {
         const komCount = (payload.komSegmentIds ?? []).length;
+        const komEfforts = payload.komEfforts ?? {};
+        const komTimeTotal = Object.values(komEfforts).reduce(
+          (a: number, b: number) => a + b, 0
+        );
         if (komCount > 0) {
+          const timeDisplay = komTimeTotal > 0
+            ? ` · ${formatTime(komTimeTotal)} total climb time`
+            : "";
           komEl.innerHTML = `
             <p class="preview-label">Day 2 · KOM Points</p>
-            <p class="preview-value">${komCount} of 3 KOM segments</p>
+            <p class="preview-value">${komCount} of 3 KOM segments${timeDisplay}</p>
             <p class="preview-explain">KOM points count for <strong>20%</strong> of your overall score, based on how your climb times compare to other riders.</p>
           `;
         } else {
@@ -206,6 +215,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       set("h-startDateLocal", payload.startDateLocal);
       set("h-sectorEfforts", payload.sectorEfforts ?? {});
       set("h-komSegmentIds", payload.komSegmentIds ?? []);
+      set("h-komEfforts", payload.komEfforts ?? {});
       set("h-athleteFirstname", payload.athleteFirstname);
       set("h-athleteLastname", payload.athleteLastname);
     }
