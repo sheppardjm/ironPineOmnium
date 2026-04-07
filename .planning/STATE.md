@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 
 ## Current Position
 
-Phase: 6 of 10 (Scoring Extraction) — COMPLETE
-Plan: 2 of 2 in phase 6
-Status: Phase 6 verified and complete
-Last activity: 2026-04-07 — Phase 6 verified (5/5 must-haves passed)
+Phase: 7 of 10 (Data Persistence) — In progress
+Plan: 1 of 3 in phase 7
+Status: In progress
+Last activity: 2026-04-07 — Completed 07-01-PLAN.md (submit-result function + confirm page wiring)
 
-Progress: [██████░░░░] 60%
+Progress: [███████░░░] 65%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
-- Average duration: ~7 min
-- Total execution time: ~109 min
+- Total plans completed: 17
+- Average duration: ~6.5 min
+- Total execution time: ~111 min
 
 **By Phase:**
 
@@ -33,10 +33,11 @@ Progress: [██████░░░░] 60%
 | 04-activity-fetching | 2/2 | ~16 min | ~8 min |
 | 05-submission-form-ux | 4/4 | ~10 min | ~3 min |
 | 06-scoring-extraction | 2/2 | ~2 min | ~1 min |
+| 07-data-persistence | 1/3 | ~2 min | ~2 min |
 
 **Recent Trend:**
-- Last 5 plans: 06-02 (~1 min), 06-01 (~1 min), 05-04 (~2 min), 05-03 (~3 min), 05-02 (~3 min)
-- Trend: Phase 6 plans very fast (focused single-file edits)
+- Last 5 plans: 07-01 (~2 min), 06-02 (~1 min), 06-01 (~1 min), 05-04 (~2 min), 05-03 (~3 min)
+- Trend: Phase 7 plans fast (focused function creation + form wiring)
 
 *Updated after each plan completion*
 
@@ -94,6 +95,10 @@ Recent decisions affecting current work:
 - 06-01: KOM time display conditioned on komTimeTotal > 0 to handle payloads missing komEfforts gracefully
 - 06-02: 2026-06-07 used as client-side literal for Day 2 detection — EVENT_DATES server-side constant not accessible in browser script block
 - 06-02: Day 1 neutral text updated to "Not applicable for Day 1 activities" (was "No timed sectors matched") for clarity
+- 07-01: submit-result reads strava_session for athleteId only — no Strava API calls, no token refresh needed
+- 07-01: All validation errors return HTTP 200 with { error } JSON; 401 for missing/bad session, 403 for athlete ID mismatch
+- 07-01: 409 SHA conflict retried once (re-GET then re-PUT); persistent conflict returns write_conflict error
+- 07-01: Build hook triggered fire-and-forget after successful GitHub PUT (no await, .catch(() => {}))
 
 ### Pending Todos
 
@@ -108,6 +113,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-07T17:35:00Z
-Stopped at: Phase 6 complete and verified — all 2 plans executed, 5/5 must-haves passed
+Last session: 2026-04-07T17:56:39Z
+Stopped at: Completed 07-01-PLAN.md — submit-result.js created, submit-confirm.astro wired
 Resume file: None
