@@ -14,10 +14,10 @@
 
 ### Submission Flow
 
-- [ ] **SUBM-01**: Rider sees computed score preview before finalizing submission (Day 1 moving time score, Day 2 sector + KOM scores)
+- [x] **SUBM-01**: Rider sees computed score preview before finalizing submission (Day 1 moving time score, Day 2 sector + KOM scores)
 - [ ] **SUBM-02**: System associates Day 1 and Day 2 submissions via Strava athlete ID
-- [ ] **SUBM-03**: Rider provides display name, hometown, and category (men/women/non-binary) during first submission
-- [ ] **SUBM-04**: Submission flow shows inline scoring explanation ("your 4:12 moving time = X points")
+- [x] **SUBM-03**: Rider provides display name, hometown, and category (men/women/non-binary) during first submission
+- [x] **SUBM-04**: Submission flow shows inline scoring explanation ("your 4:12 moving time = X points")
 - [ ] **SUBM-05**: System extracts moving time from Day 1 activity for scoring
 - [ ] **SUBM-06**: System extracts timed sector efforts and computes KOM points from Day 2 activity
 
@@ -80,9 +80,9 @@
 | STRA-04 | Phase 3 | Complete |
 | STRA-02 | Phase 4 | Complete |
 | STRA-03 | Phase 4 | Complete |
-| SUBM-01 | Phase 5 | Pending |
-| SUBM-03 | Phase 5 | Pending |
-| SUBM-04 | Phase 5 | Pending |
+| SUBM-01 | Phase 5 | Complete |
+| SUBM-03 | Phase 5 | Complete |
+| SUBM-04 | Phase 5 | Complete |
 | SUBM-05 | Phase 6 | Pending |
 | SUBM-06 | Phase 6 | Pending |
 | DATA-03 | Phase 6 | Pending |
@@ -104,4 +104,4 @@
 
 ---
 *Requirements defined: 2026-04-02*
-*Last updated: 2026-04-06 after Phase 4 execution*
+*Last updated: 2026-04-07 after Phase 5 execution*

@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Netlify Infrastructure** - netlify.toml routing, environment variables, local dev working
 - [x] **Phase 3: Strava OAuth** - OAuth round-trip with CSRF protection, token management, athlete verification
 - [x] **Phase 4: Activity Fetching and Validation** - URL parsing, activity fetch, date validation, scope handling
-- [ ] **Phase 5: Submission Form UX** - Rider identity capture, score preview, inline explanation, consent step
+- [x] **Phase 5: Submission Form UX** - Rider identity capture, score preview, inline explanation, consent step
 - [ ] **Phase 6: Scoring Extraction** - Day 1 moving time, Day 2 sector efforts, KOM points from segment comparison
 - [ ] **Phase 7: Data Persistence** - GitHub Contents API write, Netlify rebuild hook, deauth webhook
 - [ ] **Phase 8: Real Data Leaderboard** - Replace sample data, day association, live/sample indicator
@@ -115,10 +115,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Create submit.astro (URL input, fetch, base64url redirect) + fix OAuth callback redirect to /submit
-- [ ] 05-02-PLAN.md — Create submit-confirm.astro (payload decode, score preview with inline explanation, identity form, cancel flow, validation)
-- [ ] 05-03-PLAN.md — Visual verification checkpoint: build + test full submit flow with synthetic payloads
-- [ ] 05-04-PLAN.md — Gap closure: thread Strava athlete name from OAuth through session to confirm page display
+- [x] 05-01-PLAN.md — Create submit.astro (URL input, fetch, base64url redirect) + fix OAuth callback redirect to /submit
+- [x] 05-02-PLAN.md — Create submit-confirm.astro (payload decode, score preview with inline explanation, identity form, cancel flow, validation)
+- [x] 05-03-PLAN.md — Visual verification checkpoint: build + test full submit flow with synthetic payloads
+- [x] 05-04-PLAN.md — Gap closure: thread Strava athlete name from OAuth through session to confirm page display
 
 ---
 
@@ -234,7 +234,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 2. Netlify Infrastructure | 2/2 | Complete | 2026-04-06 |
 | 3. Strava OAuth | 3/3 | Complete | 2026-04-06 |
 | 4. Activity Fetching and Validation | 2/2 | Complete | 2026-04-06 |
-| 5. Submission Form UX | 0/3 | Not started | - |
+| 5. Submission Form UX | 4/4 | Complete | 2026-04-07 |
 | 6. Scoring Extraction | 0/5 | Not started | - |
 | 7. Data Persistence | 0/5 | Not started | - |
 | 8. Real Data Leaderboard | 0/5 | Not started | - |
@@ -243,4 +243,4 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-06 after Phase 4 execution*
+*Last updated: 2026-04-07 after Phase 5 execution*

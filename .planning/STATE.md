@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** Phase 5 — Submission Form UX
+**Current focus:** Phase 6 — Scoring Extraction
 
 ## Current Position
 
-Phase: 5 of 10 (Submission Form UX)
-Plan: 4 of 5 in current phase
-Status: In progress
-Last activity: 2026-04-07 — Completed 05-04-PLAN.md (Strava identity display on confirm page)
+Phase: 5 of 10 (Submission Form UX) — COMPLETE
+Plan: 4 of 4 in phase 5
+Status: Phase 5 verified and complete
+Last activity: 2026-04-07 — Phase 5 verified (5/5 must-haves passed)
 
-Progress: [████░░░░░░] 44%
+Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: ~9 min
-- Total execution time: ~97 min
+- Total plans completed: 14
+- Average duration: ~8 min
+- Total execution time: ~107 min
 
 **By Phase:**
 
@@ -31,10 +31,11 @@ Progress: [████░░░░░░] 44%
 | 02-netlify-infrastructure | 2/2 | ~23 min | ~12 min |
 | 03-strava-oauth | 3/3 | ~26 min | ~9 min |
 | 04-activity-fetching | 2/2 | ~16 min | ~8 min |
+| 05-submission-form-ux | 4/4 | ~10 min | ~3 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (~15 min), 04-01 (~1 min), 03-03 (~15 min), 03-02 (~3 min), 03-01 (~8 min)
-- Trend: Consistent 8-10 min/plan
+- Last 5 plans: 05-04 (~2 min), 05-03 (~3 min), 05-02 (~3 min), 05-01 (~2 min), 04-02 (~15 min)
+- Trend: Phase 5 plans very fast (gap closure + visual verification)
 
 *Updated after each plan completion*
 
@@ -101,6 +102,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-07T16:53:43Z
-Stopped at: Completed 05-04-PLAN.md — Strava identity display ("Connected as [name]") on confirm page
+Last session: 2026-04-07T16:57:00Z
+Stopped at: Phase 5 complete and verified — all 4 plans executed, 5/5 must-haves passed
 Resume file: None
