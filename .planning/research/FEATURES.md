@@ -31,9 +31,9 @@ Features that set the product apart. Not expected, but valued.
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| Per-component score transparency with visual weight | Most small-event leaderboards show a single number. Showing "here's your Day 1 score / Day 2 sectors / KOM contribution" makes the weighted formula legible and builds trust in an unusual scoring system | MEDIUM | Column groups or expandable row — sector and KOM scores alongside overall. Reduces "wait, how did I score lower if I rode faster?" confusion |
+| Per-component score transparency with visual weight | Most small-event leaderboards show a single number. Showing "here's your Day 1 moving time / Day 2 sectors / KOM contribution" makes the weighted formula legible and builds trust in an unusual scoring system | MEDIUM | Column groups or expandable row — moving time, sector, and KOM scores alongside overall. Reduces "wait, how did I score lower if I rode faster?" confusion |
 | Submission preview before commit | Show the athlete what score their activity would generate *before* they finalize submission. Catches wrong-activity errors and makes the scoring model feel trustworthy | MEDIUM | Fetch activity → compute score → show preview → confirm button |
-| Inline scoring explanation anchored to submission | Contextually surfacing the scoring formula at the moment of submission ("your moving time of 4:12 gives you X in Day 1") rather than only on the landing page | LOW | Text/callout within submission flow, not a separate page |
+| Inline scoring explanation anchored to submission | Contextually surfacing the scoring formula at the moment of submission ("your moving time of 4:12 gives you X in Day 2") rather than only on the landing page | LOW | Text/callout within submission flow, not a separate page |
 | Sector-by-segment breakdown in expanded row | Grinduro participants care about individual segment times, not just total sector aggregate. Expanding a leaderboard row to show their Segment A / B / C / KOM breakdown differentiates from a flat time table | HIGH | Requires segment effort data from Strava API (`include_all_efforts=true`), segment ID matching to known course segments. Complex dependency on data pipeline. |
 | "Did you also ride Day 2?" nudge for single-day submitters | If a rider submits Day 1 only, a friendly nudge surfaces when viewing the leaderboard. Increases data completeness without requiring organizer follow-up. | LOW | Simple state: submitted_day1 && !submitted_day2 → show inline prompt |
 | Shareable result card / link | Riders share results. A clean `ironpineomnium.com/results/[rider-slug]` that renders nicely in Slack/iMessage previews gives the event organic reach | MEDIUM | OG meta tags + per-rider route. Depends on having persistent rider records. |
@@ -107,7 +107,7 @@ Minimum needed to replace sample data with real results and accept athlete submi
 - [ ] Submission confirmation state (score preview + success message)
 - [ ] Leaderboard flips from sample data to real data
 - [ ] Athlete name search (client-side filter)
-- [ ] Per-component score columns visible in leaderboard (Day 1 / Day 2 sectors / KOM)
+- [ ] Per-component score columns visible in leaderboard (Day 1 moving time / Day 2 sectors / KOM)
 - [ ] Mobile-readable leaderboard validated
 
 ### Add After Validation (v1.x)

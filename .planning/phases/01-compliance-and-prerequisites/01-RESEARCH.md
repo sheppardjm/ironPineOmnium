@@ -87,7 +87,7 @@ export const SECTOR_SEGMENT_IDS = [
 
 export type SectorSegmentId = (typeof SECTOR_SEGMENT_IDS)[number];
 
-/** KOM segment IDs used for KOM points scoring. */
+/** Day 2 KOM segment IDs used for KOM points scoring. */
 export const KOM_SEGMENT_IDS = [
   "XXXXXXXXX", // KOM 1 name
   // ...
@@ -133,7 +133,7 @@ CSV file (rider fills out manually / organizer populates from Strava)
 
 **CSV template columns (minimum):**
 ```
-display_name, category, day1_moving_time_seconds, sector_1_seconds, sector_2_seconds, ..., kom_points, manual_athlete_id
+display_name, category, day1_moving_time_seconds, day2_sector_1_seconds, day2_sector_2_seconds, ..., day2_kom_points, manual_athlete_id
 ```
 
 Note: `manual_athlete_id` is a fallback-only identifier (can be organizer-assigned, e.g., `manual-001`) since real Strava athlete IDs are unavailable in fallback mode. This must be documented in the procedure so there is no confusion about why IDs differ.

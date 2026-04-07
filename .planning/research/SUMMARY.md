@@ -44,7 +44,7 @@ The leaderboard already exists with sample data and tabbed category display. The
 - Submission success/error state feedback — silent POST is a UX failure
 - Real data replacing sample data in the leaderboard
 - Athlete name search (client-side filter) — 50-100 riders, trivial implementation
-- Per-component score columns (Day 1 / Day 2 sectors / KOM) — makes the unusual scoring model legible
+- Per-component score columns (Day 1 moving time / Day 2 sectors / KOM) — makes the unusual scoring model legible
 - Mobile-readable leaderboard validation — 97% of race-day traffic is mobile
 
 **Should have (competitive differentiators):**
@@ -122,7 +122,7 @@ Based on research, the natural build order is driven by three hard constraints: 
 
 ### Phase 5: Leaderboard Enhancements and UX Polish
 **Rationale:** Once real data is flowing, the display can be enhanced. These features depend on having real submissions to validate against. Per-component score columns require the full `RiderResult` schema to be populated; athlete name search requires real names in the leaderboard.
-**Delivers:** Per-component score columns (Day 1 / Day 2 sectors / KOM) visible in leaderboard, athlete name search (client-side filter), mobile-readable leaderboard validated, submission confirmation state (score preview + success/error messages), "real data live" signal replacing sample data notice.
+**Delivers:** Per-component score columns (Day 1 moving time / Day 2 sectors / KOM) visible in leaderboard, athlete name search (client-side filter), mobile-readable leaderboard validated, submission confirmation state (score preview + success/error messages), "real data live" signal replacing sample data notice.
 **Addresses:** Table-stakes features: mobile UX, search, score transparency.
 **Avoids:** Anti-feature scope creep (real-time WebSocket updates, admin editing UI, Strava Club integration).
 

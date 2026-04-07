@@ -1,5 +1,5 @@
 /**
- * Day 2 (Hiawatha's Revenge) Strava Segment IDs
+ * Day 2 (MK Ultra Gravel) Strava Segment IDs
  *
  * These segment IDs are used to extract timed sector efforts and KOM points
  * from submitted Day 2 activities. Each ID has been verified against the

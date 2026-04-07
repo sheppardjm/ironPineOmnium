@@ -42,7 +42,7 @@ completed: 2026-04-06
 
 # Phase 1 Plan 03: Segment ID Constants Summary
 
-**10 verified Strava segment ID constants for Hiawatha's Revenge Day 2 — 7 timed sectors and 3 KOM segments — typed as string literals with as-const assertions**
+**10 verified Strava segment ID constants for MK Ultra Day 2 — 7 timed sectors and 3 KOM segments — typed as string literals with as-const assertions**
 
 ## Performance
 

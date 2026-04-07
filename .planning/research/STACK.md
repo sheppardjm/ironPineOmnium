@@ -175,7 +175,7 @@ pnpm add -D netlify-cli
 - Convert the leaderboard page to server-rendered: `export const prerender = false`
 - Because Blobs reads are synchronous per-request with 60s eventual-consistency SLA
 
-**If the scoring involves data from both events (Day 1 mkUltraGravel + Day 2 Hiawatha's Revenge):**
+**If the scoring involves data from both events (Day 1 Hiawatha's Revenge + Day 2 mkUltraGravel):**
 - Each event site manages its own rider data store independently
 - ironPineOmnium pulls from both at build time (or fetches from their APIs)
 - Because the scoring engine already handles the two-day combination

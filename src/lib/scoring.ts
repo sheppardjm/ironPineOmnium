@@ -2,7 +2,7 @@ import { categoryIds, categoryLabels } from "./types";
 import type { CategoryId, CategoryLeaderboard, RiderResult, ScoredRider, ScoringConfig } from "./types";
 
 export const defaultScoringConfig: ScoringConfig = {
-  day1Weight: 0.35,
+  movingTimeWeight: 0.35,
   sectorWeight: 0.45,
   komWeight: 0.2,
   scoreScale: 100,
@@ -21,26 +21,26 @@ function scoreCategory(
   riders: RiderResult[],
   config: ScoringConfig,
 ): CategoryLeaderboard {
-  const fastestDay1MovingTimeSeconds = Math.min(...riders.map((rider) => rider.day1MovingTimeSeconds));
-  const fastestDay2SectorTotalSeconds = Math.min(...riders.map((rider) => sum(rider.day2SectorTimesSeconds)));
-  const highestKomPoints = Math.max(...riders.map((rider) => rider.day2KomPoints), 0);
+  const fastestMovingTimeSeconds = Math.min(...riders.map((rider) => rider.movingTimeSeconds));
+  const fastestSectorTotalSeconds = Math.min(...riders.map((rider) => sum(rider.sectorTimesSeconds)));
+  const highestKomPoints = Math.max(...riders.map((rider) => rider.komPoints), 0);
 
   const scoredEntries = riders
     .map((rider) => {
-      const sectorTotalTimeSeconds = sum(rider.day2SectorTimesSeconds);
-      const day1Score =
-        (fastestDay1MovingTimeSeconds / rider.day1MovingTimeSeconds) * config.scoreScale * config.day1Weight;
+      const sectorTotalTimeSeconds = sum(rider.sectorTimesSeconds);
+      const movingTimeScore =
+        (fastestMovingTimeSeconds / rider.movingTimeSeconds) * config.scoreScale * config.movingTimeWeight;
       const sectorScore =
-        (fastestDay2SectorTotalSeconds / sectorTotalTimeSeconds) * config.scoreScale * config.sectorWeight;
+        (fastestSectorTotalSeconds / sectorTotalTimeSeconds) * config.scoreScale * config.sectorWeight;
       const komScore =
-        (highestKomPoints === 0 ? 0 : rider.day2KomPoints / highestKomPoints) * config.scoreScale * config.komWeight;
+        (highestKomPoints === 0 ? 0 : rider.komPoints / highestKomPoints) * config.scoreScale * config.komWeight;
 
       return {
         rider,
-        day1Score: roundScore(day1Score),
+        movingTimeScore: roundScore(movingTimeScore),
         sectorScore: roundScore(sectorScore),
         komScore: roundScore(komScore),
-        totalScore: roundScore(day1Score + sectorScore + komScore),
+        totalScore: roundScore(movingTimeScore + sectorScore + komScore),
         sectorTotalTimeSeconds,
       };
     })
@@ -61,7 +61,7 @@ function scoreCategory(
         return left.sectorTotalTimeSeconds - right.sectorTotalTimeSeconds;
       }
 
-      return left.rider.day1MovingTimeSeconds - right.rider.day1MovingTimeSeconds;
+      return left.rider.movingTimeSeconds - right.rider.movingTimeSeconds;
     })
     .map((entry, index): ScoredRider => ({
       ...entry,
@@ -72,8 +72,8 @@ function scoreCategory(
     categoryId,
     categoryLabel: categoryLabels[categoryId],
     benchmarks: {
-      fastestDay1MovingTimeSeconds,
-      fastestDay2SectorTotalSeconds,
+      fastestMovingTimeSeconds,
+      fastestSectorTotalSeconds,
       highestKomPoints,
     },
     entries: scoredEntries,

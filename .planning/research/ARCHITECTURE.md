@@ -248,12 +248,12 @@ Rider sees their name on the leaderboard
 Day 1 Submission:
   strava-callback extracts moving_time from activity
   submit-result writes {athleteId}.json:
-    { athleteId, name, gender, activityUrl, day1MovingTimeSeconds, day2SectorTimesSeconds: [], day2KomPoints: 0 }
+    { athleteId, name, gender, activityUrl, day1MovingTimeSeconds: N, day2SectorTimesSeconds: [], day2KomPoints: 0 }
 
 Day 2 Submission (same rider, different activity):
-  strava-callback extracts sector segment times + KOM segment times
+  strava-callback extracts sector segment times + KOM segment times from activity
   submit-result GETs existing {athleteId}.json
-  Merges day 2 data into existing record (updates day2SectorTimesSeconds + day2KomPoints)
+  Merges day 2 data into existing record (updates day2SectorTimesSeconds, day2KomPoints)
   PUTs updated file back to GitHub
   Triggers rebuild → scoring engine sees complete RiderResult, renders full combined score
 ```
@@ -290,8 +290,8 @@ Netlify rebuild removes rider from leaderboard (TOS 5.4 compliance)
   activityUrl: string,       // Day 1 or most recent submitted activity URL
   submittedAt: string,       // ISO 8601 timestamp
   day1MovingTimeSeconds: number,       // From Strava activity.moving_time (day 1)
-  day2SectorTimesSeconds: number[],    // Elapsed times for each gravel sector segment
-  day2KomPoints: number,               // Derived from KOM segment rankings at score time
+  day2SectorTimesSeconds: number[],    // Elapsed times for each gravel sector segment (day 2)
+  day2KomPoints: number,               // Derived from KOM segment rankings at score time (day 2)
   segments: Record<string, { elapsed_time: number }> // Raw segment effort times by ID
 }
 ```

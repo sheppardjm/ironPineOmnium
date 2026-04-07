@@ -174,7 +174,7 @@ function buildAthleteJson(
     );
   }
 
-  // --- Build Day 1 ---
+  // --- Build Day 1 (Hiawatha's Revenge — moving time) ---
   let day1: Day1Data | null = null;
   const rawDay1 = row.day1_moving_time_seconds?.trim();
   if (rawDay1) {
@@ -192,7 +192,7 @@ function buildAthleteJson(
     }
   }
 
-  // --- Build Day 2 ---
+  // --- Build Day 2 (MK Ultra — sectors + KOM) ---
   let day2: Day2Data | null = null;
 
   // Collect sector efforts from columns named day2_sector_{id}

@@ -42,7 +42,7 @@ deduplication — it is a numeric identifier, not a profile field.
   // "men" | "women" | "non-binary" — self-reported at first submission, locked.
   // Scoring is computed per-category (fastest in category = benchmark).
 
-  // --- Day 1 results (null until Day 1 submission is received) ---
+  // --- Day 1 results: Hiawatha's Revenge / fondo (null until Day 1 submission is received) ---
 
   "day1": {
     "movingTimeSeconds": 16953,
@@ -54,13 +54,13 @@ deduplication — it is a numeric identifier, not a profile field.
     // string — Strava activity ID. Stored for operational deduplication only
     // (prevents the same activity being submitted twice). NOT displayed publicly.
 
-    "submittedAt": "2026-06-05T20:14:33Z"
+    "submittedAt": "2026-06-06T20:14:33Z"
     // ISO8601 string — wall-clock time of submission. Stored for audit trail.
     // NOT displayed publicly.
   },
   // null if rider has not yet submitted Day 1.
 
-  // --- Day 2 results (null until Day 2 submission is received) ---
+  // --- Day 2 results: MK Ultra / grinduro (null until Day 2 submission is received) ---
 
   "day2": {
     "sectorEfforts": {
@@ -84,7 +84,7 @@ deduplication — it is a numeric identifier, not a profile field.
     // string — Strava activity ID. Same deduplication purpose as day1.activityId.
     // NOT displayed publicly.
 
-    "submittedAt": "2026-06-06T19:47:12Z"
+    "submittedAt": "2026-06-07T19:47:12Z"
     // ISO8601 string — wall-clock time of submission.
   },
   // null if rider has not yet submitted Day 2.
@@ -134,7 +134,7 @@ It contains ONLY computed values derived from stored data, and rider-chosen iden
 | Day 1 Score | Computed — `(fastestInCategory / riderTime) * 100 * 0.35` | Points, not time |
 | Day 2 Sector Score | Computed — `(fastestSectorTotal / riderSectorTotal) * 100 * 0.45` | Points, not times |
 | KOM Score | Computed — `(riderKomCount / maxKomCount) * 100 * 0.20` | Points, not segment list |
-| Total Score | Computed — sum of Day 1 + Sector + KOM scores | Displayed to 1 decimal place |
+| Total Score | Computed — sum of Day 1 + Day 2 Sector + KOM scores | Displayed to 1 decimal place |
 
 Scoring weights (35% / 45% / 20%) and scale (100 points max) match the current
 `defaultScoringConfig` in `src/lib/scoring.ts`. Any change to those weights requires
@@ -178,7 +178,7 @@ maps their raw values to points. This is the ONLY place raw values are surfaced.
 
 ### What the Submission Confirmation Shows
 
-**Day 1 breakdown (shown after Day 1 submission):**
+**Day 1 breakdown (shown after Day 1 / Hiawatha's Revenge submission):**
 
 ```
 Your moving time: 4:42:33 (16,953 sec)
@@ -186,7 +186,7 @@ Category fastest: 4:01:15 (14,475 sec)
 Your Day 1 Score: 30.0 pts
 ```
 
-**Day 2 breakdown (shown after Day 2 submission):**
+**Day 2 breakdown (shown after Day 2 / MK Ultra submission):**
 
 ```
 Sector 1 (Beaver Dam Rd): 11:54 (714 sec)  -> [shown to rider]
@@ -244,8 +244,8 @@ files. Computed scores are a derivative work, not a Strava API field.
 | Strava `activity.id` | Yes — as `activityId` for deduplication | No | Low-risk: operational use only, not surfaced |
 | `moving_time` (raw seconds) | Yes — in `day1.movingTimeSeconds` | No — converted to computed score | Compliant: raw value in private storage; public display is derived score only |
 | Segment `elapsed_time` values | Yes — in `day2.sectorEfforts` | No — converted to computed score | Same as above |
-| Computed Day 1 Score | Not in JSON (computed at serve-time) | Yes | Compliant: derived value, not Strava Data |
-| Computed Sector Score | Not in JSON (computed at serve-time) | Yes | Compliant: derived value |
+| Computed Day 1 Score (moving time) | Not in JSON (computed at serve-time) | Yes | Compliant: derived value, not Strava Data |
+| Computed Day 2 Sector Score | Not in JSON (computed at serve-time) | Yes | Compliant: derived value |
 | Computed KOM Score | Not in JSON (computed at serve-time) | Yes | Compliant: derived value |
 | Rider display name | Yes — in `displayName` | Yes | Compliant: rider-chosen, not from Strava |
 | Rider category | Yes — in `category` | Yes | Compliant: self-reported, not from Strava |

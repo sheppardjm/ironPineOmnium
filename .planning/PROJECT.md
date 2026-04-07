@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A two-day gravel cycling omnium site for the Hiawatha National Forest in Michigan's Upper Peninsula. Riders submit Strava activities here after each day — Saturday's MK Ultra Gravel fondo and Sunday's Hiawatha's Revenge grinduro — and the site computes combined leaderboards for men's, women's, and non-binary categories using weighted moving time, sector times, and KOM points.
+A two-day gravel cycling omnium site for the Hiawatha National Forest in Michigan's Upper Peninsula. Riders submit Strava activities here after each day — Saturday's Hiawatha's Revenge fondo and Sunday's MK Ultra Gravel grinduro — and the site computes combined leaderboards for men's, women's, and non-binary categories using weighted moving time, sector times, and KOM points.
 
 ## Core Value
 
@@ -12,7 +12,7 @@ Riders paste a Strava activity URL, authenticate once, and see themselves on a c
 
 ### Validated
 
-- ✓ Scoring engine with configurable weights (35% day 1 moving time, 45% day 2 sectors, 20% KOM) — existing
+- ✓ Scoring engine with configurable weights (35% day 1 moving time, 45% day 2 sectors, 20% day 2 KOM) — existing
 - ✓ Category leaderboards with benchmarks per category (men, women, non-binary) — existing
 - ✓ Tabbed leaderboard UI with winner banner and detailed score breakdown — existing
 - ✓ Landing page with hero, event cards, photo gallery, scoring explanation — existing
@@ -40,7 +40,7 @@ Riders paste a Strava activity URL, authenticate once, and see themselves on a c
 ## Context
 
 - The Strava OAuth and activity fetching logic already exists in the mkUltraGravel repo and can be adapted
-- Day 2 timed sectors and KOM segments are pre-defined Strava segments on the Hiawatha's Revenge route
+- Day 2 timed sectors and KOM segments are pre-defined Strava segments on the MK Ultra Gravel route
 - This site becomes the single Strava integration point — companion sites will remove their API keys and link here
 - Currently a fully static Astro site; adding Strava OAuth will require some dynamic capability (API routes or serverless functions)
 - Sample data with 12 riders across 3 categories is in place for validating scoring and UI

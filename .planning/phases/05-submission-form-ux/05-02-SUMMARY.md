@@ -11,7 +11,7 @@ requires:
   - phase: 04-01
     provides: strava-fetch-activity response shape and field types
   - phase: 01-01
-    provides: scoring weights (day1Weight 0.35, sectorWeight 0.45, komWeight 0.2) and segment counts (7 sector, 3 KOM)
+    provides: scoring weights (movingTimeWeight 0.35, sectorWeight 0.45, komWeight 0.2) and segment counts (7 sector, 3 KOM)
 provides:
   - "/submit-confirm page with payload decode, score preview, and identity form"
   - "fromBase64url decode function (inverse of btoa-based encoding in submit.astro)"

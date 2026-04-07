@@ -54,11 +54,11 @@ Collect the following on paper or a shared spreadsheet as riders finish:
 |---|---|---|
 | `display_name` | Rider's chosen display name | Any format — first name, nickname, initials |
 | `category` | One of: `men`, `women`, `non-binary` | Self-reported |
-| `day1_moving_time_seconds` | Moving time in seconds (Day 1) | From Strava activity page or GPS watch |
-| `day2_sector_*` | Elapsed seconds per sector (Day 2) | One column per sector — see headers below |
-| `day2_kom_*` | `yes` or `no` per KOM segment (Day 2) | Did the rider complete this KOM? |
+| `day1_moving_time_seconds` | Moving time in seconds (Day 1 / Hiawatha) | From Strava activity page or GPS watch |
+| `day2_sector_*` | Elapsed seconds per sector (Day 2 / MK Ultra) | One column per sector — see headers below |
+| `day2_kom_*` | `yes` or `no` per KOM segment (Day 2 / MK Ultra) | Did the rider complete this KOM? |
 
-### Day 1 time source
+### Day 1 time source (Hiawatha's Revenge)
 
 Moving time (not elapsed time) is the scoring input. Options for collecting it:
 
@@ -70,7 +70,7 @@ Moving time (not elapsed time) is the scoring input. Options for collecting it:
 Convert `h:mm:ss` to seconds for the CSV:
 - `4:42:33` = (4 × 3600) + (42 × 60) + 33 = **16,953 seconds**
 
-### Day 2 sector times
+### Day 2 sector times (MK Ultra)
 
 Sector times are per-segment elapsed times in seconds. The segment IDs and labels are:
 
@@ -87,7 +87,7 @@ Sector times are per-segment elapsed times in seconds. The segment IDs and label
 Read elapsed time (not moving time) for each segment from the rider's Strava activity
 page, under "Matched Segments" or "Segment Efforts."
 
-### Day 2 KOM segments
+### Day 2 KOM segments (MK Ultra)
 
 For each KOM segment, record `yes` if the rider has an effort on that segment in their
 Day 2 activity, `no` otherwise.
@@ -123,7 +123,7 @@ or a text editor. The first row is the header — do not modify it.
 Fill in one row per rider. Example:
 
 ```
-display_name,category,day1_moving_time_seconds,...
+display_name,category,day1_moving_time_seconds,day2_sector_41159670,...,day2_kom_16438243
 "Alex M.",women,15153,418,1210,485,503,2510,2042,398,yes,no,yes
 "Jordan K.",men,14208,,,,,,,,,
 ```

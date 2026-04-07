@@ -12,13 +12,13 @@ export interface RiderResult {
   id: string;
   name: string;
   category: CategoryId;
-  day1MovingTimeSeconds: number;
-  day2SectorTimesSeconds: number[];
-  day2KomPoints: number;
+  movingTimeSeconds: number;
+  sectorTimesSeconds: number[];
+  komPoints: number;
 }
 
 export interface ScoringConfig {
-  day1Weight: number;
+  movingTimeWeight: number;
   sectorWeight: number;
   komWeight: number;
   scoreScale: number;
@@ -27,7 +27,7 @@ export interface ScoringConfig {
 export interface ScoredRider {
   rank: number;
   rider: RiderResult;
-  day1Score: number;
+  movingTimeScore: number;
   sectorScore: number;
   komScore: number;
   totalScore: number;
@@ -38,8 +38,8 @@ export interface CategoryLeaderboard {
   categoryId: CategoryId;
   categoryLabel: string;
   benchmarks: {
-    fastestDay1MovingTimeSeconds: number;
-    fastestDay2SectorTotalSeconds: number;
+    fastestMovingTimeSeconds: number;
+    fastestSectorTotalSeconds: number;
     highestKomPoints: number;
   };
   entries: ScoredRider[];
