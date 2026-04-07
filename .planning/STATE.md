@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 5 of 10 (Submission Form UX)
-Plan: 2 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-04-06 — Completed 05-02-PLAN.md (submit-confirm page with score preview + identity form)
+Last activity: 2026-04-07 — Completed 05-04-PLAN.md (Strava identity display on confirm page)
 
-Progress: [████░░░░░░] 40%
+Progress: [████░░░░░░] 44%
 
 ## Performance Metrics
 
@@ -84,6 +84,9 @@ Recent decisions affecting current work:
 - 05-02: Missing/malformed payload on /submit-confirm silently redirects to /submit (no error page needed)
 - 05-02: sectorEfforts and komSegmentIds JSON.stringify-d into hidden inputs for Phase 7 form POST
 - 05-02: Score preview uses innerHTML assignment in DOMContentLoaded — Astro template is static skeleton only
+- 05-04: athleteFirstname/athleteLastname only available from tokenData.athlete during authorization_code exchange — captured once at that point and persisted in session cookie
+- 05-04: Token refresh explicitly carries athleteFirstname/athleteLastname from original session into updatedPayload — Strava refresh response never includes athlete object
+- 05-04: UI fallback chain for identity display: name fields -> "Athlete #[id]" -> "unknown"
 
 ### Pending Todos
 
@@ -98,6 +101,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-06T22:19:44Z
-Stopped at: Completed 05-02-PLAN.md — /submit-confirm page with score preview and identity form
+Last session: 2026-04-07T16:53:43Z
+Stopped at: Completed 05-04-PLAN.md — Strava identity display ("Connected as [name]") on confirm page
 Resume file: None
