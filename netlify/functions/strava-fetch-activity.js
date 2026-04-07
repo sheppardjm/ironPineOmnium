@@ -193,6 +193,17 @@ export const handler = async (event, _context) => {
   }
   const komSegmentIds = Array.from(komSet);
 
+  // Build komEfforts: segId -> elapsed_time (fastest effort per KOM segment)
+  const komEfforts = {};
+  for (const effort of efforts) {
+    const segId = String(effort.segment.id);
+    if (KOM_SEGMENT_IDS.includes(segId)) {
+      if (!(segId in komEfforts) || effort.elapsed_time < komEfforts[segId]) {
+        komEfforts[segId] = effort.elapsed_time;
+      }
+    }
+  }
+
   // Step 8: Return trimmed response
   return {
     statusCode: 200,
@@ -207,6 +218,7 @@ export const handler = async (event, _context) => {
       startDateLocal: localDateStr,
       sectorEfforts,
       komSegmentIds,
+      komEfforts,   // NEW: elapsed times for KOM segments
     }),
   };
 };
