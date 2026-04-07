@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 
 ## Current Position
 
-Phase: 7 of 10 (Data Persistence) — COMPLETE
-Plan: 3 of 3 in phase 7
-Status: Phase 7 verified and complete
-Last activity: 2026-04-07 — Phase 7 verified (5/5 must-haves passed)
+Phase: 8 of 10 (Real Data Leaderboard) — In Progress
+Plan: 1 of 4 in phase 8
+Status: In progress
+Last activity: 2026-04-07 — Completed 08-01-PLAN.md (athlete-loader.ts)
 
-Progress: [███████░░░] 70%
+Progress: [████████░░] 75%
 
 ## Performance Metrics
 
@@ -106,6 +106,10 @@ Recent decisions affecting current work:
 - 07-03: Strava webhook subscription ID 339507 registered at ironpineomnium.com/api/strava-webhook
 - 07-03: Old mkUltraGravel subscription (338141) replaced — Strava allows only one per app
 - 07-03: SECRETS_SCAN_OMIT_KEYS added to netlify.toml for GITHUB_OWNER and GITHUB_REPO
+- 08-01: import.meta.glob path '../../public/data/results/athletes/*.json' resolves correctly from src/lib/ — two levels up reaches project root, then into public/
+- 08-01: KOM scoring uses Approach A (time-based ranking) when komEfforts is non-empty; Approach B (komSegmentIds.length) for CSV fallback
+- 08-01: computeKomPoints receives pre-filtered peersInCategory — KOM rank comparison is always within-category only
+- 08-01: loadAthleteResults() returns { riders, hasLiveData } — hasLiveData = riders.length > 0, computed at build time; scoring weights NOT applied in this layer
 
 ### Pending Todos
 
@@ -121,6 +125,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-07T18:30:00Z
-Stopped at: Phase 7 complete and verified — all 3 plans executed, 5/5 must-haves passed
+Last session: 2026-04-07T18:52:59Z
+Stopped at: Completed 08-01-PLAN.md — athlete-loader.ts created
 Resume file: None
