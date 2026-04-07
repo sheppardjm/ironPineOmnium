@@ -84,9 +84,9 @@ None - no external service configuration required.
 
 ## Next Phase Readiness
 
-- Phase 8 pipeline fully verified end-to-end
+- Phase 8 pipeline fully verified end-to-end — human checkpoint approved
 - Ready for Phase 9 (admin interface) or Phase 10 (polish and launch)
-- Human checkpoint verification pending user approval of visual correctness
+- Submission-to-leaderboard pipeline is complete: Phase 7 submit-result function writes JSON + triggers build hook, Phase 8 reads and renders it
 
 ---
 *Phase: 08-real-data-leaderboard*
