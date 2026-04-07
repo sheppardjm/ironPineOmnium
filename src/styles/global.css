@@ -903,6 +903,25 @@
     color: var(--color-mist-50);
   }
 
+  .leaderboard-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--color-mist-400);
+  }
+
+  .leaderboard-empty-text {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+  }
+
+  .category-empty {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--color-mist-400);
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+  }
+
   .final-cta {
     margin-bottom: 2rem;
   }
