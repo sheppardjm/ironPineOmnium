@@ -800,6 +800,7 @@
     font-size: 0.82rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
+    touch-action: manipulation;
   }
 
   .tab-button.is-active {
@@ -819,6 +820,7 @@
     font-family: var(--font-sans);
     font-size: 0.88rem;
     outline: none;
+    touch-action: manipulation;
     transition: border-color 180ms ease, background-color 180ms ease;
   }
 
