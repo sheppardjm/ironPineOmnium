@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** Phase 8 — Real Data Leaderboard
+**Current focus:** Phase 9 — Leaderboard Enhancements
 
 ## Current Position
 
-Phase: 8 of 10 (Real Data Leaderboard) — Complete
-Plan: 3 of 3 in phase 8 (all complete)
-Status: Phase 8 complete — ready for Phase 9
-Last activity: 2026-04-07 — Completed 08-03-PLAN.md (E2E pipeline verification, human-approved)
+Phase: 9 of 10 (Leaderboard Enhancements) — In progress
+Plan: 1 of 3 in phase 9 (09-01 complete)
+Status: In progress
+Last activity: 2026-04-07 — Completed 09-01-PLAN.md (column headers + search input)
 
-Progress: [████████░░] 80%
+Progress: [█████████░] 85%
 
 ## Performance Metrics
 
@@ -114,6 +114,9 @@ Recent decisions affecting current work:
 - 08-02: Tab list rendered conditionally — only when hasLiveData is true (no empty tabs shown with zero riders)
 - 08-02: Winner banner board.entries[0] access guarded by board.entries.length > 0 conditional — no crash on zero-rider category
 - 08-02: Status badge uses Astro class:list pattern for green "Live results" / amber "Awaiting submissions" toggle
+- 09-01: search-hidden uses classList.toggle (not row.hidden) to avoid conflicting with tab panel [hidden] attribute
+- 09-01: Search input queries all tbody tr across entire [data-leaderboard] element — filtering is global across all three category panels simultaneously
+- 09-01: Search input conditionally rendered only when hasLiveData is true — not rendered in empty-state leaderboard
 
 ### Pending Todos
 
@@ -129,6 +132,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-07T19:10:00Z
-Stopped at: Completed 08-03-PLAN.md — Phase 8 fully complete
+Last session: 2026-04-07T19:31:51Z
+Stopped at: Completed 09-01-PLAN.md — column headers + rider name search
 Resume file: None
