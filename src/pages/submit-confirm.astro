@@ -244,7 +244,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
     function setupForm(): void {
       const form = document.getElementById("confirm-form") as HTMLFormElement;
-      form.addEventListener("submit", (e) => {
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const nameInput = document.getElementById("rider-name") as HTMLInputElement;
@@ -270,12 +270,64 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           return;
         }
 
-        // Phase 7 will POST to /api/submit-result.
-        // For now, show a placeholder confirmation while the payload is preserved
-        // in the hidden fields.
+        // Disable button and show submitting state
         const btn = document.getElementById("confirm-btn") as HTMLButtonElement;
-        btn.textContent = "Submission ready";
+        btn.textContent = "Submitting...";
         btn.disabled = true;
+
+        // Collect form data from hidden inputs
+        const formEl = document.getElementById("confirm-form") as HTMLFormElement;
+        const fd = new FormData(formEl);
+
+        const payload = {
+          name: name,
+          category: category,
+          activityId: fd.get("activityId"),
+          athleteId: fd.get("athleteId"),
+          movingTimeSeconds: Number(fd.get("movingTimeSeconds")),
+          startDateLocal: fd.get("startDateLocal"),
+          sectorEfforts: JSON.parse((fd.get("sectorEfforts") as string) || "{}"),
+          komSegmentIds: JSON.parse((fd.get("komSegmentIds") as string) || "[]"),
+          komEfforts: JSON.parse((fd.get("komEfforts") as string) || "{}"),
+        };
+
+        try {
+          const res = await fetch("/api/submit-result", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            credentials: "include",
+          });
+
+          const result = await res.json();
+
+          if (result.ok) {
+            // Redirect to homepage with submitted flag
+            window.location.href = "/?submitted=true";
+            return;
+          }
+
+          // Show error and re-enable button
+          btn.textContent = "Confirm Submission";
+          btn.disabled = false;
+
+          const errorMap: Record<string, string> = {
+            athlete_mismatch: "Session mismatch — please sign in again.",
+            invalid_payload: "Missing required fields. Please try again.",
+            invalid_date: "Activity date is outside the event window.",
+            write_conflict: "Temporary conflict — please try again.",
+            github_error: "Server error — please try again in a moment.",
+            github_write_error: "Failed to save — please try again.",
+          };
+
+          const msg = errorMap[result.error] || "Something went wrong. Please try again.";
+          alert(msg);
+
+        } catch (_err) {
+          btn.textContent = "Confirm Submission";
+          btn.disabled = false;
+          alert("Network error — please check your connection and try again.");
+        }
       });
 
       // Clear custom validity on interaction to allow re-submission attempts
