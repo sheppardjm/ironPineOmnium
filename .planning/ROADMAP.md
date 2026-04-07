@@ -173,15 +173,12 @@ Plans:
   5. Day 1 moving time scores are computed at build time using relative scoring (`fastestInCategory / myTime`) with the 35% weight from `defaultScoringConfig`
   6. KOM points are computed at build time by comparing each rider's `komEfforts` elapsed times against all other riders in the same category — not from Strava's `kom_rank` field
   7. Scoring weights (35% / 45% / 20%) are read from `defaultScoringConfig` in `src/lib/scoring.ts`, not hardcoded in the build pipeline
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 08-01: Update `src/lib/scoring.ts` data-loading layer to read athlete JSON files from `public/data/results/athletes/`
-- [ ] 08-02: Implement KOM ranking and relative score computation at build time using `komEfforts` and `defaultScoringConfig`
-- [ ] 08-03: Remove sample data import from `Leaderboard.astro` and replace with real data pipeline
-- [ ] 08-04: Add empty-state UI for leaderboard with zero submissions
-- [ ] 08-05: Add "Live results" / "Sample data" visual indicator to leaderboard header
-- [ ] 08-06: Smoke test: submit a test result end-to-end and verify it appears on the deployed leaderboard after rebuild
+- [ ] 08-01-PLAN.md — Create athlete-loader.ts with AthleteJson type, KOM ranking, and loadAthleteResults()
+- [ ] 08-02-PLAN.md — Wire real data into Leaderboard.astro (replace sample data, add empty state) and update index.astro (dynamic heading, live/awaiting badge)
+- [ ] 08-03-PLAN.md — Smoke test: verify empty-state and live-data builds, human verification checkpoint
 
 ---
 
@@ -238,7 +235,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 5. Submission Form UX | 4/4 | Complete | 2026-04-07 |
 | 6. Scoring Extraction | 2/2 | Complete | 2026-04-07 |
 | 7. Data Persistence | 3/3 | Complete | 2026-04-07 |
-| 8. Real Data Leaderboard | 0/6 | Not started | - |
+| 8. Real Data Leaderboard | 0/3 | Not started | - |
 | 9. Leaderboard Enhancements | 0/4 | Not started | - |
 | 10. Design Polish and Companion Links | 0/5 | Not started | - |
 
