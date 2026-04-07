@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 7 of 10 (Data Persistence) — In progress
-Plan: 1 of 3 in phase 7
+Plan: 2 of 3 in phase 7
 Status: In progress
-Last activity: 2026-04-07 — Completed 07-01-PLAN.md (submit-result function + confirm page wiring)
+Last activity: 2026-04-07 — Completed 07-02-PLAN.md (strava-webhook.js deauth handler)
 
 Progress: [███████░░░] 65%
 
@@ -33,7 +33,7 @@ Progress: [███████░░░] 65%
 | 04-activity-fetching | 2/2 | ~16 min | ~8 min |
 | 05-submission-form-ux | 4/4 | ~10 min | ~3 min |
 | 06-scoring-extraction | 2/2 | ~2 min | ~1 min |
-| 07-data-persistence | 1/3 | ~2 min | ~2 min |
+| 07-data-persistence | 2/3 | ~3 min | ~1.5 min |
 
 **Recent Trend:**
 - Last 5 plans: 07-01 (~2 min), 06-02 (~1 min), 06-01 (~1 min), 05-04 (~2 min), 05-03 (~3 min)
@@ -99,6 +99,9 @@ Recent decisions affecting current work:
 - 07-01: All validation errors return HTTP 200 with { error } JSON; 401 for missing/bad session, 403 for athlete ID mismatch
 - 07-01: 409 SHA conflict retried once (re-GET then re-PUT); persistent conflict returns write_conflict error
 - 07-01: Build hook triggered fire-and-forget after successful GitHub PUT (no await, .catch(() => {}))
+- 07-02: POST webhook always returns 200 to Strava — errors caught internally to prevent infinite retry loops
+- 07-02: Both string "false" and boolean false checked for authorized field — Strava sends string but defensive check added
+- 07-02: Build hook only triggered after successful DELETE, not after 404/already-gone — avoids spurious rebuilds
 
 ### Pending Todos
 
@@ -110,9 +113,10 @@ Recent decisions affecting current work:
 - **[Note]**: pnpm approve-builds is interactive-only. Native binaries (esbuild, @parcel/watcher) are already in pnpm store from prior installs — this does not block netlify dev execution.
 - **[Note]**: netlify dev command: `volta run --node 22.22.2 npx netlify dev --no-open` (plain npx uses Node 20, Astro requires >=22.12.0)
 - **[Note]**: STRAVA_REDIRECT_URI in .env is production URL — must be temporarily changed for local OAuth testing
+- **[Note]**: strava-webhook.js requires STRAVA_VERIFY_TOKEN env var to match value used during Strava webhook subscription registration (07-03)
 
 ## Session Continuity
 
-Last session: 2026-04-07T17:56:39Z
-Stopped at: Completed 07-01-PLAN.md — submit-result.js created, submit-confirm.astro wired
+Last session: 2026-04-07T17:59:20Z
+Stopped at: Completed 07-02-PLAN.md — strava-webhook.js created for deauth and subscription handshake
 Resume file: None
