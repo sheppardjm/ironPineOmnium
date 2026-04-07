@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Strava OAuth** - OAuth round-trip with CSRF protection, token management, athlete verification
 - [x] **Phase 4: Activity Fetching and Validation** - URL parsing, activity fetch, date validation, scope handling
 - [x] **Phase 5: Submission Form UX** - Rider identity capture, score preview, inline explanation, consent step
-- [ ] **Phase 6: Scoring Extraction** - Extend KOM extraction to capture elapsed times, wire through payload, add Day 2 zero-match warning
+- [x] **Phase 6: Scoring Extraction** - Extend KOM extraction to capture elapsed times, wire through payload, add Day 2 zero-match warning
 - [ ] **Phase 7: Data Persistence** - GitHub Contents API write, Netlify rebuild hook, deauth webhook
 - [ ] **Phase 8: Real Data Leaderboard** - Replace sample data, day association, live/sample indicator
 - [ ] **Phase 9: Leaderboard Enhancements** - Per-component columns, name search, mobile validation
@@ -123,20 +123,22 @@ Plans:
 ---
 
 ### Phase 6: Scoring Extraction
-**Goal**: The system correctly extracts Day 1 moving time from Hiawatha's Revenge activity data, and Day 2 segment efforts and KOM points from MK Ultra Gravel activity data
+**Goal**: Extend the submission pipeline to capture KOM elapsed times (not just presence), surface them in the confirm page UI, and add Day 2 zero-match warnings — completing the raw data capture needed for Phase 8 scoring
 **Depends on**: Phase 4
-**Requirements**: SUBM-05, SUBM-06, DATA-03
+**Requirements**: SUBM-06, DATA-03 (partial — raw capture only; ranking deferred to Phase 8)
 **Success Criteria** (what must be TRUE):
-  1. Day 1 submission: the system extracts `moving_time` from the Strava activity and converts it to a score using the configured 35% weight
-  2. Day 2 submission: the system filters `segment_efforts` by the hardcoded segment IDs from Phase 1 and returns matched effort times — unrecognized segments are ignored
-  3. KOM points are computed by comparing the submitted rider's effort times against all previously submitted Day 2 times for each segment — not from Strava's `kom_rank` field (which is null for non-subscribers)
-  4. A Day 2 activity with no matching segment efforts (rider missed all timed sectors) returns a zero sector score with a rider-visible warning rather than an error
-  5. Scoring weights (35% / 45% / 20%) are read from the existing configurable scoring engine, not hardcoded in the extraction functions
+  1. Day 1 extraction (`movingTimeSeconds`) and Day 2 sector extraction (`sectorEfforts`) are verified complete from Phase 4 — no new extraction work needed
+  2. KOM segment elapsed times are captured in a `komEfforts` map (`segmentId -> elapsedSeconds`) alongside the existing `komSegmentIds` presence array, using fastest-effort deduplication
+  3. The confirm page displays KOM climb times to the rider and carries `komEfforts` in a hidden field for Phase 7 to persist in the athlete JSON
+  4. A Day 2 activity with no matching segment efforts (rider missed all timed sectors) shows a rider-visible amber warning on the confirm page rather than neutral text — without blocking submission
+  5. A Day 1 activity shows neutral "Not applicable" text for sectors and KOM (no warning)
+
+> **Scope note:** Relative scoring (e.g., `fastestInCategory / myTime * weight`) and KOM ranking across riders require all submissions and can only run at leaderboard build time. Phase 6 captures the raw data; Phase 8 computes final scores using `scoreOmnium()` from `defaultScoringConfig`. Scoring weights (35%/45%/20%) are already defined in `src/lib/scoring.ts` and consumed at build time — Phase 6 does not apply them.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Extend KOM extraction to capture elapsed times, wire komEfforts through confirm page payload and display
-- [ ] 06-02-PLAN.md — Add Day 2 zero-match warning with amber styling for activities with no recognized sector/KOM efforts
+- [x] 06-01-PLAN.md — Extend KOM extraction to capture elapsed times, wire komEfforts through confirm page payload and display
+- [x] 06-02-PLAN.md — Add Day 2 zero-match warning with amber styling for activities with no recognized sector/KOM efforts
 
 ---
 
@@ -162,22 +164,26 @@ Plans:
 ---
 
 ### Phase 8: Real Data Leaderboard
-**Goal**: The public leaderboard displays actual submitted rider results instead of sample data, and a clear indicator distinguishes live results from placeholder data when no submissions exist yet
+**Goal**: The public leaderboard displays actual submitted rider results instead of sample data, computes relative scores and KOM rankings from all athlete JSON files at build time, and a clear indicator distinguishes live results from placeholder data
 **Depends on**: Phase 7
-**Requirements**: LEAD-04, DSGN-03
+**Requirements**: LEAD-04, DSGN-03, DATA-03 (KOM ranking), SUBM-05 (score computation)
 **Success Criteria** (what must be TRUE):
   1. After a rider submits, their name, category, and computed score appear on the leaderboard following the next Netlify rebuild — no manual steps required
   2. The sample data is entirely removed from the leaderboard rendering path; a fresh build with no athlete JSON files shows an empty leaderboard or an "awaiting submissions" state — not placeholder riders
   3. When the leaderboard is showing live results, a clear visual indicator confirms "Live results" — distinguishable from any future test or sample state
   4. The existing scoring engine reads athlete JSON files from `public/data/results/athletes/` at build time and ranks them correctly across all three categories
+  5. Day 1 moving time scores are computed at build time using relative scoring (`fastestInCategory / myTime`) with the 35% weight from `defaultScoringConfig`
+  6. KOM points are computed at build time by comparing each rider's `komEfforts` elapsed times against all other riders in the same category — not from Strava's `kom_rank` field
+  7. Scoring weights (35% / 45% / 20%) are read from `defaultScoringConfig` in `src/lib/scoring.ts`, not hardcoded in the build pipeline
 **Plans**: TBD
 
 Plans:
 - [ ] 08-01: Update `src/lib/scoring.ts` data-loading layer to read athlete JSON files from `public/data/results/athletes/`
-- [ ] 08-02: Remove sample data import from `Leaderboard.astro` and replace with real data pipeline
-- [ ] 08-03: Add empty-state UI for leaderboard with zero submissions
-- [ ] 08-04: Add "Live results" / "Sample data" visual indicator to leaderboard header
-- [ ] 08-05: Smoke test: submit a test result end-to-end and verify it appears on the deployed leaderboard after rebuild
+- [ ] 08-02: Implement KOM ranking and relative score computation at build time using `komEfforts` and `defaultScoringConfig`
+- [ ] 08-03: Remove sample data import from `Leaderboard.astro` and replace with real data pipeline
+- [ ] 08-04: Add empty-state UI for leaderboard with zero submissions
+- [ ] 08-05: Add "Live results" / "Sample data" visual indicator to leaderboard header
+- [ ] 08-06: Smoke test: submit a test result end-to-end and verify it appears on the deployed leaderboard after rebuild
 
 ---
 
@@ -232,12 +238,12 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 3. Strava OAuth | 3/3 | Complete | 2026-04-06 |
 | 4. Activity Fetching and Validation | 2/2 | Complete | 2026-04-06 |
 | 5. Submission Form UX | 4/4 | Complete | 2026-04-07 |
-| 6. Scoring Extraction | 0/2 | Not started | - |
+| 6. Scoring Extraction | 2/2 | Complete | 2026-04-07 |
 | 7. Data Persistence | 0/5 | Not started | - |
-| 8. Real Data Leaderboard | 0/5 | Not started | - |
+| 8. Real Data Leaderboard | 0/6 | Not started | - |
 | 9. Leaderboard Enhancements | 0/4 | Not started | - |
 | 10. Design Polish and Companion Links | 0/5 | Not started | - |
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-07 after Phase 5 execution*
+*Last updated: 2026-04-07 after Phase 6 execution complete (5/5 must-haves verified)*

@@ -18,8 +18,8 @@
 - [ ] **SUBM-02**: System associates Day 1 and Day 2 submissions via Strava athlete ID
 - [x] **SUBM-03**: Rider provides display name, hometown, and category (men/women/non-binary) during first submission
 - [x] **SUBM-04**: Submission flow shows inline scoring explanation ("your 4:12 moving time = X points")
-- [ ] **SUBM-05**: System extracts moving time from Day 1 activity for scoring
-- [ ] **SUBM-06**: System extracts timed sector efforts and computes KOM points from Day 2 activity
+- [x] **SUBM-05**: System extracts moving time from Day 1 activity for scoring
+- [x] **SUBM-06**: System extracts timed sector efforts and computes KOM points from Day 2 activity
 
 ### Leaderboard
 
@@ -83,9 +83,9 @@
 | SUBM-01 | Phase 5 | Complete |
 | SUBM-03 | Phase 5 | Complete |
 | SUBM-04 | Phase 5 | Complete |
-| SUBM-05 | Phase 6 | Pending |
-| SUBM-06 | Phase 6 | Pending |
-| DATA-03 | Phase 6 | Pending |
+| SUBM-05 | Phase 6 | Complete |
+| SUBM-06 | Phase 6 | Complete |
+| DATA-03 | Phase 6 | Partial (raw capture; ranking in Phase 8) |
 | DATA-01 | Phase 7 | Pending |
 | DATA-02 | Phase 7 | Pending |
 | SUBM-02 | Phase 7 | Pending |
@@ -104,4 +104,4 @@
 
 ---
 *Requirements defined: 2026-04-02*
-*Last updated: 2026-04-07 after Phase 5 execution*
+*Last updated: 2026-04-07 after Phase 6 execution*
