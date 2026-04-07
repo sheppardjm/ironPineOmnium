@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Activity Fetching and Validation** - URL parsing, activity fetch, date validation, scope handling
 - [x] **Phase 5: Submission Form UX** - Rider identity capture, score preview, inline explanation, consent step
 - [x] **Phase 6: Scoring Extraction** - Extend KOM extraction to capture elapsed times, wire through payload, add Day 2 zero-match warning
-- [ ] **Phase 7: Data Persistence** - GitHub Contents API write, Netlify rebuild hook, deauth webhook
+- [x] **Phase 7: Data Persistence** - GitHub Contents API write, Netlify rebuild hook, deauth webhook
 - [ ] **Phase 8: Real Data Leaderboard** - Replace sample data, day association, live/sample indicator
 - [ ] **Phase 9: Leaderboard Enhancements** - Per-component columns, name search, mobile validation
 - [ ] **Phase 10: Design Polish and Companion Links** - Event-ready UI, submission form visual language, companion site links
@@ -152,14 +152,12 @@ Plans:
   3. A rider who submits both Day 1 and Day 2 has their results associated under a single `athleteId` — the JSON file is updated, not duplicated
   4. A Strava deauth event for an athlete causes that athlete's JSON file to be deleted from GitHub and a rebuild to be triggered — no manual action is required
   5. The submission function rejects payloads where the activity athlete ID does not match the authenticated session athlete ID
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 07-01: Implement `netlify/functions/submit-result.js` — decode payload, validate consent, write athlete JSON via GitHub Contents API (GET-then-PUT)
-- [ ] 07-02: Implement Day 1 / Day 2 association logic — update existing athlete file if `athleteId` already exists
-- [ ] 07-03: Implement Netlify build hook trigger after successful GitHub write
-- [ ] 07-04: Implement `netlify/functions/strava-webhook.js` — handle deauth events, delete athlete file, trigger rebuild
-- [ ] 07-05: Register Strava webhook endpoint in Strava API dashboard and verify subscription handshake
+- [ ] 07-01-PLAN.md — Create submit-result.js (session validation, athlete ID check, GitHub GET-then-PUT, identity lock, dedup, build hook) + wire confirm page fetch POST
+- [ ] 07-02-PLAN.md — Create strava-webhook.js (GET subscription handshake + POST deauth handler with GitHub delete and rebuild trigger)
+- [ ] 07-03-PLAN.md — End-to-end smoke test via netlify dev + register Strava webhook subscription (checkpoint)
 
 ---
 
@@ -239,11 +237,11 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 4. Activity Fetching and Validation | 2/2 | Complete | 2026-04-06 |
 | 5. Submission Form UX | 4/4 | Complete | 2026-04-07 |
 | 6. Scoring Extraction | 2/2 | Complete | 2026-04-07 |
-| 7. Data Persistence | 0/5 | Not started | - |
+| 7. Data Persistence | 3/3 | Complete | 2026-04-07 |
 | 8. Real Data Leaderboard | 0/6 | Not started | - |
 | 9. Leaderboard Enhancements | 0/4 | Not started | - |
 | 10. Design Polish and Companion Links | 0/5 | Not started | - |
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-07 after Phase 6 execution complete (5/5 must-haves verified)*
+*Last updated: 2026-04-07 after Phase 7 execution complete (5/5 must-haves verified)*

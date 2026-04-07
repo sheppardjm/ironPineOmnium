@@ -86,9 +86,9 @@
 | SUBM-05 | Phase 6 | Complete |
 | SUBM-06 | Phase 6 | Complete |
 | DATA-03 | Phase 6 | Partial (raw capture; ranking in Phase 8) |
-| DATA-01 | Phase 7 | Pending |
-| DATA-02 | Phase 7 | Pending |
-| SUBM-02 | Phase 7 | Pending |
+| DATA-01 | Phase 7 | Complete |
+| DATA-02 | Phase 7 | Complete |
+| SUBM-02 | Phase 7 | Complete |
 | LEAD-04 | Phase 8 | Pending |
 | DSGN-03 | Phase 8 | Pending |
 | LEAD-01 | Phase 9 | Pending |

@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** Phase 7 — Data Persistence
+**Current focus:** Phase 8 — Real Data Leaderboard
 
 ## Current Position
 
-Phase: 7 of 10 (Data Persistence) — In progress
-Plan: 2 of 3 in phase 7
-Status: In progress
-Last activity: 2026-04-07 — Completed 07-02-PLAN.md (strava-webhook.js deauth handler)
+Phase: 7 of 10 (Data Persistence) — COMPLETE
+Plan: 3 of 3 in phase 7
+Status: Phase 7 verified and complete
+Last activity: 2026-04-07 — Phase 7 verified (5/5 must-haves passed)
 
-Progress: [███████░░░] 65%
+Progress: [███████░░░] 70%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
+- Total plans completed: 19
 - Average duration: ~6.5 min
-- Total execution time: ~111 min
+- Total execution time: ~124 min
 
 **By Phase:**
 
@@ -33,11 +33,11 @@ Progress: [███████░░░] 65%
 | 04-activity-fetching | 2/2 | ~16 min | ~8 min |
 | 05-submission-form-ux | 4/4 | ~10 min | ~3 min |
 | 06-scoring-extraction | 2/2 | ~2 min | ~1 min |
-| 07-data-persistence | 2/3 | ~3 min | ~1.5 min |
+| 07-data-persistence | 3/3 | ~13 min | ~4 min |
 
 **Recent Trend:**
-- Last 5 plans: 07-01 (~2 min), 06-02 (~1 min), 06-01 (~1 min), 05-04 (~2 min), 05-03 (~3 min)
-- Trend: Phase 7 plans fast (focused function creation + form wiring)
+- Last 5 plans: 07-03 (~10 min), 07-02 (~1 min), 07-01 (~2 min), 06-02 (~1 min), 06-01 (~1 min)
+- Trend: 07-03 slower due to human checkpoint (PAT fix + webhook registration)
 
 *Updated after each plan completion*
 
@@ -102,6 +102,10 @@ Recent decisions affecting current work:
 - 07-02: POST webhook always returns 200 to Strava — errors caught internally to prevent infinite retry loops
 - 07-02: Both string "false" and boolean false checked for authorized field — Strava sends string but defensive check added
 - 07-02: Build hook only triggered after successful DELETE, not after 404/already-gone — avoids spurious rebuilds
+- 07-03: GitHub PAT required contents:write permission — original fine-grained token only had metadata:read
+- 07-03: Strava webhook subscription ID 339507 registered at ironpineomnium.com/api/strava-webhook
+- 07-03: Old mkUltraGravel subscription (338141) replaced — Strava allows only one per app
+- 07-03: SECRETS_SCAN_OMIT_KEYS added to netlify.toml for GITHUB_OWNER and GITHUB_REPO
 
 ### Pending Todos
 
@@ -117,6 +121,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-07T17:59:20Z
-Stopped at: Completed 07-02-PLAN.md — strava-webhook.js created for deauth and subscription handshake
+Last session: 2026-04-07T18:30:00Z
+Stopped at: Phase 7 complete and verified — all 3 plans executed, 5/5 must-haves passed
 Resume file: None
