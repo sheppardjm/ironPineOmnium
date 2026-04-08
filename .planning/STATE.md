@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** All 10 phases complete — milestone ready for audit
+**Current focus:** Phase 11 bug fix and dead code cleanup in progress
 
 ## Current Position
 
-Phase: 10 of 10 (Design Polish and Companion Links) — Complete
-Plan: 6 of 6 in phase 10
-Status: Complete — visual checkpoint approved
-Last activity: 2026-04-08 — Phase 10 complete (editorial race-poster redesign, all pages approved at 375px and desktop)
+Phase: 11 of 11 (Bug Fix and Dead Code Cleanup) — In progress
+Plan: 1 of 1 in phase 11
+Status: In progress — 11-01 complete
+Last activity: 2026-04-08 — Completed 11-01: route map swap fixed, dead files deleted, dead form fields removed, build clean
 
-Progress: [██████████] 100%
+Progress: [██████████] 100% (of original 10 phases; phase 11 = cleanup pass)
 
 ## Performance Metrics
 
@@ -157,6 +157,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-08T12:51:00Z
-Stopped at: Phase 10 complete — all pages approved at visual checkpoint (desktop + 375px mobile)
+Last session: 2026-04-08T17:46:47Z
+Stopped at: Completed 11-01-PLAN.md — route map bug fixed, dead files deleted, clean build confirmed
 Resume file: None
