@@ -21,7 +21,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 7: Data Persistence** - GitHub Contents API write, Netlify rebuild hook, deauth webhook
 - [x] **Phase 8: Real Data Leaderboard** - Replace sample data, day association, live/sample indicator
 - [x] **Phase 9: Leaderboard Enhancements** - Per-component columns, name search, mobile validation
-- [ ] **Phase 10: Design Polish and Companion Links** - Event-ready UI, submission form visual language, companion site links
+- [x] **Phase 10: Design Polish and Companion Links** - Event-ready UI, submission form visual language, companion site links
 
 ## Phase Details
 
@@ -237,8 +237,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 7. Data Persistence | 3/3 | Complete | 2026-04-07 |
 | 8. Real Data Leaderboard | 3/3 | Complete | 2026-04-07 |
 | 9. Leaderboard Enhancements | 3/3 | Complete | 2026-04-08 |
-| 10. Design Polish and Companion Links | 0/6 | Not started | - |
+| 10. Design Polish and Companion Links | 6/6 | Complete | 2026-04-08 |
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-08 after Phase 10 planning complete (6 plans in 3 waves)*
+*Last updated: 2026-04-08 after Phase 10 complete — editorial race-poster redesign approved at visual checkpoint*
