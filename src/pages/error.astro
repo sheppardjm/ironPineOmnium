@@ -14,14 +14,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   <main class="page-shell">
     <div class="error-shell">
       <div class="error-card">
-        <img src="/logo.svg" alt="" width="64" height="48" style="opacity: 0.6; margin-bottom: 1.5rem;" />
-        <p class="error-eyebrow">Connection Error</p>
-        <h1 class="error-heading">Something went wrong</h1>
+        <p class="eyebrow" aria-hidden="true">Strava OAuth</p>
+        <h1 class="error-heading">Connection Error</h1>
         <p class="error-message" id="error-message">
           Something went wrong during the Strava connection.
         </p>
         <div class="error-actions">
-          <a class="primary-button" href="/api/strava-auth">Connect with Strava Again</a>
+          <a class="primary-button" href="/api/strava-auth">Try Again</a>
           <a class="secondary-button" href="/">Back to Home</a>
         </div>
       </div>
@@ -57,44 +56,39 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 80vh;
-      padding: var(--page-gutter);
+      min-height: 100vh;
+      padding: var(--page-gutter, 1.5rem);
     }
 
     .error-card {
-      max-width: 32rem;
+      position: relative;
+      z-index: 1;
+      max-width: 36rem;
       width: 100%;
-      text-align: center;
+      background: var(--color-fir-900, #17231f);
+      border: 1px solid var(--color-fir-700, #2f463d);
+      border-radius: 0.75rem;
+      padding: clamp(2rem, 6vw, 3.5rem);
+      box-shadow: var(--shadow-poster);
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .error-eyebrow {
-      font-family: var(--font-mono);
-      font-size: 0.76rem;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--color-ember-500);
+      gap: 1.25rem;
     }
 
     .error-heading {
       font-family: var(--font-display);
-      font-size: clamp(2rem, 5vw, 3rem);
-      font-weight: 700;
-      color: var(--color-night-900);
-      line-height: 0.92;
+      font-size: clamp(2rem, 5vw, 2.75rem);
+      font-weight: 600;
+      color: var(--color-mist-50);
+      line-height: 1;
       letter-spacing: -0.04em;
     }
 
     .error-message {
       font-family: var(--font-sans);
-      font-size: 1.05rem;
+      font-size: 1rem;
       line-height: 1.65;
-      color: var(--color-ink-muted);
-      max-width: 36ch;
+      color: var(--color-mist-200, #d1cabd);
     }
 
     .error-actions {
@@ -102,28 +96,55 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       flex-wrap: wrap;
       gap: 0.75rem;
       margin-top: 0.5rem;
-      justify-content: center;
     }
 
-    /* Secondary button — light mode, centered layout */
+    /* Reuse global button styles if present; define fallbacks here */
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.65rem 1.4rem;
+      background: var(--color-ember-400, #dd8258);
+      color: var(--color-night-975, #060908);
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 0.375rem;
+      text-decoration: none;
+      transition: background 0.15s ease;
+    }
+
+    .primary-button:hover {
+      background: var(--color-ember-500, #bc5f40);
+    }
+
     .secondary-button {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
       padding: 0.65rem 1.4rem;
       background: transparent;
-      color: var(--color-night-900);
+      color: var(--color-mist-50);
       font-family: var(--font-sans);
       font-size: 0.9rem;
       font-weight: 500;
-      border: 1px solid rgba(19, 28, 26, 0.2);
-      border-radius: 999px;
+      border: 1px solid var(--color-fern-500, #6d8977);
+      border-radius: 0.375rem;
       text-decoration: none;
-      transition: border-color 0.15s ease;
+      transition: border-color 0.15s ease, color 0.15s ease;
     }
 
     .secondary-button:hover {
-      border-color: var(--color-night-900);
+      border-color: var(--color-mist-200, #d1cabd);
+      color: var(--color-mist-200, #d1cabd);
+    }
+
+    /* eyebrow label reusing global pattern */
+    .eyebrow {
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--color-fern-500, #6d8977);
     }
   </style>
 </BaseLayout>
