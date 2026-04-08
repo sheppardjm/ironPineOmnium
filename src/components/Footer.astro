@@ -1,0 +1,88 @@
+---
+// Site footer — minimal editorial closer with Neucadia attribution.
+---
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="/logo.svg" alt="" width="36" height="27" class="footer-logo" />
+      <span class="footer-name">Iron & Pine Omnium</span>
+      <span class="footer-dot" aria-hidden="true"></span>
+      <span class="footer-date">June 6 – 7, 2026</span>
+    </div>
+    <div class="footer-powered">
+      Powered by <a href="https://neucadia.com" class="footer-neucadia">Neucadia</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 2px solid var(--color-night-900);
+    padding: 2rem var(--page-gutter);
+    background: var(--color-surface);
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: var(--content-max);
+    margin: 0 auto;
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-logo {
+    filter: grayscale(1) brightness(0.3);
+    opacity: 0.6;
+  }
+
+  .footer-name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-night-900);
+    letter-spacing: -0.02em;
+  }
+
+  .footer-dot {
+    width: 3px;
+    height: 3px;
+    background: var(--color-mist-400);
+  }
+
+  .footer-date {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-mist-400);
+  }
+
+  .footer-powered {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-mist-400);
+  }
+
+  .footer-neucadia {
+    color: var(--color-night-900);
+    text-decoration: none;
+    transition: color 120ms ease;
+  }
+
+  .footer-neucadia:hover {
+    color: var(--color-ember-400);
+  }
+</style>

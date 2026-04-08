@@ -1,0 +1,161 @@
+---
+import { defaultScoringConfig, scoreOmnium } from "../lib/scoring";
+import { loadAthleteResults } from "../lib/athlete-loader";
+
+const { riders, hasLiveData } = loadAthleteResults();
+const leaderboards = scoreOmnium(riders, defaultScoringConfig);
+
+const scoreFormatter = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
+
+const podiumData = leaderboards.map((board) => ({
+  categoryLabel: board.categoryLabel,
+  categoryId: board.categoryId,
+  top3: board.entries.slice(0, 3),
+}));
+---
+
+{hasLiveData ? (
+  <div class="podium-wrap">
+    <div class="podium-grid">
+      {podiumData.map((cat) => (
+        <div class="podium-category">
+          <p class="podium-cat-label">{cat.categoryLabel}</p>
+          {cat.top3.length > 0 ? (
+            <ol class="podium-list">
+              {cat.top3.map((entry) => (
+                <li class="podium-entry" data-rank={entry.rank}>
+                  <span class="podium-rank">{entry.rank}</span>
+                  <span class="podium-name">{entry.rider.name}</span>
+                  <span class="podium-score">{scoreFormatter.format(entry.totalScore)}</span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p class="podium-empty">No riders yet</p>
+          )}
+        </div>
+      ))}
+    </div>
+    <div class="podium-cta">
+      <a href="/leaderboard" class="primary-button">Full Leaderboard</a>
+    </div>
+  </div>
+) : (
+  <div class="podium-awaiting">
+    <p class="podium-awaiting-text">The leaderboard opens after submissions begin.</p>
+    <a href="/leaderboard" class="inline-link">View leaderboard page</a>
+  </div>
+)}
+
+<style>
+  .podium-wrap {
+    margin-top: 2rem;
+  }
+
+  .podium-grid {
+    display: grid;
+    gap: 1px;
+    background: rgba(19, 28, 26, 0.1);
+  }
+
+  @media (min-width: 760px) {
+    .podium-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .podium-category {
+    background: var(--color-surface-raised, #ffffff);
+    padding: 1.75rem;
+  }
+
+  .podium-cat-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--color-ember-400);
+  }
+
+  .podium-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .podium-entry {
+    display: grid;
+    grid-template-columns: 2rem 1fr auto;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid rgba(19, 28, 26, 0.06);
+  }
+
+  .podium-entry:last-child {
+    border-bottom: none;
+  }
+
+  .podium-entry[data-rank="1"] .podium-name {
+    font-weight: 700;
+  }
+
+  .podium-rank {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-night-900);
+  }
+
+  .podium-entry[data-rank="1"] .podium-rank {
+    color: var(--color-ember-400);
+  }
+
+  .podium-name {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: var(--color-night-900);
+  }
+
+  .podium-score {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--color-ink-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .podium-empty {
+    color: var(--color-mist-400);
+    font-size: 0.9rem;
+  }
+
+  .podium-cta {
+    margin-top: 2rem;
+  }
+
+  .podium-awaiting {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .podium-awaiting-text {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    color: var(--color-ink-muted);
+  }
+</style>

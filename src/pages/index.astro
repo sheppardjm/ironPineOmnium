@@ -1,56 +1,48 @@
 ---
-import Leaderboard from "../components/Leaderboard.astro";
-import LogoMark from "../components/LogoMark.astro";
+import PodiumPreview from "../components/PodiumPreview.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { defaultScoringConfig } from "../lib/scoring";
 import { loadAthleteResults } from "../lib/athlete-loader";
 
 const { hasLiveData } = loadAthleteResults();
 
-const eventLinks = [
+const events = [
   {
-    label: "Day 1 · Hiawatha's Revenge",
-    href: "file:///Users/Sheppardjm/Repos/hiawathasRevenge/dist/index.html",
+    day: "Day 1",
+    name: "Hiawatha's Revenge",
     marker: "Saturday",
-    vibe: "Long fondo day with moving time counted toward the overall.",
-    detail: "Hiawatha's Revenge opens the weekend with the bigger miles and sets the baseline for the omnium.",
+    miles: "102",
+    elevation: "2,258",
+    description: "The fondo opens the weekend with the bigger miles. Moving time is counted toward the omnium overall.",
+    site: "https://hiawathasrevenge.com",
+    strava: "https://www.strava.com/routes/3476978085290434764",
+    routeMap: "/images/route-mkultra.png",
   },
   {
-    label: "Day 2 · MK Ultra Gravel",
-    href: "file:///Users/Sheppardjm/Repos/mkUltraGravel/dist/index.html",
+    day: "Day 2",
+    name: "MK Ultra Gravel",
     marker: "Sunday",
-    vibe: "Timed sectors and KOM points decide more of the table.",
-    detail: "MK Ultra Gravel closes the weekend with the sharper efforts and carries the heaviest scoring weight.",
-  },
-];
-
-const sceneSignals = [
-  {
-    title: "Saturday ride",
-    body: "Start with distance and moving time on the fondo.",
-  },
-  {
-    title: "Sunday push",
-    body: "Finish with timed sectors, climbs, and a harder sort.",
-  },
-  {
-    title: "Separate standings",
-    body: "Women, men, and non-binary riders each get their own overall table.",
+    miles: "100",
+    elevation: "3,365",
+    description: "Timed sectors and KOM climbs carry the heaviest scoring weight. This is where the table gets decided.",
+    site: "https://mkultragravel.com",
+    strava: "https://www.strava.com/routes/3474143305417209640",
+    routeMap: "/images/route-hiawatha.png",
   },
 ];
 
 const gatheringNotes = [
   {
     title: "Forest roads",
-    body: "The route photos do most of the talking: pines, water, hardpack, and loose rock.",
+    body: "The route photos do most of the talking: pines, streams, hardpack, and chunky gravel.",
   },
   {
     title: "Simple weekend shape",
-    body: "Two established events, one combined result, and an easy page to check between ride days.",
+    body: "Two established 100-miler gravel grinders — one combined result.",
   },
   {
-    title: "Stay around",
-    body: "It should feel like a ride weekend people want to hang around for, not just race through.",
+    title: "No pressure",
+    body: "Ride your own ride. The scoring rewards those who work together.",
   },
 ];
 
@@ -64,9 +56,17 @@ const rideFrames = [
     modifier: "ride-frame--feature",
   },
   {
+    label: "Day 1 · Forest Canopy",
+    title: "Under the hardwoods",
+    body: "Dappled light through a dense canopy tunnel.",
+    src: "/images/canopy-tunnel.jpg",
+    alt: "A gravel cyclist riding through a dense hardwood forest canopy.",
+    modifier: "ride-frame--portrait",
+  },
+  {
     label: "Day 1 · Rough Surface",
-    title: "Loose rock",
-    body: "The rougher surface shows up early in the weekend.",
+    title: "Untamed surfaces",
+    body: "A few rough stretches challenge rides both days.",
     src: "/images/hiawatha-rock-garden.jpg",
     alt: "A gravel bike on a rough, rock-strewn forest road during Hiawatha's Revenge.",
     modifier: "ride-frame--conditions",
@@ -82,10 +82,34 @@ const rideFrames = [
   {
     label: "Day 2 · Conditions",
     title: "Wet section",
-    body: "The route stays honest when the water sits on top of the road.",
+    body: "The route stays honest when the water sits on the road.",
     src: "/images/mkultra-puddle.jpg",
     alt: "Two gravel bikes laid beside a large puddle on a forest road during MK Ultra Gravel.",
     modifier: "ride-frame--conditions",
+  },
+  {
+    label: "Day 2 · Open Road",
+    title: "Farmland stretch",
+    body: "The route opens up through rolling pasture between the forest sections.",
+    src: "/images/farmland-road.jpg",
+    alt: "A winding dirt road through green farmland under blue sky.",
+    modifier: "ride-frame--portrait",
+  },
+  {
+    label: "Day 2 · Views for days",
+    title: "Two-up on sand",
+    body: "Some epic view of Lake Superior near the end of the route.",
+    src: "/images/two-riders-sandy.jpg",
+    alt: "Two gravel cyclists riding abreast on a wide sandy road lined with trees.",
+    modifier: "ride-frame--ride",
+  },
+  {
+    label: "Day 1 · The Corridor",
+    title: "Pine corridor",
+    body: "Curving and quiet through the NFS pine stands.",
+    src: "/images/spruce-corridor.jpg",
+    alt: "A solo gravel cyclist riding a straight road through sparse spruce forest.",
+    modifier: "ride-frame--portrait",
   },
 ];
 
@@ -114,69 +138,102 @@ const scoringPillars = [
 >
   <main class="page-shell">
     <section class="hero-section">
-      <div class="hero-inner">
-        <div class="hero-copy">
-          <p class="eyebrow">June 6 to 7, 2026 · Hiawatha National Forest</p>
-          <div class="logo-lockup">
-            <LogoMark class="logo-mark" />
-            <div class="logo-copy">
-              <p class="logo-subtitle">Two-day gravel omnium</p>
-              <h1 class="hero-title">Iron & Pine Omnium</h1>
-            </div>
-          </div>
-          <p class="hero-kicker">
-            Two days of gravel riding in the Upper Peninsula.
-          </p>
-          <p class="hero-body">
-            Saturday starts with Hiawatha&apos;s Revenge and its moving time counted toward the overall. Sunday finishes at MK Ultra Gravel with timed sectors and KOM points. The omnium keeps separate overall standings for women, men, and non-binary riders.
-          </p>
+      <div class="hero-center">
+        <img src="/logo.svg" alt="" width="72" height="54" class="hero-logo" />
+        <p class="hero-dateline">June 6 – 7, 2026 · Hiawatha National Forest</p>
+        <h1 class="hero-title">Iron &amp; Pine<br/>Omnium</h1>
+        <p class="hero-kicker">
+          Two days of gravel riding in the Upper Peninsula.
+        </p>
+        <div class="hero-ctas">
+          <a class="primary-button" href="/leaderboard">Leaderboard</a>
+          <a class="secondary-button" href="#format">How the weekend works</a>
+        </div>
+        <div class="hero-strip">
+          <span>Fondo + Grinduro</span>
+          <span class="hero-strip-dot" aria-hidden="true"></span>
+          <span>Women · Men · Non-Binary</span>
+          <span class="hero-strip-dot" aria-hidden="true"></span>
+          <span>Moving time · Sectors · KOM</span>
+        </div>
+      </div>
+    </section>
 
-          <div class="cta-row">
-            <a class="primary-button" href="#leaderboard">See the Omnium Leaderboard</a>
-            <a class="secondary-button" href="#format">How the weekend works</a>
-          </div>
-
-          <div class="signal-grid">
-            {sceneSignals.map((signal) => (
-              <article class="signal-card">
-                <h3>{signal.title}</h3>
-                <p>{signal.body}</p>
-              </article>
-            ))}
-          </div>
+    <section id="format" class="content-section">
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="eyebrow">Weekend Flow</p>
+          <h2>Start long, finish sharp.</h2>
+          <p class="section-copy">
+            The first day rewards steady riding and plenty of friendly stops across the fondo. The second day puts weight on timed sectors and climbing.
+          </p>
         </div>
 
-        <div class="hero-panel">
-          <div class="hero-poster">
-            <p class="poster-overline">Weekend overview</p>
-            <h2 class="poster-title">Ride Saturday. Push Sunday. Add it up at the end.</h2>
+        <div class="event-grid">
+          {events.map((event) => (
+            <article class="event-card">
+              <div class="event-card-body">
+                <div class="event-head">
+                  <span class="event-marker">{event.marker}</span>
+                  <span class="event-day">{event.day}</span>
+                </div>
+                <h3 class="event-name">{event.name}</h3>
+                <div class="event-stats">
+                  <div class="event-stat">
+                    <span class="event-stat-value">{event.miles}</span>
+                    <span class="event-stat-label">Miles</span>
+                  </div>
+                  <div class="event-stat">
+                    <span class="event-stat-value">{event.elevation}</span>
+                    <span class="event-stat-label">Ft Climbing</span>
+                  </div>
+                </div>
+                <p class="event-description">{event.description}</p>
+                <div class="event-links">
+                  <a class="inline-link" href={event.site}>Companion site</a>
+                  <a class="inline-link strava-link" href={event.strava}><svg class="strava-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>Strava route</a>
+                </div>
+              </div>
+              <a class="event-route-map" href={event.strava}>
+                <img src={event.routeMap} alt={`${event.name} route overview`} loading="lazy" />
+              </a>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
 
-            <div class="poster-grid">
-              <div>
-                <span>Format</span>
-                <strong>Fondo + Grinduro</strong>
-              </div>
-              <div>
-                <span>Scoring</span>
-                <strong>Moving time · sectors · KOM</strong>
-              </div>
-              <div>
-                <span>Fields</span>
-                <strong>Women · Men · Non-Binary</strong>
+    <section class="content-section scoring-section">
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="eyebrow">Scoring System</p>
+          <h2>Straightforward scoring.</h2>
+          <p class="section-copy">
+            Each category is benchmarked against its fastest rider, then weighted across the weekend.
+          </p>
+        </div>
+
+        <div class="scoring-strip">
+          {scoringPillars.map((pillar) => (
+            <div class="scoring-item">
+              <span class="scoring-weight">{pillar.weight}</span>
+              <div class="scoring-detail">
+                <h3>{pillar.title}</h3>
+                <p>{pillar.body}</p>
               </div>
             </div>
+          ))}
+        </div>
 
-            <div class="route-stack">
-              {eventLinks.map((event) => (
-                <article class="route-card">
-                  <p class="route-marker">{event.marker}</p>
-                  <h3>{event.label}</h3>
-                  <p class="route-vibe">{event.vibe}</p>
-                  <a class="inline-link" href={event.href}>Open companion site</a>
-                </article>
-              ))}
-            </div>
-          </div>
+        <div class="formula-bar">
+          <p class="formula-text">
+            Overall = moving time × {Math.round(defaultScoringConfig.movingTimeWeight * 100)} + sectors × {Math.round(defaultScoringConfig.sectorWeight * 100)} + KOM × {Math.round(defaultScoringConfig.komWeight * 100)}
+          </p>
+          <p class="formula-note">
+            Each category is ranked independently.{hasLiveData
+              ? " Live results from submitted activities."
+              : " Results appear once riders begin submitting."}
+          </p>
         </div>
       </div>
     </section>
@@ -185,18 +242,21 @@ const scoringPillars = [
       <div class="section-inner">
         <div class="section-heading">
           <p class="eyebrow">What To Expect</p>
-          <h2>A simple page for a two-day ride weekend.</h2>
+          <h2>A simple two-day gravel weekend.</h2>
           <p class="section-copy">
-            The companion sites carry the route details. This page keeps the overview, the combined scoring, and photos that actually show the roads.
+            The first annual Iron & Pine Omnium is a two-day gravel weekend in Michigan's Hiawatha National Forest. The format is straightforward: a longer fondo on Saturday, followed by a day of timed sectors and KOMs on Sunday. Riders are scored virtually across both days for an overall result that rewards consistency, pacing, and endurance.
           </p>
         </div>
 
-        <div class="manifesto-grid">
-          {gatheringNotes.map((note) => (
-            <article class="manifesto-card">
-              <h3>{note.title}</h3>
-              <p>{note.body}</p>
-            </article>
+        <div class="manifesto-strip">
+          {gatheringNotes.map((note, i) => (
+            <div class="manifesto-item">
+              <span class="manifesto-num">{String(i + 1).padStart(2, '0')}</span>
+              <div>
+                <h3>{note.title}</h3>
+                <p>{note.body}</p>
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -206,9 +266,9 @@ const scoringPillars = [
       <div class="section-inner ride-reel-inner">
         <div class="section-heading ride-reel-heading">
           <p class="eyebrow">From The Route</p>
-          <h2>Photos from both days.</h2>
+          <h2>The roads speak for themselves.</h2>
           <p class="section-copy">
-            Pulled directly from the MK Ultra Gravel and Hiawatha&apos;s Revenge sites.
+            Hardpack, loose rock, and the occasional standing water. Two days on forest roads in the Hiawatha National Forest.
           </p>
         </div>
 
@@ -227,70 +287,16 @@ const scoringPillars = [
       </div>
     </section>
 
-    <section id="format" class="content-section">
-      <div class="section-inner">
-        <div class="section-heading">
-          <p class="eyebrow">Weekend Flow</p>
-          <h2>Start sharp, finish long.</h2>
-          <p class="section-copy">
-            The first day rewards steady riding across the fondo. The second day puts weight on timed sectors and climbing.
-          </p>
-        </div>
-
-        <div class="event-grid">
-          {eventLinks.map((event) => (
-            <article class="event-card">
-              <p class="event-marker">{event.marker}</p>
-              <h3>{event.label}</h3>
-              <p class="event-vibe">{event.vibe}</p>
-              <p>{event.detail}</p>
-              <a class="inline-link" href={event.href}>Visit companion site</a>
-            </article>
-          ))}
-        </div>
+    <section class="submit-banner section-dark">
+      <div class="submit-banner-inner">
+        <p class="eyebrow">Ready?</p>
+        <h2>Submit Your Results</h2>
+        <p>Connect your Strava account and paste your activity URL to land on the leaderboard.</p>
+        <a class="primary-button" href="/submit">Submit Results</a>
       </div>
     </section>
 
-    <section class="content-section scoring-section">
-      <div class="section-inner">
-        <div class="section-heading">
-          <p class="eyebrow">Scoring System</p>
-          <h2>Straightforward scoring.</h2>
-          <p class="section-copy">
-            Each category is benchmarked against its fastest rider, then weighted across the weekend.
-          </p>
-        </div>
-
-        <div class="pillar-grid">
-          {scoringPillars.map((pillar) => (
-            <article class="pillar-card">
-              <div class="pill-row">
-                <span class="score-pill">{pillar.weight}</span>
-                <span class="mini-label">weighted contribution</span>
-              </div>
-              <h3>{pillar.title}</h3>
-              <p>{pillar.body}</p>
-            </article>
-          ))}
-        </div>
-
-        <div class="formula-card">
-          <p class="eyebrow">Formula</p>
-          <p class="formula-text">
-            Overall score = moving time ratio × {Math.round(defaultScoringConfig.movingTimeWeight * 100)} +
-            sector ratio × {Math.round(defaultScoringConfig.sectorWeight * 100)} +
-            KOM ratio × {Math.round(defaultScoringConfig.komWeight * 100)}
-          </p>
-          <p class="formula-note">
-            Each category is ranked independently.{hasLiveData
-              ? " The leaderboard below shows live results from submitted activities."
-              : " The leaderboard will show results once riders begin submitting."}
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section id="leaderboard" class="content-section leaderboard-section">
+    <section id="leaderboard" class="content-section">
       <div class="section-inner">
         <div class="section-heading">
           <p class="eyebrow">Leaderboard</p>
@@ -300,27 +306,31 @@ const scoringPillars = [
           <h2>{hasLiveData ? "Current standings." : "Awaiting submissions."}</h2>
           <p class="section-copy">
             {hasLiveData
-              ? "Combined scores across both days, updated after each submission."
+              ? "Top finishers across both days."
               : "The leaderboard will populate as riders submit their Strava activities."}
           </p>
         </div>
 
-        <Leaderboard />
+        <PodiumPreview />
       </div>
     </section>
 
-    <section class="content-section final-cta">
-      <div class="section-inner final-cta__inner">
-        <div>
-          <p class="eyebrow">Ride Pages</p>
+    <section class="content-section companion-section">
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="eyebrow">Companion Sites</p>
           <h2>See each day on its own.</h2>
           <p class="section-copy">
             Route details and ride-day specifics live on the two event sites.
           </p>
         </div>
-        <div class="cta-stack">
-          {eventLinks.map((event) => (
-            <a class="secondary-button w-full justify-center" href={event.href}>{event.label}</a>
+        <div class="companion-grid">
+          {events.map((event) => (
+            <a class="companion-card" href={event.site}>
+              <span class="companion-marker">{event.marker}</span>
+              <span class="companion-name">{event.day} · {event.name}</span>
+              <span class="companion-arrow">↗</span>
+            </a>
           ))}
         </div>
       </div>

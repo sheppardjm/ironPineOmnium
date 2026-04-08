@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Leaderboard from "../components/Leaderboard.astro";
+import { loadAthleteResults } from "../lib/athlete-loader";
+
+const { hasLiveData } = loadAthleteResults();
+---
+
+<BaseLayout title="Leaderboard | Iron & Pine Omnium">
+  <main class="page-shell">
+    <section class="section-dark leaderboard-page-wrap">
+      <div class="section-inner">
+        <div class="section-heading">
+          <p class="eyebrow">Leaderboard</p>
+          <span class:list={["status-badge", hasLiveData ? "status-live" : "status-pending"]}>
+            {hasLiveData ? "Live results" : "Awaiting submissions"}
+          </span>
+          <h1>Overall Standings</h1>
+          <p class="section-copy">
+            {hasLiveData
+              ? "Combined scores across both days, updated after each submission."
+              : "The leaderboard will populate as riders submit their Strava activities."}
+          </p>
+        </div>
+        <Leaderboard />
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .leaderboard-page-wrap {
+    min-height: 80vh;
+    padding: clamp(3rem, 6vw, 5rem) var(--page-gutter);
+  }
+</style>
