@@ -71,8 +71,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <input type="hidden" name="sectorEfforts" id="h-sectorEfforts" />
           <input type="hidden" name="komSegmentIds" id="h-komSegmentIds" />
           <input type="hidden" name="komEfforts" id="h-komEfforts" />
-          <input type="hidden" name="athleteFirstname" id="h-athleteFirstname" />
-          <input type="hidden" name="athleteLastname" id="h-athleteLastname" />
 
           <div class="form-actions">
             <button type="submit" class="primary-button" id="confirm-btn">
@@ -248,8 +246,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       set("h-sectorEfforts", payload.sectorEfforts ?? {});
       set("h-komSegmentIds", payload.komSegmentIds ?? []);
       set("h-komEfforts", payload.komEfforts ?? {});
-      set("h-athleteFirstname", payload.athleteFirstname);
-      set("h-athleteLastname", payload.athleteLastname);
     }
 
     function setupForm(): void {
