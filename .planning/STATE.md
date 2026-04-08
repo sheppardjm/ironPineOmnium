@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** Phase 11 bug fix and dead code cleanup in progress
+**Current focus:** Phase 11 complete — Phase 12 (Strava Athlete Limit Review) remaining
 
 ## Current Position
 
-Phase: 11 of 11 (Bug Fix and Dead Code Cleanup) — In progress
+Phase: 11 of 12 (Bug Fix and Dead Code Cleanup) — Complete
 Plan: 1 of 1 in phase 11
-Status: In progress — 11-01 complete
-Last activity: 2026-04-08 — Completed 11-01: route map swap fixed, dead files deleted, dead form fields removed, build clean
+Status: Complete — verified
+Last activity: 2026-04-08 — Phase 11 complete (route map swap fixed, dead files deleted, dead form fields removed, build clean)
 
-Progress: [██████████] 100% (of original 10 phases; phase 11 = cleanup pass)
+Progress: [███████████░] 11/12 phases complete
 
 ## Performance Metrics
 
