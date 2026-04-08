@@ -86,17 +86,12 @@ export const handler = async (event, _context) => {
   }
 
   // Step 5: Determine which day from startDateLocal
+  // TEMPORARY: accept any date for Strava review screenshots, default to Day 1
   let isDay1;
-  if (startDateLocal === "2026-06-06") {
-    isDay1 = true;
-  } else if (startDateLocal === "2026-06-07") {
+  if (startDateLocal === "2026-06-07") {
     isDay1 = false;
   } else {
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ error: "invalid_date" }),
-    };
+    isDay1 = true;
   }
 
   // Step 6: GitHub Contents API — GET existing file
