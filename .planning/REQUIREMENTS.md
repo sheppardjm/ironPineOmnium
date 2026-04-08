@@ -91,9 +91,9 @@
 | SUBM-02 | Phase 7 | Complete |
 | LEAD-04 | Phase 8 | Complete |
 | DSGN-03 | Phase 8 | Complete |
-| LEAD-01 | Phase 9 | Pending |
-| LEAD-02 | Phase 9 | Pending |
-| LEAD-03 | Phase 9 | Pending |
+| LEAD-01 | Phase 9 | Complete |
+| LEAD-02 | Phase 9 | Complete |
+| LEAD-03 | Phase 9 | Complete |
 | DSGN-01 | Phase 10 | Pending |
 | DSGN-02 | Phase 10 | Pending |
 

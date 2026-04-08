@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-04-02)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** Phase 9 — Leaderboard Enhancements
+**Current focus:** Phase 10 — Design Polish and Companion Links
 
 ## Current Position
 
-Phase: 9 of 10 (Leaderboard Enhancements) — In progress
-Plan: 2 of 3 in phase 9 (09-02 complete)
-Status: In progress
-Last activity: 2026-04-07 — Completed 09-02-PLAN.md (mobile layout + sticky column + touch targets)
+Phase: 10 of 10 (Design Polish and Companion Links) — Not started
+Plan: 0 of 5 in phase 10
+Status: Not started
+Last activity: 2026-04-08 — Completed Phase 9 (leaderboard enhancements verified, all 5 must-haves passed)
 
-Progress: [█████████░] 85%
+Progress: [█████████░] 90%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 22
+- Total plans completed: 25
 - Average duration: ~6 min
-- Total execution time: ~133 min
+- Total execution time: ~140 min
 
 **By Phase:**
 
@@ -35,6 +35,7 @@ Progress: [█████████░] 85%
 | 06-scoring-extraction | 2/2 | ~2 min | ~1 min |
 | 07-data-persistence | 3/3 | ~13 min | ~4 min |
 | 08-real-data-leaderboard | 3/3 | ~9 min | ~3 min |
+| 09-leaderboard-enhancements | 3/3 | ~7 min | ~2 min |
 
 **Recent Trend:**
 - Last 5 plans: 07-03 (~10 min), 07-02 (~1 min), 07-01 (~2 min), 06-02 (~1 min), 06-01 (~1 min)
@@ -138,6 +139,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-07T19:36:09Z
-Stopped at: Completed 09-02-PLAN.md — mobile layout, sticky column, touch targets
+Last session: 2026-04-08T09:44:00Z
+Stopped at: Completed Phase 9 — all 3 plans executed, 5/5 must-haves verified
 Resume file: None

@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Scoring Extraction** - Extend KOM extraction to capture elapsed times, wire through payload, add Day 2 zero-match warning
 - [x] **Phase 7: Data Persistence** - GitHub Contents API write, Netlify rebuild hook, deauth webhook
 - [x] **Phase 8: Real Data Leaderboard** - Replace sample data, day association, live/sample indicator
-- [ ] **Phase 9: Leaderboard Enhancements** - Per-component columns, name search, mobile validation
+- [x] **Phase 9: Leaderboard Enhancements** - Per-component columns, name search, mobile validation
 - [ ] **Phase 10: Design Polish and Companion Links** - Event-ready UI, submission form visual language, companion site links
 
 ## Phase Details
@@ -191,13 +191,12 @@ Plans:
   2. A rider can type a name into a search field and the leaderboard rows filter in real time to matching athletes — searching works across all three category tabs
   3. On a 375px-wide screen (iPhone SE viewport), the leaderboard is readable without horizontal scroll — rider name, category, and total score are always visible
   4. Tapping a leaderboard row on mobile does not accidentally trigger search or tab navigation
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 09-01: Add per-component score columns (Day 1 / Day 2 sectors / KOM / Total) to `Leaderboard.astro`
-- [ ] 09-02: Implement client-side athlete name search with real-time row filtering
-- [ ] 09-03: Validate and fix leaderboard layout at 375px viewport — ensure no horizontal overflow
-- [ ] 09-04: Test tap targets and touch interaction on mobile leaderboard
+- [ ] 09-01-PLAN.md — Rename column headers to self-explanatory labels + add client-side name search with real-time row filtering
+- [ ] 09-02-PLAN.md — Sticky Rider column, mobile layout at 375px (drop min-width, hide .score-note, compact rank), touch-action: manipulation
+- [ ] 09-03-PLAN.md — Visual verification checkpoint: confirm all four success criteria at 375px viewport (human-verify)
 
 ---
 
@@ -236,9 +235,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 6. Scoring Extraction | 2/2 | Complete | 2026-04-07 |
 | 7. Data Persistence | 3/3 | Complete | 2026-04-07 |
 | 8. Real Data Leaderboard | 3/3 | Complete | 2026-04-07 |
-| 9. Leaderboard Enhancements | 0/4 | Not started | - |
+| 9. Leaderboard Enhancements | 3/3 | Complete | 2026-04-08 |
 | 10. Design Polish and Companion Links | 0/5 | Not started | - |
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-07 after Phase 8 execution complete (7/7 must-haves verified)*
+*Last updated: 2026-04-08 after Phase 9 execution complete (5/5 must-haves verified)*
