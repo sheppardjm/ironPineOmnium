@@ -15,7 +15,7 @@
 ### Submission Flow
 
 - [x] **SUBM-01**: Rider sees computed score preview before finalizing submission (Day 1 moving time score, Day 2 sector + KOM scores)
-- [ ] **SUBM-02**: System associates Day 1 and Day 2 submissions via Strava athlete ID
+- [x] **SUBM-02**: System associates Day 1 and Day 2 submissions via Strava athlete ID
 - [x] **SUBM-03**: Rider provides display name, hometown, and category (men/women/non-binary) during first submission
 - [x] **SUBM-04**: Submission flow shows inline scoring explanation ("your 4:12 moving time = X points")
 - [x] **SUBM-05**: System extracts moving time from Day 1 activity for scoring
@@ -23,27 +23,27 @@
 
 ### Leaderboard
 
-- [ ] **LEAD-01**: Leaderboard displays per-component score columns (Day 1 / Day 2 sectors / KOM) alongside total
-- [ ] **LEAD-02**: Rider can search/filter leaderboard by athlete name
-- [ ] **LEAD-03**: Leaderboard is mobile-readable and validated for phone-sized screens
+- [x] **LEAD-01**: Leaderboard displays per-component score columns (Day 1 / Day 2 sectors / KOM) alongside total
+- [x] **LEAD-02**: Rider can search/filter leaderboard by athlete name
+- [x] **LEAD-03**: Leaderboard is mobile-readable and validated for phone-sized screens
 - [x] **LEAD-04**: Leaderboard displays real rider data from submissions (replacing sample data)
 
 ### Data Pipeline
 
-- [ ] **DATA-01**: Rider submissions persist via GitHub Contents API (one JSON file per rider)
-- [ ] **DATA-02**: Leaderboard rebuilds with current submission data (via build hook or SSR)
+- [x] **DATA-01**: Rider submissions persist via GitHub Contents API (one JSON file per rider)
+- [x] **DATA-02**: Leaderboard rebuilds with current submission data (via build hook or SSR)
 - [x] **DATA-03**: KOM points computed internally by comparing submitted effort times (not Strava's `kom_rank`)
 
 ### Design & Polish
 
-- [ ] **DSGN-01**: Submission form UI matches site's visual language (Cormorant Garamond / Sora, existing color palette)
-- [ ] **DSGN-02**: Companion sites (mkUltraGravel, hiawathasRevenge) link to this site for submissions and results
+- [x] **DSGN-01**: Submission form UI matches site's visual language (Cormorant Garamond / Sora, existing color palette)
+- [x] **DSGN-02**: Companion sites (mkUltraGravel, hiawathasRevenge) link to this site for submissions and results
 - [x] **DSGN-03**: Clear visual indicator distinguishes sample data from live results on leaderboard
 
 ### Compliance
 
 - [x] **COMP-01**: Public leaderboard displays only computed scores and rider-chosen display names (no raw Strava data per Nov 2024 API terms)
-- [ ] **COMP-02**: Strava app athlete limit approval submitted with adequate lead time before June 6
+- [x] **COMP-02**: Strava app athlete limit approval submitted with adequate lead time before June 6
 
 ## v2 Requirements
 
@@ -75,7 +75,7 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | COMP-01 | Phase 1 | Complete |
-| COMP-02 | Phase 1 | Deferred (requires finished UI) |
+| COMP-02 | Phase 12 | Complete |
 | STRA-01 | Phase 3 | Complete |
 | STRA-04 | Phase 3 | Complete |
 | STRA-02 | Phase 4 | Complete |
@@ -94,8 +94,8 @@
 | LEAD-01 | Phase 9 | Complete |
 | LEAD-02 | Phase 9 | Complete |
 | LEAD-03 | Phase 9 | Complete |
-| DSGN-01 | Phase 10 | Pending |
-| DSGN-02 | Phase 10 | Pending |
+| DSGN-01 | Phase 10 | Complete |
+| DSGN-02 | Phase 10 | Complete |
 
 **Coverage:**
 - v1 requirements: 22 total
@@ -104,4 +104,4 @@
 
 ---
 *Requirements defined: 2026-04-02*
-*Last updated: 2026-04-07 after Phase 6 execution*
+*Last updated: 2026-04-08 after Phase 12 execution*
