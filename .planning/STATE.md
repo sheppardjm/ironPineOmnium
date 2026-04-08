@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 
 ## Current Position
 
-Phase: 10 of 10 (Design Polish and Companion Links) — Not started
-Plan: 0 of 5 in phase 10
-Status: Not started
-Last activity: 2026-04-08 — Completed Phase 9 (leaderboard enhancements verified, all 5 must-haves passed)
+Phase: 10 of 10 (Design Polish and Companion Links) — In progress
+Plan: 1 of 6 in phase 10
+Status: In progress
+Last activity: 2026-04-08 — Completed 10-01 (foundation light theme, Nav component, JetBrains Mono)
 
-Progress: [█████████░] 90%
+Progress: [█████████░] 92%
 
 ## Performance Metrics
 
@@ -124,6 +124,10 @@ Recent decisions affecting current work:
 - 09-02: SC-4 (no accidental row tap) satisfied structurally — tr elements have zero onclick handlers
 - 09-02: white-space: nowrap on mobile cells keeps score values on one line without column-width constraints
 - 09-02: touch-action: manipulation on .tab-button and .search-input eliminates 300ms tap delay on mobile
+- 10-01: section-dark CSS wrapper added so leaderboard styles stay untouched; pages apply .section-dark to leaderboard containers
+- 10-01: primary-button inverted to dark bg (--color-night-900) on light page; hero/section-dark get override rules
+- 10-01: Nav uses position:sticky (not fixed) to avoid layout flow disruption; rendered outside .page-shell
+- 10-01: astro.config.mjs fonts block removed (Cormorant Garamond + Sora were inert — no Font component used)
 
 ### Pending Todos
 
@@ -139,6 +143,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-08T09:44:00Z
-Stopped at: Completed Phase 9 — all 3 plans executed, 5/5 must-haves verified
+Last session: 2026-04-08T14:57:50Z
+Stopped at: Completed 10-01-PLAN.md (foundation light theme, Nav, JetBrains Mono)
 Resume file: None
