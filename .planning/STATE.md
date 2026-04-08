@@ -128,6 +128,10 @@ Recent decisions affecting current work:
 - 10-01: primary-button inverted to dark bg (--color-night-900) on light page; hero/section-dark get override rules
 - 10-01: Nav uses position:sticky (not fixed) to avoid layout flow disruption; rendered outside .page-shell
 - 10-01: astro.config.mjs fonts block removed (Cormorant Garamond + Sora were inert — no Font component used)
+- 10-02: Companion site URLs replaced: file:/// paths -> https://hiawathasrevenge.com + https://mkultragravel.com
+- 10-02: PodiumPreview kept on light background (no .section-dark) — cards designed for light surface
+- 10-02: Full Leaderboard moved to /leaderboard; landing page shows PodiumPreview (top-3 preview only)
+- 10-02: Submit Results CTA placed after scoring section, before leaderboard preview (per CONTEXT.md direction)
 - 10-03: Error element changed from <p hidden> to <div style="display:none"> — .submit-error-banner is block-display; div is semantically correct
 - 10-03: TypeScript cast updated from HTMLParagraphElement to HTMLDivElement to match new error element type
 - 10-03: brand-eyebrow uses --font-mono for editorial label style on dark brand panel
@@ -149,6 +153,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-08T15:01:58Z
-Stopped at: Completed 10-03-PLAN.md (submit page split-layout redesign)
+Last session: 2026-04-08T15:02:43Z
+Stopped at: Completed 10-02-PLAN.md (landing page redesign, PodiumPreview, /leaderboard route)
 Resume file: None
