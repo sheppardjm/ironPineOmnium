@@ -23,7 +23,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 9: Leaderboard Enhancements** - Per-component columns, name search, mobile validation
 - [x] **Phase 10: Design Polish and Companion Links** - Event-ready UI, submission form visual language, companion site links
 - [x] **Phase 11: Bug Fix and Dead Code Cleanup** - Swap route map images, remove orphaned files and dead markup
-- [ ] **Phase 12: Strava Athlete Limit Review** - Submit athlete limit review to Strava (COMP-02 closure)
+- [ ] **Phase 12: Strava Athlete Limit Review** - Submit athlete limit review to Strava (COMP-02 closure) — 1 plan
 
 ## Phase Details
 
@@ -247,7 +247,10 @@ Plans:
   1. Strava athlete limit review has been submitted via the HubSpot form with app description, use case, and expected athlete count
   2. Screenshots of the finished leaderboard and submission flow are included
   3. Submission date is recorded for tracking the 7-10 business day review window
-**Plans**: TBD (draft content exists in 01-02-PLAN.md)
+**Plans**: 1 plan
+
+Plans:
+- [ ] 12-01-PLAN.md — Draft corrected submission content and submit athlete limit review via HubSpot form
 
 ---
 
@@ -269,7 +272,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 9. Leaderboard Enhancements | 3/3 | Complete | 2026-04-08 |
 | 10. Design Polish and Companion Links | 6/6 | Complete | 2026-04-08 |
 | 11. Bug Fix and Dead Code Cleanup | 1/1 | Complete | 2026-04-08 |
-| 12. Strava Athlete Limit Review | 0/0 | Not started | — |
+| 12. Strava Athlete Limit Review | 0/1 | Planned | — |
 
 ---
 *Roadmap created: 2026-04-02*
