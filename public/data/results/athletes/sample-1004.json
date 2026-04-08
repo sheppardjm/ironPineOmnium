@@ -1,0 +1,13 @@
+{
+  "athleteId": "sample-1004",
+  "displayName": "Ben Kowalski",
+  "category": "men",
+  "day1": { "movingTimeSeconds": 24600, "activityId": "sample", "submittedAt": "2026-06-06T19:30:00Z" },
+  "day2": {
+    "sectorEfforts": { "41159670": 870, "24479292": 2220, "24479426": 576, "24479467": 552, "24479496": 2640, "34573011": 2160, "6809754": 258 },
+    "komSegmentIds": ["24479270", "41126651", "16438243"],
+    "komEfforts": { "24479270": 366, "41126651": 198, "16438243": 660 },
+    "activityId": "sample", "submittedAt": "2026-06-07T19:30:00Z"
+  },
+  "createdAt": "2026-06-06T19:30:00Z", "updatedAt": "2026-06-07T19:30:00Z"
+}

@@ -1,0 +1,13 @@
+{
+  "athleteId": "sample-3001",
+  "displayName": "Jordan Hale",
+  "category": "non-binary",
+  "day1": { "movingTimeSeconds": 22200, "activityId": "sample", "submittedAt": "2026-06-06T18:20:00Z" },
+  "day2": {
+    "sectorEfforts": { "41159670": 798, "24479292": 1980, "24479426": 528, "24479467": 498, "24479496": 2400, "34573011": 1920, "6809754": 222 },
+    "komSegmentIds": ["24479270", "41126651", "16438243"],
+    "komEfforts": { "24479270": 324, "41126651": 174, "16438243": 594 },
+    "activityId": "sample", "submittedAt": "2026-06-07T18:20:00Z"
+  },
+  "createdAt": "2026-06-06T18:20:00Z", "updatedAt": "2026-06-07T18:20:00Z"
+}

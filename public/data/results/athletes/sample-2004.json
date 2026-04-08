@@ -1,0 +1,13 @@
+{
+  "athleteId": "sample-2004",
+  "displayName": "Rachel Nguyen",
+  "category": "women",
+  "day1": { "movingTimeSeconds": 26400, "activityId": "sample", "submittedAt": "2026-06-06T19:45:00Z" },
+  "day2": {
+    "sectorEfforts": { "41159670": 948, "24479292": 2340, "24479426": 630, "24479467": 600, "24479496": 2760, "34573011": 2280, "6809754": 276 },
+    "komSegmentIds": ["41126651"],
+    "komEfforts": { "41126651": 210 },
+    "activityId": "sample", "submittedAt": "2026-06-07T19:45:00Z"
+  },
+  "createdAt": "2026-06-06T19:45:00Z", "updatedAt": "2026-06-07T19:45:00Z"
+}

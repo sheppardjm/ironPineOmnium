@@ -1,0 +1,13 @@
+{
+  "athleteId": "sample-2002",
+  "displayName": "Amy Chernoff",
+  "category": "women",
+  "day1": { "movingTimeSeconds": 24000, "activityId": "sample", "submittedAt": "2026-06-06T18:45:00Z" },
+  "day2": {
+    "sectorEfforts": { "41159670": 870, "24479292": 2160, "24479426": 576, "24479467": 546, "24479496": 2580, "34573011": 2100, "6809754": 246 },
+    "komSegmentIds": ["24479270", "16438243"],
+    "komEfforts": { "24479270": 354, "16438243": 630 },
+    "activityId": "sample", "submittedAt": "2026-06-07T18:45:00Z"
+  },
+  "createdAt": "2026-06-06T18:45:00Z", "updatedAt": "2026-06-07T18:45:00Z"
+}

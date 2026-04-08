@@ -1,0 +1,13 @@
+{
+  "athleteId": "sample-2001",
+  "displayName": "Sarah Lindqvist",
+  "category": "women",
+  "day1": { "movingTimeSeconds": 23400, "activityId": "sample", "submittedAt": "2026-06-06T18:15:00Z" },
+  "day2": {
+    "sectorEfforts": { "41159670": 840, "24479292": 2100, "24479426": 558, "24479467": 522, "24479496": 2520, "34573011": 2010, "6809754": 234 },
+    "komSegmentIds": ["24479270", "41126651", "16438243"],
+    "komEfforts": { "24479270": 336, "41126651": 174, "16438243": 600 },
+    "activityId": "sample", "submittedAt": "2026-06-07T18:15:00Z"
+  },
+  "createdAt": "2026-06-06T18:15:00Z", "updatedAt": "2026-06-07T18:15:00Z"
+}

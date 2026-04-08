@@ -1,0 +1,13 @@
+{
+  "athleteId": "sample-1002",
+  "displayName": "Chris Tennant",
+  "category": "men",
+  "day1": { "movingTimeSeconds": 22800, "activityId": "sample", "submittedAt": "2026-06-06T18:30:00Z" },
+  "day2": {
+    "sectorEfforts": { "41159670": 810, "24479292": 2040, "24479426": 540, "24479467": 510, "24479496": 2460, "34573011": 1980, "6809754": 228 },
+    "komSegmentIds": ["24479270", "41126651", "16438243"],
+    "komEfforts": { "24479270": 330, "41126651": 180, "16438243": 612 },
+    "activityId": "sample", "submittedAt": "2026-06-07T18:30:00Z"
+  },
+  "createdAt": "2026-06-06T18:30:00Z", "updatedAt": "2026-06-07T18:30:00Z"
+}

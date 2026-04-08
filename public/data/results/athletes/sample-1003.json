@@ -1,0 +1,13 @@
+{
+  "athleteId": "sample-1003",
+  "displayName": "Matt Roskam",
+  "category": "men",
+  "day1": { "movingTimeSeconds": 23400, "activityId": "sample", "submittedAt": "2026-06-06T19:00:00Z" },
+  "day2": {
+    "sectorEfforts": { "41159670": 840, "24479292": 2100, "24479426": 558, "24479467": 528, "24479496": 2520, "34573011": 2040, "6809754": 240 },
+    "komSegmentIds": ["24479270", "16438243"],
+    "komEfforts": { "24479270": 348, "16438243": 636 },
+    "activityId": "sample", "submittedAt": "2026-06-07T19:00:00Z"
+  },
+  "createdAt": "2026-06-06T19:00:00Z", "updatedAt": "2026-06-07T19:00:00Z"
+}

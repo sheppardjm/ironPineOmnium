@@ -1085,6 +1085,27 @@
     justify-content: center;
   }
 
+  .split-brand--photo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      linear-gradient(180deg, rgba(6, 9, 8, 0.65) 0%, rgba(6, 9, 8, 0.5) 40%, rgba(6, 9, 8, 0.8) 100%),
+      url("/images/forest-straightaway.jpg") center 40% / cover;
+  }
+
+  .split-brand--confirm::before {
+    background:
+      linear-gradient(180deg, rgba(6, 9, 8, 0.65) 0%, rgba(6, 9, 8, 0.5) 40%, rgba(6, 9, 8, 0.8) 100%),
+      url("/images/two-track-clearing.jpg") center 40% / cover;
+  }
+
+  .split-brand .brand-inner {
+    position: relative;
+    z-index: 1;
+  }
+
   @media (max-width: 759px) {
     .split-brand {
       min-height: 35vw;

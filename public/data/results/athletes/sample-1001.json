@@ -1,0 +1,13 @@
+{
+  "athleteId": "sample-1001",
+  "displayName": "Jake Moreland",
+  "category": "men",
+  "day1": { "movingTimeSeconds": 21420, "activityId": "sample", "submittedAt": "2026-06-06T18:00:00Z" },
+  "day2": {
+    "sectorEfforts": { "41159670": 780, "24479292": 1920, "24479426": 510, "24479467": 480, "24479496": 2340, "34573011": 1860, "6809754": 210 },
+    "komSegmentIds": ["24479270", "41126651", "16438243"],
+    "komEfforts": { "24479270": 312, "41126651": 168, "16438243": 582 },
+    "activityId": "sample", "submittedAt": "2026-06-07T18:00:00Z"
+  },
+  "createdAt": "2026-06-06T18:00:00Z", "updatedAt": "2026-06-07T18:00:00Z"
+}

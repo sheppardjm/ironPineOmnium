@@ -10,12 +10,12 @@ const { hasLiveData } = loadAthleteResults();
   <main class="page-shell">
     <section class="section-dark leaderboard-page-wrap">
       <div class="section-inner">
-        <div class="section-heading">
+        <div class="section-heading leaderboard-page-heading">
           <p class="eyebrow">Leaderboard</p>
           <span class:list={["status-badge", hasLiveData ? "status-live" : "status-pending"]}>
             {hasLiveData ? "Live results" : "Awaiting submissions"}
           </span>
-          <h1>Overall Standings</h1>
+          <h1 class="py-8">Overall Standings</h1>
           <p class="section-copy">
             {hasLiveData
               ? "Combined scores across both days, updated after each submission."
@@ -32,5 +32,10 @@ const { hasLiveData } = loadAthleteResults();
   .leaderboard-page-wrap {
     min-height: 80vh;
     padding: clamp(3rem, 6vw, 5rem) var(--page-gutter);
+    border-top: 3px solid var(--color-ember-400);
+  }
+
+  .leaderboard-page-heading h1 {
+    font-size: clamp(2.8rem, 7vw, 5rem);
   }
 </style>

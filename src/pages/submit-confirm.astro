@@ -12,7 +12,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   description="Review your activity score preview and confirm your submission to the Iron & Pine Omnium leaderboard."
 >
   <main class="split-shell">
-    <div class="split-brand">
+    <div class="split-brand split-brand--photo split-brand--confirm">
       <div class="brand-inner">
         <img src="/logo.svg" alt="" width="72" height="54" class="brand-logo" />
         <p class="brand-label">Iron & Pine Omnium</p>
@@ -383,8 +383,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     }
 
     .brand-logo {
-      opacity: 0.7;
       margin-bottom: 2rem;
+      filter: invert(1) brightness(1.05) sepia(0.12) saturate(0.5);
+      opacity: 0.85;
     }
 
     .brand-label {

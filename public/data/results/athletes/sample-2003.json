@@ -1,0 +1,13 @@
+{
+  "athleteId": "sample-2003",
+  "displayName": "Megan Pruitt",
+  "category": "women",
+  "day1": { "movingTimeSeconds": 25800, "activityId": "sample", "submittedAt": "2026-06-06T19:15:00Z" },
+  "day2": {
+    "sectorEfforts": { "41159670": 918, "24479292": 2280, "24479426": 606, "24479467": 576, "24479496": 2700, "34573011": 2220, "6809754": 264 },
+    "komSegmentIds": ["24479270", "41126651", "16438243"],
+    "komEfforts": { "24479270": 372, "41126651": 192, "16438243": 660 },
+    "activityId": "sample", "submittedAt": "2026-06-07T19:15:00Z"
+  },
+  "createdAt": "2026-06-06T19:15:00Z", "updatedAt": "2026-06-07T19:15:00Z"
+}
