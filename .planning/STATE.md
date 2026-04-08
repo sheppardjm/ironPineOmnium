@@ -128,6 +128,9 @@ Recent decisions affecting current work:
 - 10-01: primary-button inverted to dark bg (--color-night-900) on light page; hero/section-dark get override rules
 - 10-01: Nav uses position:sticky (not fixed) to avoid layout flow disruption; rendered outside .page-shell
 - 10-01: astro.config.mjs fonts block removed (Cormorant Garamond + Sora were inert — no Font component used)
+- 10-03: Error element changed from <p hidden> to <div style="display:none"> — .submit-error-banner is block-display; div is semantically correct
+- 10-03: TypeScript cast updated from HTMLParagraphElement to HTMLDivElement to match new error element type
+- 10-03: brand-eyebrow uses --font-mono for editorial label style on dark brand panel
 - 10-05: No scoped .primary-button on error page — global 10-01 style handles dark-on-light correctly
 - 10-05: Eyebrow renamed error-eyebrow with ember-500 color to signal error context (fern-500 was neutral)
 - 10-05: min-height: 80vh on error-shell (not 100vh) to center card in visible viewport below sticky nav
@@ -146,6 +149,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-08T15:01:45Z
-Stopped at: Completed 10-05-PLAN.md (error page light-mode redesign)
+Last session: 2026-04-08T15:01:58Z
+Stopped at: Completed 10-03-PLAN.md (submit page split-layout redesign)
 Resume file: None
