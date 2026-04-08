@@ -156,19 +156,18 @@ export const handler = async (event, _context) => {
   // start_date_local has a misleading Z suffix — slice(0,10) gives the local date directly.
   const localDateStr = activity.start_date_local.slice(0, 10);
 
-  // TEMPORARY: date validation bypassed for Strava review screenshots
-  // if (!EVENT_DATES.includes(localDateStr)) {
-  //   return {
-  //     statusCode: 200,
-  //     headers: { "Content-Type": "application/json" },
-  //     ...(Object.keys(multiValueHeaders).length ? { multiValueHeaders } : {}),
-  //     body: JSON.stringify({
-  //       error: "wrong_date",
-  //       actualDate: localDateStr,
-  //       expectedDates: EVENT_DATES,
-  //     }),
-  //   };
-  // }
+  if (!EVENT_DATES.includes(localDateStr)) {
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      ...(Object.keys(multiValueHeaders).length ? { multiValueHeaders } : {}),
+      body: JSON.stringify({
+        error: "wrong_date",
+        actualDate: localDateStr,
+        expectedDates: EVENT_DATES,
+      }),
+    };
+  }
 
   // Step 7: Segment effort extraction
   const efforts = activity.segment_efforts || [];
