@@ -1,5 +1,5 @@
 ---
-import Leaderboard from "../components/Leaderboard.astro";
+import PodiumPreview from "../components/PodiumPreview.astro";
 import LogoMark from "../components/LogoMark.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { defaultScoringConfig } from "../lib/scoring";
@@ -10,14 +10,14 @@ const { hasLiveData } = loadAthleteResults();
 const eventLinks = [
   {
     label: "Day 1 · Hiawatha's Revenge",
-    href: "file:///Users/Sheppardjm/Repos/hiawathasRevenge/dist/index.html",
+    href: "https://hiawathasrevenge.com",
     marker: "Saturday",
     vibe: "Long fondo day with moving time counted toward the overall.",
     detail: "Hiawatha's Revenge opens the weekend with the bigger miles and sets the baseline for the omnium.",
   },
   {
     label: "Day 2 · MK Ultra Gravel",
-    href: "file:///Users/Sheppardjm/Repos/mkUltraGravel/dist/index.html",
+    href: "https://mkultragravel.com",
     marker: "Sunday",
     vibe: "Timed sectors and KOM points decide more of the table.",
     detail: "MK Ultra Gravel closes the weekend with the sharper efforts and carries the heaviest scoring weight.",
@@ -132,7 +132,7 @@ const scoringPillars = [
           </p>
 
           <div class="cta-row">
-            <a class="primary-button" href="#leaderboard">See the Omnium Leaderboard</a>
+            <a class="primary-button" href="/leaderboard">See the Omnium Leaderboard</a>
             <a class="secondary-button" href="#format">How the weekend works</a>
           </div>
 
@@ -290,7 +290,20 @@ const scoringPillars = [
       </div>
     </section>
 
-    <section id="leaderboard" class="content-section leaderboard-section">
+    <section class="content-section submit-cta-section">
+      <div class="section-inner" style="text-align: center; max-width: 40rem; margin: 0 auto;">
+        <p class="eyebrow">Ready to submit?</p>
+        <h2>Submit Your Results</h2>
+        <p class="section-copy" style="margin: 1rem auto;">
+          Connect your Strava account and paste your activity URL to see your score on the leaderboard.
+        </p>
+        <div class="cta-row" style="justify-content: center;">
+          <a class="primary-button" href="/submit">Submit Results</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="leaderboard" class="content-section">
       <div class="section-inner">
         <div class="section-heading">
           <p class="eyebrow">Leaderboard</p>
@@ -300,12 +313,11 @@ const scoringPillars = [
           <h2>{hasLiveData ? "Current standings." : "Awaiting submissions."}</h2>
           <p class="section-copy">
             {hasLiveData
-              ? "Combined scores across both days, updated after each submission."
+              ? "Top finishers across both days."
               : "The leaderboard will populate as riders submit their Strava activities."}
           </p>
         </div>
-
-        <Leaderboard />
+        <PodiumPreview />
       </div>
     </section>
 
