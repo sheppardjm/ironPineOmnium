@@ -135,6 +135,10 @@ Recent decisions affecting current work:
 - 10-03: Error element changed from <p hidden> to <div style="display:none"> — .submit-error-banner is block-display; div is semantically correct
 - 10-03: TypeScript cast updated from HTMLParagraphElement to HTMLDivElement to match new error element type
 - 10-03: brand-eyebrow uses --font-mono for editorial label style on dark brand panel
+- 10-04: submit-confirm.astro old scoped styles removed entirely — global .split-shell/.form-field from 10-01 handle layout and inputs
+- 10-04: preview-label uses --font-mono (JetBrains Mono) for label consistency with form-field label pattern
+- 10-04: secondary-button scoped as pill (border-radius: 999px) on confirm page for light-page variant
+- 10-04: Script block (fromBase64url, renderPreview, populateHiddenFields, setupForm) preserved exactly via Astro Vite bundling
 - 10-05: No scoped .primary-button on error page — global 10-01 style handles dark-on-light correctly
 - 10-05: Eyebrow renamed error-eyebrow with ember-500 color to signal error context (fern-500 was neutral)
 - 10-05: min-height: 80vh on error-shell (not 100vh) to center card in visible viewport below sticky nav
@@ -153,6 +157,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-08T15:02:43Z
-Stopped at: Completed 10-02-PLAN.md (landing page redesign, PodiumPreview, /leaderboard route)
+Last session: 2026-04-08T15:03:27Z
+Stopped at: Completed 10-04-PLAN.md (confirm page redesign, split layout, light-mode score preview)
 Resume file: None
