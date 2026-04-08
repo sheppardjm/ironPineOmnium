@@ -1,0 +1,13 @@
+{
+  "athleteId": "2262684",
+  "displayName": "Jamison Sheppard",
+  "category": "men",
+  "day1": {
+    "movingTimeSeconds": 22900,
+    "activityId": "14727070255",
+    "submittedAt": "2026-04-08T18:48:12.414Z"
+  },
+  "day2": null,
+  "createdAt": "2026-04-08T18:48:12.414Z",
+  "updatedAt": "2026-04-08T18:48:12.414Z"
+}
