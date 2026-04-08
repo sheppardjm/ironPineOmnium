@@ -22,6 +22,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 8: Real Data Leaderboard** - Replace sample data, day association, live/sample indicator
 - [x] **Phase 9: Leaderboard Enhancements** - Per-component columns, name search, mobile validation
 - [x] **Phase 10: Design Polish and Companion Links** - Event-ready UI, submission form visual language, companion site links
+- [ ] **Phase 11: Bug Fix and Dead Code Cleanup** - Swap route map images, remove orphaned files and dead markup
+- [ ] **Phase 12: Strava Athlete Limit Review** - Submit athlete limit review to Strava (COMP-02 closure)
 
 ## Phase Details
 
@@ -221,14 +223,42 @@ Plans:
 
 ---
 
+### Phase 11: Bug Fix and Dead Code Cleanup
+**Goal**: Fix the route map image swap bug and remove all orphaned code and dead markup identified in the v1.0 milestone audit
+**Depends on**: Phase 10
+**Requirements**: *(no dedicated requirement — tech debt / bug fix)*
+**Gap Closure**: Closes route map bug + 3 tech debt items from v1.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. Day 1 (Hiawatha's Revenge) event card shows `route-hiawatha.png` and Day 2 (MK Ultra Gravel) shows `route-mkultra.png`
+  2. `src/lib/sample-data.ts` is deleted — no file exists at that path
+  3. `src/components/LogoMark.astro` is deleted — no file exists at that path
+  4. `submit-confirm.astro` no longer contains `h-athleteFirstname` or `h-athleteLastname` hidden fields
+  5. The site builds successfully with `pnpm build` after all removals
+**Plans**: TBD
+
+---
+
+### Phase 12: Strava Athlete Limit Review
+**Goal**: Submit the Strava athlete limit review request so the app is approved for multiple athletes before the June 6 event
+**Depends on**: Phase 10 (needs finished UI for screenshots)
+**Requirements**: COMP-02
+**Gap Closure**: Closes COMP-02 from v1.0-MILESTONE-AUDIT.md
+**Success Criteria** (what must be TRUE):
+  1. Strava athlete limit review has been submitted via the HubSpot form with app description, use case, and expected athlete count
+  2. Screenshots of the finished leaderboard and submission flow are included
+  3. Submission date is recorded for tracking the 7-10 business day review window
+**Plans**: TBD (draft content exists in 01-02-PLAN.md)
+
+---
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
+Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Compliance and Prerequisites | 3/4 | Complete (01-02 deferred) | 2026-04-06 |
+| 1. Compliance and Prerequisites | 3/4 | Complete (01-02 deferred to Phase 12) | 2026-04-06 |
 | 2. Netlify Infrastructure | 2/2 | Complete | 2026-04-06 |
 | 3. Strava OAuth | 3/3 | Complete | 2026-04-06 |
 | 4. Activity Fetching and Validation | 2/2 | Complete | 2026-04-06 |
@@ -238,7 +268,9 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 8. Real Data Leaderboard | 3/3 | Complete | 2026-04-07 |
 | 9. Leaderboard Enhancements | 3/3 | Complete | 2026-04-08 |
 | 10. Design Polish and Companion Links | 6/6 | Complete | 2026-04-08 |
+| 11. Bug Fix and Dead Code Cleanup | 0/0 | Not started | — |
+| 12. Strava Athlete Limit Review | 0/0 | Not started | — |
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-08 after Phase 10 complete — editorial race-poster redesign approved at visual checkpoint*
+*Last updated: 2026-04-08 after gap closure phases added from v1.0-MILESTONE-AUDIT.md*
