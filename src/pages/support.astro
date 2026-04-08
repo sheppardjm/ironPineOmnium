@@ -1,0 +1,254 @@
+---
+// support.astro — Contact form for rider support and feedback.
+// Uses Netlify Forms (static HTML form with netlify attribute).
+// No server-side code needed — Netlify detects the form at deploy time.
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Support | Iron & Pine Omnium"
+  description="Get help with your Iron & Pine Omnium submission or report an issue with your ride data."
+>
+  <main class="split-shell">
+    <div class="split-brand split-brand--support">
+      <div class="brand-inner">
+        <img src="/logo.svg" alt="" width="72" height="54" class="brand-logo" />
+        <p class="brand-label">Iron & Pine Omnium</p>
+        <h2 class="brand-title">Support</h2>
+        <p class="brand-body">
+          Questions about the event, trouble with your submission, or issues with your ride data? We're here to help.
+        </p>
+      </div>
+    </div>
+
+    <div class="split-form">
+      <div class="form-inner">
+        <h1 class="form-title">Contact Us</h1>
+        <p class="form-subtitle">
+          Fill out the form below and we'll get back to you as soon as possible.
+        </p>
+
+        <div id="support-success" class="success-banner" hidden>
+          Message sent! We'll get back to you shortly.
+        </div>
+
+        <form
+          id="support-form"
+          name="support"
+          method="POST"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+        >
+          <p class="visually-hidden">
+            <label>Don't fill this out: <input name="bot-field" /></label>
+          </p>
+
+          <div class="form-field">
+            <label for="support-name">Name</label>
+            <input
+              type="text"
+              name="name"
+              id="support-name"
+              required
+              placeholder="Your name"
+              autocomplete="name"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="support-email">Email</label>
+            <input
+              type="email"
+              name="email"
+              id="support-email"
+              required
+              placeholder="you@example.com"
+              autocomplete="email"
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="support-topic">Topic</label>
+            <select name="topic" id="support-topic" required>
+              <option value="" disabled selected>Select a topic</option>
+              <option value="submission">Submission issue</option>
+              <option value="strava">Strava / ride data issue</option>
+              <option value="leaderboard">Leaderboard question</option>
+              <option value="event">Event question</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="support-message">Message</label>
+            <textarea
+              name="message"
+              id="support-message"
+              rows="5"
+              required
+              placeholder="Describe your question or issue..."
+            ></textarea>
+          </div>
+
+          <button type="submit" id="support-btn" class="primary-button">
+            Send Message
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById("support-form") as HTMLFormElement;
+    const successEl = document.getElementById("support-success") as HTMLDivElement;
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("support-btn") as HTMLButtonElement;
+      btn.disabled = true;
+      btn.textContent = "Sending…";
+
+      try {
+        const body = new URLSearchParams(new FormData(form) as any).toString();
+        const res = await fetch("/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body,
+        });
+
+        if (res.ok) {
+          form.hidden = true;
+          successEl.hidden = false;
+        } else {
+          btn.disabled = false;
+          btn.textContent = "Send Message";
+          alert("Something went wrong. Please try again.");
+        }
+      } catch {
+        btn.disabled = false;
+        btn.textContent = "Send Message";
+        alert("Network error. Please check your connection and try again.");
+      }
+    });
+  </script>
+
+  <style>
+    .split-brand--support::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        linear-gradient(180deg, rgba(6, 9, 8, 0.65) 0%, rgba(6, 9, 8, 0.5) 40%, rgba(6, 9, 8, 0.8) 100%),
+        url("/images/spruce-corridor.jpg") center 40% / cover;
+    }
+
+    .brand-inner {
+      max-width: 24rem;
+    }
+
+    .brand-logo {
+      margin-bottom: 2rem;
+      filter: invert(1) brightness(1.05) sepia(0.12) saturate(0.5);
+      opacity: 0.85;
+    }
+
+    .brand-label {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-mist-400);
+    }
+
+    .brand-title {
+      margin-top: 0.5rem;
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 7vw, 4.5rem);
+      font-weight: 700;
+      color: var(--color-mist-50);
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+    }
+
+    .brand-body {
+      margin-top: 1.25rem;
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--color-mist-200);
+      max-width: 30ch;
+    }
+
+    .form-inner {
+      max-width: 28rem;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 700;
+      color: var(--color-night-900);
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+    }
+
+    .form-subtitle {
+      font-size: 1rem;
+      line-height: 1.65;
+      color: var(--color-ink-muted);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .form-field textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.85rem 0;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid var(--color-night-900);
+      color: var(--color-night-900);
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 120ms ease;
+      resize: vertical;
+    }
+
+    .form-field textarea:focus {
+      border-bottom-color: var(--color-ember-400);
+    }
+
+    .form-field textarea::placeholder {
+      color: var(--color-mist-400);
+    }
+
+    .success-banner {
+      padding: 1.25rem 1.5rem;
+      background: var(--color-fern-500);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      border-radius: 6px;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+  </style>
+</BaseLayout>
