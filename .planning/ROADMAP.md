@@ -201,22 +201,23 @@ Plans:
 ---
 
 ### Phase 10: Design Polish and Companion Links
-**Goal**: The submission form and all new pages match the site's established visual language, and companion sites link to this site as the single submission and results destination
+**Goal**: Full site redesign with bold, graphic, poster-like visual language on light backgrounds — applied to all pages (landing, submit, confirm, error, leaderboard) with sticky navigation and Submit Results CTA
 **Depends on**: Phase 9
-**Requirements**: DSGN-01, DSGN-02
+**Requirements**: DSGN-01, DSGN-02 (companion sites DEFERRED — separate repos)
 **Success Criteria** (what must be TRUE):
-  1. The submission form, confirm page, and all error states use Cormorant Garamond and Sora, match the existing color palette, and look consistent with the landing page — no default browser form styling is visible
-  2. The mkUltraGravel companion site links to this site for submission and results — its own Strava integration is removed or redirected
-  3. The hiawathasRevenge companion site links to this site for submission and results — its own Strava integration is removed or redirected
-  4. The submission entry point is clearly reachable from the Iron & Pine Omnium landing page without requiring a rider to know the URL
-**Plans**: TBD
+  1. The submission form, confirm page, and all error states use Spectral, Karla, and JetBrains Mono, match the existing color palette on light backgrounds, and look consistent with the landing page — no default browser form styling is visible
+  2. The submission entry point is clearly reachable from the Iron & Pine Omnium landing page without requiring a rider to know the URL
+  3. A sticky navigation bar with logo, page links, and Submit Results CTA appears on every page
+  4. A dedicated /leaderboard route renders the full leaderboard with all Phase 9 enhancements
+**Plans**: 6 plans
 
 Plans:
-- [ ] 10-01: Apply Tailwind classes and existing design tokens to `submit.astro` and `submit-confirm.astro`
-- [ ] 10-02: Polish error state pages (auth error, validation error, submission error) to match site visual language
-- [ ] 10-03: Update mkUltraGravel companion site to remove Strava integration and link to Iron & Pine Omnium submission page
-- [ ] 10-04: Update hiawathasRevenge companion site to remove Strava integration and link to Iron & Pine Omnium submission page
-- [ ] 10-05: Add prominent submission CTA to Iron & Pine Omnium landing page with correct link
+- [ ] 10-01-PLAN.md — Foundation: rewrite global.css for light-base theme, create Nav.astro, update BaseLayout.astro, clean astro.config.mjs
+- [ ] 10-02-PLAN.md — Landing page redesign: index.astro light theme + PodiumPreview component + /leaderboard page
+- [ ] 10-03-PLAN.md — Submit page split-layout redesign with borderless-bottom form inputs
+- [ ] 10-04-PLAN.md — Confirm page split-layout redesign with light-mode score preview
+- [ ] 10-05-PLAN.md — Error page redesign with light-mode styling and contextual auth error CTAs
+- [ ] 10-06-PLAN.md — Visual verification checkpoint: all pages at desktop and 375px mobile
 
 ---
 
@@ -236,8 +237,8 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10
 | 7. Data Persistence | 3/3 | Complete | 2026-04-07 |
 | 8. Real Data Leaderboard | 3/3 | Complete | 2026-04-07 |
 | 9. Leaderboard Enhancements | 3/3 | Complete | 2026-04-08 |
-| 10. Design Polish and Companion Links | 0/5 | Not started | - |
+| 10. Design Polish and Companion Links | 0/6 | Not started | - |
 
 ---
 *Roadmap created: 2026-04-02*
-*Last updated: 2026-04-08 after Phase 9 execution complete (5/5 must-haves verified)*
+*Last updated: 2026-04-08 after Phase 10 planning complete (6 plans in 3 waves)*
