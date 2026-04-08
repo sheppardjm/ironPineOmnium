@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-02)
 ## Current Position
 
 Phase: 10 of 10 (Design Polish and Companion Links) — In progress
-Plan: 1 of 6 in phase 10
+Plan: 5 of 6 in phase 10
 Status: In progress
-Last activity: 2026-04-08 — Completed 10-01 (foundation light theme, Nav component, JetBrains Mono)
+Last activity: 2026-04-08 — Completed 10-05 (error page redesign, light-mode)
 
-Progress: [█████████░] 92%
+Progress: [█████████░] 93%
 
 ## Performance Metrics
 
@@ -128,6 +128,9 @@ Recent decisions affecting current work:
 - 10-01: primary-button inverted to dark bg (--color-night-900) on light page; hero/section-dark get override rules
 - 10-01: Nav uses position:sticky (not fixed) to avoid layout flow disruption; rendered outside .page-shell
 - 10-01: astro.config.mjs fonts block removed (Cormorant Garamond + Sora were inert — no Font component used)
+- 10-05: No scoped .primary-button on error page — global 10-01 style handles dark-on-light correctly
+- 10-05: Eyebrow renamed error-eyebrow with ember-500 color to signal error context (fern-500 was neutral)
+- 10-05: min-height: 80vh on error-shell (not 100vh) to center card in visible viewport below sticky nav
 
 ### Pending Todos
 
@@ -143,6 +146,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-08T14:57:50Z
-Stopped at: Completed 10-01-PLAN.md (foundation light theme, Nav, JetBrains Mono)
+Last session: 2026-04-08T15:01:45Z
+Stopped at: Completed 10-05-PLAN.md (error page light-mode redesign)
 Resume file: None
