@@ -39,7 +39,7 @@ See `.planning/milestones/v1.0-ROADMAP.md` for full phase details.
 2. `@astrojs/sitemap` is installed and integrated; `/sitemap-index.xml` is present in the build output with `/submit-confirm` excluded
 3. `public/robots.txt` exists with a `Sitemap:` directive pointing to the absolute sitemap URL and appropriate `Allow: /` crawl directives
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
 - [ ] 13-01: Set `site` URL in astro.config.mjs, install @astrojs/sitemap with submit-confirm filter, and create robots.txt
@@ -166,7 +166,7 @@ Plans:
 | 10. Design Polish and Companion Links | v1.0 | 6/6 | Complete | 2026-04-08 |
 | 11. Bug Fix and Dead Code Cleanup | v1.0 | 1/1 | Complete | 2026-04-08 |
 | 12. Strava Athlete Limit Review | v1.0 | 1/1 | Complete | 2026-04-08 |
-| 13. Config and Prerequisites | v1.1 | 0/TBD | Not started | - |
+| 13. Config and Prerequisites | v1.1 | 0/1 | Not started | - |
 | 14. Asset Creation | v1.1 | 0/TBD | Not started | - |
 | 15. BaseLayout Extension and Page Metadata | v1.1 | 0/TBD | Not started | - |
 | 16. Structured Data | v1.1 | 0/TBD | Not started | - |
