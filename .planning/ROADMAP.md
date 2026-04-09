@@ -59,11 +59,11 @@ Plans:
 2. `public/favicon.ico` (32x32) and `public/apple-touch-icon.png` (180x180) exist in `public/`
 3. `public/site.webmanifest` exists with correct event name, theme color, and icon references pointing to the generated favicon set
 
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 14-01: Create OG image (1200x630px branded event image)
-- [ ] 14-02: Generate favicon set (favicon.ico, apple-touch-icon.png) and author site.webmanifest
+- [ ] 14-01-PLAN.md — Design and create branded OG image (1200x630px) with visual approval checkpoint
+- [ ] 14-02-PLAN.md — Generate favicon set from logo SVG and author site.webmanifest
 
 ---
 
@@ -167,7 +167,7 @@ Plans:
 | 11. Bug Fix and Dead Code Cleanup | v1.0 | 1/1 | Complete | 2026-04-08 |
 | 12. Strava Athlete Limit Review | v1.0 | 1/1 | Complete | 2026-04-08 |
 | 13. Config and Prerequisites | v1.1 | 1/1 | Complete | 2026-04-09 |
-| 14. Asset Creation | v1.1 | 0/TBD | Not started | - |
+| 14. Asset Creation | v1.1 | 0/2 | Not started | - |
 | 15. BaseLayout Extension and Page Metadata | v1.1 | 0/TBD | Not started | - |
 | 16. Structured Data | v1.1 | 0/TBD | Not started | - |
 | 17. QA and Validation | v1.1 | 0/TBD | Not started | - |
