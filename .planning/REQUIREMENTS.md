@@ -53,6 +53,25 @@ Ensure all shared links and search results display the event logo, proper descri
 
 ## Traceability
 
-| Requirement | Phase | Plan |
-|-------------|-------|------|
-| *(filled by roadmapper)* | | |
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| SEO-03 | Phase 13 — Config and Prerequisites | Pending |
+| SEO-04 | Phase 13 — Config and Prerequisites | Pending |
+| SEO-05 | Phase 13 — Config and Prerequisites | Pending |
+| SOCIAL-03 | Phase 14 — Asset Creation | Pending |
+| IDENT-01 | Phase 14 — Asset Creation | Pending |
+| IDENT-02 | Phase 14 — Asset Creation | Pending |
+| IDENT-03 | Phase 14 — Asset Creation | Pending |
+| SOCIAL-01 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |
+| SOCIAL-02 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |
+| SEO-01 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |
+| SEO-02 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |
+| SEO-06 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |
+| SCHEMA-01 | Phase 16 — Structured Data | Pending |
+| QA-01 | Phase 17 — QA and Validation | Pending |
+| QA-02 | Phase 17 — QA and Validation | Pending |
+| QA-03 | Phase 17 — QA and Validation | Pending |
+| QA-04 | Phase 17 — QA and Validation | Pending |
+| DIR-01 | Phase 18 — Directory Submissions | Pending |
+| DIR-02 | Phase 18 — Directory Submissions | Pending |
+| DIR-03 | Phase 18 — Directory Submissions | Pending |
