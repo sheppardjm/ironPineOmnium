@@ -1,7 +1,7 @@
 # Architecture Research
 
 **Domain:** Strava-integrated gravel cycling event leaderboard (Astro static → hybrid SSR)
-**Researched:** 2026-04-02
+**Researched:** 2026-04-02 (OAuth/persistence) · 2026-04-09 (SEO & social sharing addendum)
 **Confidence:** HIGH — based on direct inspection of existing ironPineOmnium codebase and the
 complete, production-deployed mkUltraGravel integration (OAuth, callback, submit-result,
 webhook, GitHub-as-data-store pattern). No speculation required; the sibling repo is the
@@ -9,7 +9,300 @@ reference implementation.
 
 ---
 
-## Standard Architecture
+## SEO & Social Sharing Architecture (v1.1 addendum)
+
+This section documents how meta tags, structured data, favicons, and a sitemap integrate
+into the existing Astro 6 layout architecture. The core system architecture (OAuth, data
+persistence, Netlify Functions) is unchanged — SEO is a pure static-page concern.
+
+---
+
+### Current State (Baseline)
+
+Inspecting the existing codebase:
+
+**`src/layouts/BaseLayout.astro` already has:**
+- `Props` interface with `title?: string` and `description?: string` (both optional, both have defaults)
+- `<title>{title}</title>` and `<meta name="description" content={description} />`
+- `<link rel="icon" type="image/svg+xml" href="/logo.svg" />` (SVG favicon only)
+- `<slot name="head" />` — a named slot for page-specific head injection
+
+**All pages already pass title and description:**
+- `index.astro`: `title="Iron & Pine Omnium | Two Days of Gravel in the Hiawatha National Forest"`, description present
+- `submit.astro`: `title="Submit Activity | Iron & Pine Omnium"`, description present
+- `submit-confirm.astro`: `title="Confirm Submission | Iron & Pine Omnium"`, description present
+- `support.astro`: `title="Support | Iron & Pine Omnium"`, description present
+- `leaderboard.astro`: `title="Leaderboard | Iron & Pine Omnium"`, **description NOT passed** (uses layout default)
+
+**Missing entirely:**
+- Open Graph tags (`og:title`, `og:description`, `og:image`, `og:url`, `og:type`, `og:site_name`)
+- Twitter/X Card tags (`twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`)
+- Canonical URL tag (`<link rel="canonical" href="..." />`)
+- Web app manifest (`/site.webmanifest`)
+- Multiple favicon sizes (only SVG exists; no PNG fallbacks, no apple-touch-icon)
+- Structured data (JSON-LD)
+- Sitemap (`sitemap.xml`)
+- `<meta name="robots" />` for noindex on utility pages
+
+---
+
+### Integration Architecture
+
+#### Where Meta Tags Live
+
+**Decision: Extend BaseLayout, not a separate SEO component.**
+
+The existing `BaseLayout.astro` Props interface already handles title and description. The
+correct pattern is to extend this interface with OG/Twitter props, keeping all head content
+generation in one place. A separate `<SEO>` component (like `astro-seo` library) adds an
+indirection layer with no benefit at this site's scale.
+
+```
+src/layouts/BaseLayout.astro
+  Props interface (extended):
+    title?: string           — already exists
+    description?: string     — already exists
+    ogImage?: string         — new: URL to OG image (absolute), defaults to site-wide branded image
+    canonical?: string       — new: absolute URL for this page, defaults to Astro.url.href
+    noindex?: boolean        — new: true for submit-confirm (transient, no indexing value)
+    type?: 'website'|'article' — new: OG type, defaults to 'website'
+```
+
+The `<slot name="head" />` already exists in BaseLayout for edge cases where a page needs
+truly custom head content. For this milestone, structured data (JSON-LD) uses this slot from
+`index.astro` only. All other meta tag additions belong in BaseLayout directly.
+
+#### Prop Flow: BaseLayout to Pages
+
+No pages need architectural changes — they already pass `title` and `description`. The new
+props (`ogImage`, `canonical`, `noindex`) have safe defaults, so pages that don't pass them
+get sensible behavior:
+
+```
+Page             → BaseLayout props                    → Head output
+─────────────────────────────────────────────────────────────────────
+index.astro        title, description                  og:image = /og-image.png
+                                                       canonical = https://ironpineomnium.com/
+                                                       JSON-LD via <slot name="head" />
+
+leaderboard.astro  title (description missing — fix!)  og:image = /og-image.png
+                                                       canonical = .../leaderboard/
+
+submit.astro       title, description                  og:image = /og-image.png
+                                                       noindex not needed (indexable)
+
+submit-confirm     title, description                  noindex=true (no stable URL)
+  .astro
+
+support.astro      title, description                  og:image = /og-image.png
+```
+
+Canonical URL can be derived from `Astro.url` inside BaseLayout without any prop, since
+`Astro.url.href` returns the full absolute URL during static generation. Pass it from the
+layout itself unless a page needs to override.
+
+**Note:** `Astro.url` is available in `.astro` files during build in static mode — it uses
+the `site` config value in `astro.config.mjs`. This requires adding `site:
+'https://ironpineomnium.com'` to the config. Without this, `Astro.url.href` will be relative.
+
+#### OG Image Strategy
+
+Single branded image used for all pages. This is correct for a small event site — per-page
+OG images require either a build-time image generation step (complex) or a server-rendered
+image endpoint (unnecessary overhead).
+
+```
+public/og-image.png      — 1200×630px, branded event image
+                           referenced as absolute URL: https://ironpineomnium.com/og-image.png
+```
+
+The image must be an absolute URL in OG tags, not a relative path. BaseLayout derives the
+absolute URL from the `site` config + the filename.
+
+#### Structured Data (JSON-LD)
+
+JSON-LD for the event lives only on `index.astro` via the `<slot name="head">` mechanism.
+This is the correct placement: the homepage is the canonical landing page for the event,
+and structured data only adds value where search engines will crawl and a rich result
+(event card) can appear.
+
+```astro
+<!-- In index.astro, inside <BaseLayout> -->
+<script type="application/ld+json" slot="head">
+{
+  "@context": "https://schema.org",
+  "@type": "SportsEvent",
+  "name": "Iron & Pine Omnium",
+  "startDate": "2026-06-06",
+  "endDate": "2026-06-07",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "location": {
+    "@type": "Place",
+    "name": "Hiawatha National Forest",
+    "address": {
+      "@type": "PostalAddress",
+      "addressRegion": "MI",
+      "addressCountry": "US"
+    }
+  },
+  "url": "https://ironpineomnium.com",
+  "description": "A two-day gravel omnium in Michigan's Upper Peninsula combining fondo moving time with grinduro timed sectors and KOM points.",
+  "sport": "Cycling"
+}
+</script>
+```
+
+Do not add JSON-LD to leaderboard, submit, or support pages. Those pages are functional
+tools, not event discovery pages, and structured data there provides no search benefit.
+
+#### Favicons and Web App Manifest
+
+Current state: only `<link rel="icon" type="image/svg+xml" href="/logo.svg" />` in BaseLayout.
+
+The SVG favicon works in modern browsers but fails for iOS home screen icons and any
+browser that doesn't support SVG favicons (older Safari, some Android webviews). The manifest
+enables "Add to Home Screen" behavior.
+
+File additions to `public/`:
+```
+public/
+  favicon.ico          — 32×32 ICO (fallback for very old browsers / email clients)
+  favicon-96x96.png    — PNG for Android Chrome
+  apple-touch-icon.png — 180×180 PNG for iOS Safari "Add to Home Screen"
+  site.webmanifest     — JSON manifest linking the above
+```
+
+BaseLayout head additions:
+```html
+<link rel="icon" type="image/svg+xml" href="/logo.svg" />          <!-- existing -->
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+```
+
+`site.webmanifest` content:
+```json
+{
+  "name": "Iron & Pine Omnium",
+  "short_name": "I&P Omnium",
+  "icons": [
+    { "src": "/favicon-96x96.png", "sizes": "96x96", "type": "image/png" }
+  ],
+  "start_url": "/",
+  "display": "browser",
+  "theme_color": "#131c1a",
+  "background_color": "#f5f0e8"
+}
+```
+
+Colors from the existing design token context: `--color-night-900` (dark) and
+`--color-surface` (light background). These match the site's editorial palette.
+
+#### Sitemap
+
+Use `@astrojs/sitemap` — the official Astro integration. This is the only correct approach
+for static Astro sites. Manual `sitemap.xml` authoring is error-prone and not maintained
+automatically.
+
+Required config change in `astro.config.mjs`:
+```js
+import sitemap from '@astrojs/sitemap';
+
+export default defineConfig({
+  site: 'https://ironpineomnium.com',   // required for sitemap + canonical URLs
+  output: 'static',
+  integrations: [sitemap({
+    filter: (page) => !page.includes('/submit-confirm'),
+  })],
+  vite: { plugins: [tailwindcss()] },
+});
+```
+
+Filter out `/submit-confirm` — it uses a query param payload (`?payload=...`), has no stable
+URL, and noindex will already prevent indexing; excluding it from the sitemap reinforces this.
+
+All other routes (`/`, `/leaderboard`, `/submit`, `/support`) should be in the sitemap.
+
+Note: `leaderboard/` is a directory route in Astro — confirm the generated URL is
+`/leaderboard/` not `/leaderboard` to match what the sitemap generates and what canonicals
+will reference.
+
+---
+
+### Component Modification Summary
+
+| Component | Change Type | What Changes |
+|-----------|-------------|--------------|
+| `src/layouts/BaseLayout.astro` | **Modify** | Add `ogImage`, `canonical`, `noindex`, `type` props; add OG/Twitter meta tags; add additional favicon links; derive canonical from `Astro.url` |
+| `src/pages/leaderboard.astro` | **Modify** | Add missing `description` prop to BaseLayout call |
+| `src/pages/index.astro` | **Modify** | Add JSON-LD script block in `<slot name="head">` |
+| `src/pages/submit-confirm.astro` | **Modify** | Add `noindex={true}` to BaseLayout call |
+| `astro.config.mjs` | **Modify** | Add `site` URL, add sitemap integration |
+| `public/og-image.png` | **New** | 1200×630 branded OG image |
+| `public/apple-touch-icon.png` | **New** | 180×180 PNG for iOS |
+| `public/favicon-96x96.png` | **New** | 96×96 PNG for Android Chrome |
+| `public/favicon.ico` | **New** | ICO fallback |
+| `public/site.webmanifest` | **New** | Web app manifest |
+
+No new Astro components are required. No new pages are required. No SSR changes needed.
+The entire milestone is BaseLayout modifications plus static assets.
+
+---
+
+### Build Order for Implementation
+
+Dependencies create a natural sequence:
+
+1. **Add `site` URL to `astro.config.mjs`** — everything else depends on having an absolute
+   base URL. `Astro.url.href` is relative without it. Do this first.
+
+2. **Create the OG image (`public/og-image.png`)** — must exist before the meta tags that
+   reference it are testable. Can be created with any image editor or design tool. No code
+   dependency, but blocks social preview testing.
+
+3. **Extend `BaseLayout.astro`** — add OG/Twitter meta tags, canonical link, additional
+   favicon links, and manifest link. All pages benefit from this change immediately.
+
+4. **Fix `leaderboard.astro` description** — small fix, do it alongside the BaseLayout
+   change. One prop, one line.
+
+5. **Create favicon assets** — `apple-touch-icon.png`, `favicon-96x96.png`, `favicon.ico`,
+   `site.webmanifest`. These are static file additions to `public/`. Order doesn't matter
+   among them; all can be done in one pass.
+
+6. **Add sitemap integration** — install `@astrojs/sitemap`, update `astro.config.mjs`.
+   Depends on step 1 (site URL). Verify `pnpm build` produces `sitemap-index.xml` and
+   `sitemap-0.xml` in `dist/`.
+
+7. **Add JSON-LD to `index.astro`** — add the `<script type="application/ld+json"
+   slot="head">` block. Depends on confirming the structured data content (event name,
+   dates, location) is final.
+
+8. **Add `noindex` to `submit-confirm.astro`** — one prop change. Last because it's
+   lowest priority; the page is not indexed today even without noindex.
+
+---
+
+### Testing Approach Per Phase
+
+| Phase | How to Verify |
+|-------|---------------|
+| BaseLayout OG tags | Open Graph debugger (opengraph.xyz or meta.tag.io) against deployed preview URL |
+| Twitter card | cards-dev.twitter.com/validator against deployed URL |
+| Canonical tags | View source on each page — confirm absolute URL in `<link rel="canonical">` |
+| Sitemap | `https://ironpineomnium.com/sitemap-index.xml` returns valid XML after deploy |
+| Favicons | iOS simulator "Add to Home Screen" for apple-touch-icon; Android Chrome for manifest |
+| JSON-LD | Google Rich Results Test against homepage URL |
+| Noindex | View source on submit-confirm — confirm `<meta name="robots" content="noindex">` present |
+
+---
+
+## Standard Architecture (v1.0 — OAuth, Persistence, UI)
+
+The sections below document the Strava OAuth, GitHub-as-data-store, and Netlify Functions
+architecture from the v1.0 milestone. These are unchanged for v1.1.
+
+---
 
 ### System Overview
 
@@ -100,34 +393,35 @@ ironPineOmnium/
 │   │   └── results/
 │   │       └── athletes/
 │   │           └── {athleteId}.json   # One file per rider; keyed by Strava athlete ID
-│   └── images/
+│   ├── images/
+│   ├── og-image.png              # v1.1 — 1200×630 branded OG image
+│   ├── apple-touch-icon.png      # v1.1 — 180×180 for iOS
+│   ├── favicon-96x96.png         # v1.1 — 96×96 PNG
+│   ├── favicon.ico               # v1.1 — ICO fallback
+│   ├── site.webmanifest          # v1.1 — web app manifest
+│   └── logo.svg
 ├── src/
 │   ├── components/
 │   │   ├── Leaderboard.astro     # Tabbed per-category leaderboard
 │   │   └── LogoMark.astro
 │   ├── layouts/
-│   │   └── BaseLayout.astro
+│   │   └── BaseLayout.astro      # Extended in v1.1 with OG/Twitter/canonical/favicon
 │   ├── lib/
 │   │   ├── types.ts              # RiderResult, ScoredRider, CategoryLeaderboard
 │   │   ├── scoring.ts            # Pure scoring engine — no deps
 │   │   └── sample-data.ts        # Removed or guarded once real data flows
 │   ├── pages/
-│   │   ├── index.astro           # Landing + embedded leaderboard
+│   │   ├── index.astro           # Landing + embedded leaderboard + JSON-LD (v1.1)
+│   │   ├── leaderboard.astro     # + description prop added (v1.1)
 │   │   ├── submit.astro          # Activity URL form
-│   │   └── submit-confirm.astro  # Confirmation + category + consent
+│   │   ├── submit-confirm.astro  # Confirmation + category + consent + noindex (v1.1)
+│   │   └── support.astro
 │   └── styles/
 │       └── global.css
+├── astro.config.mjs              # v1.1: add site URL + sitemap integration
 ├── netlify.toml                  # Build config + /api/* redirect to /.netlify/functions/*
-├── astro.config.mjs              # Stays output: "static" — SSR not needed
 └── package.json
 ```
-
-### Structure Rationale
-
-- **`netlify/functions/`**: All server-side logic lives here as Netlify Functions v1. This keeps Astro as a pure static builder — no SSR adapter needed, no `output: "server"` change.
-- **`public/data/results/athletes/`**: GitHub-as-database pattern. One JSON file per Strava athlete ID. Idempotent — resubmission overwrites cleanly. Read at Astro build time by `results.astro` / `Leaderboard.astro`.
-- **`src/lib/scoring.ts`**: Pure functions, zero side effects. Consumed at build time only. The same engine works whether fed sample data or real athlete files.
-- **`src/pages/submit-confirm.astro`**: Stays static — the `?data=` payload is decoded client-side in a `<script>` tag, exactly as mkUltraGravel does it. No server-side query param access needed.
 
 ---
 
@@ -356,6 +650,12 @@ The athlete JSON on GitHub maps to `RiderResult` at build time in `results.astro
 **Why it's wrong:** Requires a database for what is already a stateless, short-lived operation. The 10-minute cookie window is sufficient.
 **Do this instead:** Encode all state into the OAuth `state` parameter as base64url JSON. The cookie stores only the nonce for CSRF verification. Nothing server-side needed.
 
+### Anti-Pattern 6: Separate SEO Component (v1.1 specific)
+
+**What people do:** Install `astro-seo` or create a separate `<SEO>` component that wraps all meta tags.
+**Why it's wrong at this scale:** The existing `BaseLayout.astro` already handles meta tags with a typed Props interface and `<slot name="head">` for overrides. A separate component adds an indirection layer (extra import, extra file, extra prop-passing chain) with no benefit for a 5-page site.
+**Do this instead:** Extend BaseLayout's Props interface and add OG/Twitter tags directly to its `<head>`. Use the existing `<slot name="head">` for the one case (JSON-LD on index.astro) that needs page-specific head injection.
+
 ---
 
 ## Integration Points
@@ -384,7 +684,7 @@ The athlete JSON on GitHub maps to `RiderResult` at build time in `results.astro
 
 ---
 
-## Build Order
+## Build Order (v1.0 — OAuth + Persistence)
 
 The component dependencies create a natural build sequence:
 
@@ -412,14 +712,18 @@ The component dependencies create a natural build sequence:
 
 ## Sources
 
-- Direct inspection of `/Users/Sheppardjm/Repos/ironPineOmnium/` (existing static site)
+- Direct inspection of `/Users/Sheppardjm/Repos/ironPineOmnium/` (existing static site, all pages and layouts)
 - Direct inspection of `/Users/Sheppardjm/Repos/mkUltraGravel/netlify/functions/` (production OAuth + data persistence implementation)
 - Direct inspection of `/Users/Sheppardjm/Repos/mkUltraGravel/src/pages/submit.astro`, `submit-confirm.astro`, `results.astro` (UI patterns)
 - `netlify.toml` from mkUltraGravel (redirect rules, build config)
 - Netlify Functions v1/v2 env var bug documented in mkUltraGravel function headers (confirmed 2026-03-28)
 - Strava API authentication docs referenced in function source code comments
+- Astro official docs — Layouts (BaseLayout props pattern): https://docs.astro.build/en/basics/layouts/ — HIGH confidence
+- Astro official docs — Sitemap integration: https://docs.astro.build/en/guides/integrations-guide/sitemap/ — HIGH confidence
+- Schema.org SportsEvent type: https://schema.org/SportsEvent — HIGH confidence
+- `@astrojs/sitemap` npm package: https://www.npmjs.com/package/@astrojs/sitemap — HIGH confidence
 
 ---
 
 *Architecture research for: Strava-integrated event leaderboard (ironPineOmnium)*
-*Researched: 2026-04-02*
+*Researched: 2026-04-02 (v1.0) · 2026-04-09 (v1.1 SEO addendum)*

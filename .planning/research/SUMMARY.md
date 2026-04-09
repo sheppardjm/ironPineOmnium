@@ -1,155 +1,201 @@
-# Project Research Summary
+# Research Summary: Iron & Pine Omnium — SEO & Social Sharing (v1.1)
 
-**Project:** Iron & Pine Omnium — Strava-integrated gravel cycling event leaderboard
-**Domain:** Gravel cycling event results platform with OAuth-gated submission pipeline
-**Researched:** 2026-04-02
+**Project:** Iron & Pine Omnium
+**Domain:** Static Astro 6 event site — gravel cycling omnium
+**Researched:** 2026-04-09
 **Confidence:** HIGH
 
-## Executive Summary
+---
 
-Iron & Pine Omnium is an existing Astro 6.1.1 static site that needs three new capabilities added to replace its sample-data leaderboard with real rider submissions: Strava OAuth authentication, activity data fetching, and persistent storage of per-rider results. The core scoring engine is already built and tested. A complete, production-deployed reference implementation of all three required capabilities exists in the sibling repo `mkUltraGravel` — this is not a greenfield integration; it is a targeted port and adaptation of proven code. The architecture keeps Astro as a pure static builder, routing `/api/*` to Netlify Functions v1 via `netlify.toml`, and persists rider data as JSON files committed to GitHub (the GitHub-as-database pattern already proven in the sibling repo).
+## Key Consensus
 
-The recommended approach is a direct, disciplined port from `mkUltraGravel`: four Netlify Functions (`strava-auth`, `strava-callback`, `submit-result`, `strava-webhook`), GitHub Contents API for persistence, and a Netlify build hook to trigger rebuilds after each submission. Astro stays in static output mode — no SSR adapter needed. This approach is the lowest-risk path because the implementation is already validated in production at the same event-scale (50-100 riders). The only architectural decision to make is whether to use GitHub-as-database (default, proven) or Netlify Blobs (simpler, real-time, requires making the leaderboard page server-rendered) — the recommendation is to use GitHub-as-database unless event organizers specifically require a sub-2-minute leaderboard refresh.
+All four research dimensions (stack, features, architecture, pitfalls) are tightly aligned and mutually reinforcing. There are no conflicts between researchers. Key points of consensus:
 
-The two critical risks that can block the entire project are (1) Strava's November 2024 API Terms, which restrict displaying athlete data to third parties and require the leaderboard to show computed scores rather than raw Strava fields, and (2) Strava's athlete limit, which caps new apps at one connected athlete until Strava manually approves an increase — a process that can take weeks. Both risks must be addressed before any code is written, not as afterthoughts. The Strava app must be submitted for athlete limit review immediately, targeting no later than April 30 to leave buffer before the June 6 event date.
+1. **Single OG image, not per-page or dynamic.** STACK, FEATURES, and ARCHITECTURE all independently concluded a 1200×630px PNG in `public/` is the correct approach. PITFALLS confirmed Satori+Sharp has documented Netlify compatibility friction and is not worth pursuing for a one-image site.
+2. **Extend `BaseLayout.astro` directly — no SEO library.** All four files agree `astro-seo` adds no value for a 5-page site and has uncertain Astro 6 compatibility. The existing `<slot name="head">` and props interface is already the right architecture.
+3. **`site` URL in `astro.config.mjs` is the first prerequisite.** FEATURES notes it as a dependency gate; ARCHITECTURE identifies it as step 1 of the build order; PITFALLS calls it the single most dangerous omission (silent failures cascade across all canonical and OG URL construction).
+4. **Only one new npm package: `@astrojs/sitemap`.** Every other item is either a static file (`og-image.png`, `robots.txt`, favicon assets, `site.webmanifest`) or in-layout template markup (meta tags, JSON-LD).
+5. **JSON-LD `SportsEvent` on homepage only.** All researchers agree structured data belongs only on the index page where Google's rich result event card adds value.
 
 ---
 
-## Key Findings
+## Stack Additions
 
-### Recommended Stack
+The existing stack (Astro 6.1.x, Tailwind CSS 4, pnpm, Netlify static) is **unchanged**. This milestone is purely additive.
 
-The existing stack (Astro 6.1.1, pnpm, Netlify) requires only one dependency addition: Netlify Functions v1 JavaScript files dropped into `netlify/functions/`. No SSR adapter, no framework change, no new database service. Astro stays `output: 'static'`. The one version-critical constraint is that Netlify Functions must use v1 syntax (`exports.handler`) — a confirmed Netlify bug as of 2026-03-28 causes user-defined environment variables to return `undefined` intermittently in v2 (`export default`) functions, which would silently break OAuth and all GitHub API calls. This bug is documented in the sibling repo comments and independently confirmed in three Netlify Support Forum threads.
+**New package (one):**
+- `@astrojs/sitemap` v3.7.2 — official Astro integration; auto-crawls all static routes at build time; requires `site` URL in config. Install via `pnpm astro add sitemap`.
 
-If Netlify Blobs is chosen over GitHub-as-database, add `@netlify/blobs` (no version pin needed) and convert the leaderboard page to `prerender = false` with `@astrojs/netlify` adapter. This trades the simplicity of the proven pattern for real-time leaderboard updates. For an event where riders submit after finishing a multi-hour gravel ride and a 1-3 minute rebuild latency is acceptable, GitHub-as-database is the correct choice.
+**New static assets (no packages):**
+- `public/og-image.png` — 1200x630px, under 500KB, branded event image (design deliverable)
+- `public/favicon.ico` — 32x32 ICO fallback for legacy browsers/email clients
+- `public/apple-touch-icon.png` — 180x180 PNG for iOS Safari "Add to Home Screen"
+- `public/favicon-96x96.png` — 96x96 PNG for Android Chrome
+- `public/site.webmanifest` — web app manifest linking icon set
+- `public/robots.txt` — 5-line static file pointing to sitemap
 
-**Core technologies:**
-- **Astro 6.1.1 (static output):** Framework — already in use; no change needed
-- **Netlify Functions v1 (`exports.handler`):** Server-side logic — stable env var access; v2 has an active confirmed bug
-- **GitHub Contents API (native `fetch`):** Data persistence — zero new dependencies, proven in mkUltraGravel
-- **Strava API v3:** Activity data source — OAuth 2.0, scope `activity:read_all` required
-- **Netlify build hook:** Leaderboard update trigger — fire-and-forget after each submission write
-
-### Expected Features
-
-The leaderboard already exists with sample data and tabbed category display. The entire scope of this milestone is building the submission pipeline that feeds real data into it, plus enhancements to the display that real data enables.
-
-**Must have (table stakes):**
-- Strava OAuth login — the only acceptable auth pattern for a cycling-community product
-- Activity URL input with auto-parsed ID extraction — manual numeric ID entry is a friction blocker
-- Activity date validation with clear error messaging — rejects wrong-event submissions
-- Moving time extraction for Day 1 scoring — the `moving_time` Strava API field
-- Segment effort extraction for Day 2 scoring — requires `include_all_efforts=true`
-- Submission preview/confirmation step — rider reviews matched segments before committing
-- Submission success/error state feedback — silent POST is a UX failure
-- Real data replacing sample data in the leaderboard
-- Athlete name search (client-side filter) — 50-100 riders, trivial implementation
-- Per-component score columns (Day 1 moving time / Day 2 sectors / KOM) — makes the unusual scoring model legible
-- Mobile-readable leaderboard validation — 97% of race-day traffic is mobile
-
-**Should have (competitive differentiators):**
-- Submission preview with score calculation before confirm — builds trust in the scoring model
-- "Did you ride Day 2?" nudge for single-day submitters — increases data completeness
-- Inline scoring explanation anchored to the submission step
-- Shareable per-rider result card/URL — requires stable persistent rider records
-- Activity date validation error messaging refinement
-
-**Defer (v2+):**
-- Sector-by-segment breakdown in expanded leaderboard row — high complexity, needs Strava segment ID mapping, and only valuable after validating rider demand
-- Admin result editing UI — handle manually in v1
-- Multi-year results archive — only relevant after a second event
-
-### Architecture Approach
-
-The architecture is a static Astro site augmented by four Netlify Functions that handle all server-side concerns. Astro builds the public pages statically; functions handle OAuth, data persistence, and compliance. Rider data is stored as individual JSON files committed to the GitHub repo via the Contents API, which Astro reads at build time to render the leaderboard. This eliminates any database infrastructure at the cost of 1-3 minute leaderboard refresh latency — appropriate for the event scale. The sibling repo `mkUltraGravel` is the definitive reference for all four function implementations.
-
-**Major components:**
-1. **`netlify/functions/strava-auth.js`** — validates activity URL, generates CSRF nonce, sets HttpOnly cookie, redirects to Strava OAuth consent
-2. **`netlify/functions/strava-callback.js`** — verifies CSRF nonce, exchanges code for token, fetches activity with segment efforts, filters to event segment IDs, redirects to confirm page with base64url payload
-3. **`netlify/functions/submit-result.js`** — validates consent and category, decodes payload, writes `{athleteId}.json` to GitHub, triggers Netlify rebuild
-4. **`netlify/functions/strava-webhook.js`** — handles Strava deauth events by deleting athlete data from GitHub and triggering rebuild (Strava ToS 5.4 compliance)
-5. **`public/data/results/athletes/{athleteId}.json`** — one JSON file per rider, the live data store
-6. **`src/lib/scoring.ts`** — pure scoring engine, already built, consumes real athlete files at build time replacing sample data
-7. **`src/pages/submit-confirm.astro`** — static page that decodes the base64url `?data=` payload client-side, presents confirmation UI
-
-### Critical Pitfalls
-
-1. **Strava November 2024 API Terms restrict public display of athlete data** — The API Agreement now prohibits showing one user's Strava data to other users. The leaderboard must display computed scores and rider-chosen names, not raw Strava API fields (activity titles, segment names from the API, start dates). Address this during architecture design before any UI work. The safe model: compute a score from Strava data, store and display only the score.
-
-2. **Strava athlete limit will block all riders on event day if not addressed immediately** — New apps are capped at 1 connected athlete. Manual review by Strava is required and can take weeks. Submit the app for review no later than April 30, 2026. Build a manual CSV fallback in case approval is delayed.
-
-3. **Netlify Functions v2 env var bug silently breaks OAuth and GitHub API calls** — Confirmed active bug as of 2026-03-28 causes `process.env` user-defined vars to return `undefined` in v2 functions. Use v1 syntax (`exports.handler`) for all functions. Do not use v2 (`export default`) regardless of what the current Netlify docs show as the default.
-
-4. **Wrong Strava scope causes segment efforts to silently return empty for private activities** — `activity:read` returns an empty `segment_efforts` array (not an error) for "Only Me" activities. Request `activity:read_all`. Test with a Strava account that has private activities before launch.
-
-5. **KOM scoring from `kom_rank` API field fails for free-tier riders** — `kom_rank` is null for non-subscribers. Determine KOM points by comparing submitted segment effort times across all riders internally — not by reading from the Strava API field.
-
-6. **Segment effort misidentification from name or proximity matching** — Pin every scoring segment to its exact Strava segment ID before writing any fetch logic. Filter `segment_efforts` by `effort.segment.id` only. This is a data prerequisite, not a code detail.
-
-7. **Strava athlete ID ownership not verified on submission** — Always verify `activity.athlete.id === authenticated_athlete_id` after fetching. A rider can paste any public activity URL; the system must reject URLs from other athletes.
+**Explicitly ruled out:**
+- `astro-seo` — Astro 6 compat unconfirmed; abstraction adds no value at this scale
+- `satori` + `sharp` — Sharp has documented Netlify friction; single static image makes dynamic generation unnecessary
+- `astro-favicons` — one-time offline generation via realfavicongenerator.net is simpler
+- `astro-robots-txt` — overkill for a 5-line file
 
 ---
 
-## Implications for Roadmap
+## Feature Categories
 
-Based on research, the natural build order is driven by three hard constraints: (1) OAuth is the gate for everything — nothing else works without it; (2) the Strava athlete limit approval must be initiated immediately and in parallel with development; (3) the Strava segment IDs for the course must be mapped before any data fetching logic is written.
+### Table Stakes (must ship — social sharing fails without these)
 
-### Phase 1: Legal, Compliance, and Prerequisites
-**Rationale:** Two blockers exist that are not code problems: Strava ToS compliance shapes the data model, and Strava athlete limit approval has a multi-week lead time. These must be resolved before building, not after. This phase has zero code output and is often skipped by developers — it is not optional here.
-**Delivers:** Approved data model (computed scores, not raw Strava fields on public leaderboard), Strava API app registered and submitted for athlete limit review, event Strava segment IDs identified and hardcoded, moving time policy documented in event rules.
-**Addresses:** Strava ToS pitfall, athlete limit pitfall, segment misidentification pitfall, moving time inconsistency pitfall.
-**Avoids:** Building the wrong data model for the leaderboard display, launching with a 1-athlete cap, and scoring the wrong segments.
+| Feature | Gap Today | Effort |
+|---------|-----------|--------|
+| Open Graph tags: `og:title`, `og:description`, `og:image`, `og:url`, `og:type`, `og:site_name` | Entirely missing | 30-60 min |
+| Twitter/X Card tags: `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`, `twitter:image:alt` | Entirely missing | Bundled with OG |
+| Canonical URL (`<link rel="canonical">`) | Entirely missing | 15 min |
+| OG image asset — 1200x630px PNG | Does not exist | Design: 2-4 hrs |
+| Favicon complete set — ICO, SVG (existing), apple-touch-icon | ICO and apple-touch-icon missing | 1-2 hrs |
+| `@astrojs/sitemap` integration | Missing; no `site` URL set | 30 min |
+| `robots.txt` | Missing | 10 min |
+| Per-page description for leaderboard (only page missing it) | `leaderboard.astro` missing description | 15 min |
+| `site` URL in `astro.config.mjs` | Not set | Trivial — 1 line |
 
-### Phase 2: Netlify Infrastructure and Environment Setup
-**Rationale:** All function work depends on `netlify.toml` routing `/api/*` to `/.netlify/functions/*` and all environment variables being in place. Setting these up first means function development and testing can proceed without configuration debugging.
-**Delivers:** `netlify.toml` with redirect rules, all 9 environment variables set in Netlify Dashboard (`STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_REDIRECT_URI`, `STRAVA_VERIFY_TOKEN`, `GITHUB_TOKEN`, `GITHUB_OWNER`, `GITHUB_REPO`, `NETLIFY_BUILD_HOOK`, plus Strava app registration verified), `netlify dev` working locally.
-**Uses:** Netlify Functions v1 (environment variable stability), `netlify-cli` for local development.
-**Implements:** Infrastructure prerequisite for all four functions.
+### Differentiators (high value, low effort — should ship)
 
-### Phase 3: Strava OAuth Flow
-**Rationale:** OAuth is the gating dependency for every submission feature. Build and test it end-to-end before touching activity fetching or data persistence. This phase maps 1:1 to the `strava-auth.js` and `strava-callback.js` functions in the sibling repo.
-**Delivers:** Working OAuth round-trip — rider clicks "Connect with Strava," approves on Strava's consent screen, is redirected to `/submit-confirm` with a valid base64url payload. CSRF protection via nonce cookie is in place. Activity fetch from Strava API (with `include_all_efforts=true`) is working.
-**Uses:** Netlify Functions v1, Strava OAuth 2.0 (`activity:read_all` scope), CSRF nonce cookie pattern, base64url state parameter.
-**Implements:** `strava-auth.js`, `strava-callback.js`, segment effort filtering by hardcoded segment IDs.
-**Avoids:** Wrong scope pitfall, CSRF vulnerability, activity ownership verification gap.
+| Feature | Value | Effort |
+|---------|-------|--------|
+| `SportsEvent` JSON-LD on homepage | Google rich results event card; gravel event discovery SEO | 1-2 hrs incl. validation |
+| `site.webmanifest` | "Add to Home Screen" for riders during event weekend | 30 min (once icons exist) |
+| `og:locale` | Signals region to Facebook/LinkedIn crawlers | Trivial — 1 line |
 
-### Phase 4: Submission Persistence and Data Pipeline
-**Rationale:** Once OAuth produces a validated payload, the submission and persistence layer can be built. This phase also includes the `submit-confirm.astro` page that bridges OAuth and submission, and the data-loading layer in `results.astro` that replaces sample data with real athlete JSON files.
-**Delivers:** Complete submission flow — rider reviews matched segments, selects category, consents, submits; athlete JSON is written to GitHub; Netlify rebuild is triggered; rider appears on leaderboard after rebuild. `strava-webhook.js` handles deauth compliance. Sample data is removed from the leaderboard.
-**Uses:** GitHub Contents API (GET-then-PUT pattern), Netlify build hook (fire-and-forget), `fs.readdirSync` in `results.astro` to read athlete files at build time.
-**Implements:** `submit-result.js`, `strava-webhook.js`, `submit-confirm.astro`, data-loading layer in `results.astro` / `Leaderboard.astro`, category normalization (`M/F/NB` → `men/women/non-binary`).
-**Avoids:** Activity ownership verification gap, token storage beyond request, Strava ToS display violation.
+### Anti-Features (do not build)
 
-### Phase 5: Leaderboard Enhancements and UX Polish
-**Rationale:** Once real data is flowing, the display can be enhanced. These features depend on having real submissions to validate against. Per-component score columns require the full `RiderResult` schema to be populated; athlete name search requires real names in the leaderboard.
-**Delivers:** Per-component score columns (Day 1 moving time / Day 2 sectors / KOM) visible in leaderboard, athlete name search (client-side filter), mobile-readable leaderboard validated, submission confirmation state (score preview + success/error messages), "real data live" signal replacing sample data notice.
-**Addresses:** Table-stakes features: mobile UX, search, score transparency.
-**Avoids:** Anti-feature scope creep (real-time WebSocket updates, admin editing UI, Strava Club integration).
+| Anti-Feature | Why Not |
+|--------------|---------|
+| Social sharing buttons (X, Facebook) | Meta shut down external Facebook buttons Feb 10, 2026; X share widgets harm Core Web Vitals; 99.8% of mobile users never tap them; OG tags make any shared link polished without buttons |
+| Dynamic per-rider OG share cards | Requires serverless image generation; no demand signal at 50-100 rider scale; revisit Year 2 |
+| Per-page OG images (5 unique images) | Marginal benefit at meaningful production cost; one branded image covers all pages |
+| Breadcrumb structured data | This is a 5-page flat site; breadcrumb schema is for deep hierarchies |
+| FAQ structured data | No FAQ content exists; injecting schema without visible content violates Google policies |
+| hreflang tags | English-only event for regional US audience; zero benefit |
+| AMP pages | Deprecated as ranking signal in 2021; Astro static output is already fast |
 
-### Phase 6: Post-Submission Differentiators (v1.x)
-**Rationale:** Build after the core submission flow has processed real submissions and edge cases are known. These features are lower priority but increase product quality and community engagement.
-**Delivers:** "Did you ride Day 2?" nudge for single-day submitters, inline scoring explanation within submission flow, shareable per-rider result card with OG meta tags.
-**Addresses:** Differentiator features from FEATURES.md.
+---
 
-### Phase Ordering Rationale
+## Architecture Approach
 
-- **Phase 1 before all code:** Strava ToS compliance shapes the data model; building the wrong model first means reworking the entire data pipeline. Athlete limit review starts here with maximum lead time.
-- **Phase 2 before functions:** `netlify.toml` routing and environment variable setup are infrastructure prerequisites. Debugging missing redirects mid-function development is a common time sink.
-- **Phase 3 (OAuth) before Phase 4 (persistence):** The OAuth callback payload defines the data schema that `submit-result.js` consumes. Finalizing the callback first means persistence can be built against a stable contract.
-- **Phase 4 gates Phases 5-6:** Enhancements to the leaderboard require real data. Per-component columns require the `RiderResult` schema to be fully populated from real submissions.
-- **Segment ID mapping is a prerequisite to Phase 3** — not a step within it. If segment IDs are not known, the callback function cannot filter segment efforts. This must be complete before Phase 3 begins.
+This milestone requires **no architectural changes** to the core system (Strava OAuth, Netlify Functions, GitHub data store, scoring engine). SEO is a pure static-page concern.
+
+**What changes:**
+
+| Component | Change |
+|-----------|--------|
+| `astro.config.mjs` | Add `site: 'https://ironpineomnium.com'`; add `sitemap()` integration with filter excluding `/submit-confirm` |
+| `src/layouts/BaseLayout.astro` | Extend Props with `ogImage?`, `noindex?`, `type?`; add OG/Twitter meta tags; add canonical link; add favicon/manifest link tags |
+| `src/pages/index.astro` | Add SportsEvent JSON-LD via `<slot name="head">` |
+| `src/pages/leaderboard.astro` | Add missing `description` prop (one line) |
+| `src/pages/submit-confirm.astro` | Add `noindex={true}` prop |
+
+**Key architecture decision:** Centralize all SEO tags in `BaseLayout.astro` props. Do not split between layout and head slot. Use head slot only for additive content (JSON-LD on homepage). All meta tags go through props to prevent duplicates.
+
+**Canonical URL pattern:**
+```typescript
+const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
+// Use this same value for both <link rel="canonical"> AND og:url
+```
+
+**Build order imposed by dependencies:**
+1. Set `site` URL — everything depends on this
+2. Create OG image — blocks social preview testing
+3. Extend BaseLayout — all pages benefit immediately
+4. Fix leaderboard description — one line alongside step 3
+5. Create favicon assets + manifest
+6. Add sitemap integration
+7. Add JSON-LD to index.astro
+8. Add noindex to submit-confirm.astro
+
+---
+
+## Top Pitfalls
+
+**Critical (silent failures, hard to detect without prior knowledge):**
+
+1. **Missing `site` in `astro.config.mjs`** — `Astro.site` is `undefined`; canonical and `og:url` silently produce broken strings. Do this first, before writing any meta tag code. This project currently has no `site` property set.
+
+2. **Relative path in `og:image`** — Social crawlers cannot resolve relative URLs. A tag with `content="/og-image.png"` silently fails for all social cards. Always use `new URL("/og-image.png", Astro.site).toString()`.
+
+3. **OG image wrong dimensions or size** — LinkedIn minimum is 1200x627px; narrower images fail to render. File above 5MB may timeout during crawler fetch. Target: exactly 1200x630px, under 500KB. Include explicit `og:image:width` and `og:image:height` tags.
+
+4. **Duplicate meta tags from layout + head slot** — Astro does not deduplicate `<head>` content. If OG tags are in BaseLayout AND a page adds them via head slot, both render. Platform behavior on duplicates is undefined. Prevention: all SEO tags through BaseLayout props only.
+
+5. **`twitter:card` missing** — X does not render a preview card without this tag, even when OG tags are correct. Add `<meta name="twitter:card" content="summary_large_image">` — this single tag unlocks card rendering.
+
+**Moderate (catch in QA):**
+
+6. **JSON-LD Astro escaping** — Never use `{schemaObject}` in a script body. Astro escapes quotes to `&quot;`, producing invalid JSON. Always use `set:html={JSON.stringify(schemaObject)}`.
+
+7. **Social platform cache locks in broken previews** — Facebook caches OG metadata for ~30 days. First share with broken tags = broken preview for a month. Verify all OG tags with Facebook Sharing Debugger and X Card Validator before any social sharing.
+
+8. **Trailing slash canonical mismatch** — Astro SSG produces `directory/index.html`; Netlify serves with trailing slash. Canonicals must match the actual served URL. Derive from `Astro.url.pathname` (not hardcoded paths) and set `trailingSlash: 'always'` in config.
+
+9. **`og:url` differs from canonical** — Both must be computed from the same expression. Never set them independently. Facebook uses `og:url` as deduplication key for shared links.
+
+---
+
+## Open Questions
+
+1. **Production domain confirmed?** `https://ironpineomnium.com` is hardcoded in astro.config.mjs and BaseLayout. If the domain changes before launch, it must be updated in both places.
+
+2. **OG image design ownership.** The OG image is 2-4 hours of design work (not code). It should follow the editorial race-poster aesthetic. Who is creating it, and is it in scope for this milestone?
+
+3. **Event dates final for JSON-LD?** `startDate: "2026-06-06"`, `endDate: "2026-06-07"` will be embedded in structured data. Confirm these are correct before committing.
+
+4. **Gravel calendar submissions in scope?** gravelevents.com, gravelcalendar.com, granfondoguide.com are the primary discovery channels for riders searching "gravel race Upper Peninsula Michigan 2026." Submitting to these is a non-code task. Is it part of this milestone or deferred?
+
+---
+
+## Roadmap Implications
+
+This milestone is small, well-defined, and has no blocking unknowns. Suggested phase structure:
+
+**Phase 1: Config & Prerequisites** (gates everything else)
+- Add `site: 'https://ironpineomnium.com'` to `astro.config.mjs`
+- Install `@astrojs/sitemap`, add to integrations with submit-confirm filter
+- Verify `Astro.site` is not `undefined` in a local build
+- Rationale: `site` URL gates all canonical/OG URL construction; without it, no other phase can be tested
+
+**Phase 2: Asset Creation** (design-gated)
+- Create `public/og-image.png` — 1200x630px, under 500KB (design task, ~2-4 hrs)
+- Generate favicon set: `favicon.ico`, `apple-touch-icon.png`, `favicon-96x96.png` (via realfavicongenerator.net)
+- Author `public/robots.txt` with Sitemap directive
+- Author `public/site.webmanifest`
+- Rationale: OG image is the critical path item; other assets are low-effort and can be done while design work proceeds
+
+**Phase 3: BaseLayout Extension** (coding)
+- Extend `BaseLayout.astro` Props: add `ogImage?`, `noindex?`, `type?`
+- Add OG tags, Twitter Card tags, canonical link, favicon/manifest link tags
+- Fix `leaderboard.astro` missing description
+- Add `noindex={true}` to `submit-confirm.astro`
+- Rationale: BaseLayout changes benefit all 5 pages simultaneously; should be done in one pass to avoid partial states
+
+**Phase 4: Structured Data** (coding + validation)
+- Add SportsEvent JSON-LD to `index.astro` via `<slot name="head">`
+- Use `set:html={JSON.stringify(...)}` — not string interpolation
+- Validate with Google Rich Results Test against Netlify preview deploy
+- Rationale: validation requires a deployed URL; this phase is last in the coding sequence
+
+**Phase 5: QA & Pre-Launch Verification** (mandatory before social shares)
+- View source on every page — verify canonical, OG tags, no duplicates
+- Facebook Sharing Debugger — force scrape, confirm image renders
+- X Card Validator — confirm `summary_large_image` card appears
+- Verify `/sitemap-index.xml` returns valid XML
+- Test apple-touch-icon on iOS (Add to Home Screen)
+- Google Rich Results Test — confirm event rich result eligibility
+- Rationale: platform caching means the first share locks in the preview for up to 30 days; QA is mandatory before any promotion
+
+**Total estimated effort:** 6-12 hours (dominated by OG image design and QA round-trips)
 
 ### Research Flags
 
-Phases likely needing deeper research or validation during planning:
-- **Phase 1 (Legal/ToS):** Strava's November 2024 API Agreement interpretation for community events is not definitively settled. Email to developers@strava.com recommended before proceeding. The "computed score vs. raw field" distinction needs product owner sign-off.
-- **Phase 3 (OAuth / Strava App):** Strava athlete limit review timeline is unpredictable. Need confirmation of current review SLA and a tested fallback path (manual CSV import) documented before this phase closes.
-- **Course segment IDs:** The exact Strava segment IDs for the Day 2 gravel sectors and KOM segments are a prerequisite to Phase 3. This requires the course to be finalized and the segments to be located and verified in Strava's segment database.
-
-Phases with standard, well-documented patterns (research-phase likely not needed):
-- **Phase 2 (Infrastructure):** `netlify.toml` setup and env var configuration are fully documented and identical to the sibling repo.
-- **Phase 4 (Persistence):** GitHub Contents API GET-then-PUT is proven in `mkUltraGravel`. Direct port.
-- **Phase 5 (Leaderboard UX):** Client-side name search, responsive table layout, and static page enhancements are standard patterns with no novel integration complexity.
+No phase needs `/gsd:research-phase` — this milestone is entirely documented territory with HIGH confidence sources (official Astro docs, Google structured data docs, ogp.me spec). All patterns are established and stable.
 
 ---
 
@@ -157,48 +203,39 @@ Phases with standard, well-documented patterns (research-phase likely not needed
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | Astro and Netlify adapter confirmed by official changelogs March 2026. Functions v1 bug confirmed by three independent forum threads. All choices have working reference in sibling repo. |
-| Features | HIGH (table stakes) / MEDIUM (differentiators) | Table stakes derived from direct domain research and Race Roster analytics. Differentiator value is MEDIUM — needs validation with actual riders. Anti-features are well-reasoned from gravel event ecosystem analysis. |
-| Architecture | HIGH | Based on direct inspection of two live codebases (ironPineOmnium existing site + mkUltraGravel production functions). No speculation required. |
-| Pitfalls | HIGH (API mechanics and ToS text) / MEDIUM (ToS enforcement for small events) | Strava API ToS restrictions are confirmed from the official legal page and multiple third-party analyses. Enforcement behavior for small community events is not publicly documented — email clarification is the right path. |
+| Stack | HIGH | One new package with official Astro docs; all other additions are static files or inline markup |
+| Features | HIGH | OG spec, Google structured data docs, and Twitter/X Card docs are authoritative and stable |
+| Architecture | HIGH | Based on direct inspection of the existing codebase plus official Astro docs |
+| Pitfalls | HIGH | Derived from official Astro behavior, official platform specs, and documented Netlify/Astro behavior |
 
-**Overall confidence:** HIGH
+**Overall confidence: HIGH**
 
 ### Gaps to Address
 
-- **Strava ToS clarification for community events:** The API Agreement's display restriction applies as written, but whether Strava enforces this for small, consent-based event apps is not documented. Email developers@strava.com before Phase 3 to clarify, or design conservatively (compute + display scores only, no raw Strava fields).
-- **Exact Strava segment IDs for the course:** These must be identified before any data fetching code is written. The segment IDs are a data prerequisite, not researchable from code. Event organizers must provide or confirm these.
-- **`hometown` field in `RiderResult` type:** The existing TypeScript type includes `hometown` but there is no obvious source for it in the OAuth flow. Decision needed: capture it during submission (add a form field), derive it from Strava athlete profile, or remove it from the type entirely.
-- **Strava athlete limit approval status:** The app must be registered and the review submitted immediately. Approval timeline is the biggest schedule risk in the project and is entirely outside the development team's control.
-- **Manual CSV fallback design:** If Strava approval is delayed or Strava has an outage on June 6, the organizer needs a way to enter results manually. Scope and format of this fallback needs definition before Phase 4.
+- **Production domain** — confirm `ironpineomnium.com` is final before coding begins
+- **OG image design** — highest-effort item; needs explicit ownership and time budget
+- **Trailing slash behavior** — verify Netlify's actual redirect behavior for this deployment against Astro's `trailingSlash` setting before finalizing canonical URL construction
 
 ---
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- `mkUltraGravel` sibling repo (`/netlify/functions/`) — production reference implementation for all four Netlify Functions and data persistence patterns
-- Astro official docs (on-demand rendering, endpoints, actions): `https://docs.astro.build/` — stack and anti-pattern validation
-- Netlify changelog (Astro 6 support, March 10 2026): `https://www.netlify.com/changelog/2026-03-10-astro-6/` — adapter compatibility
-- Netlify Support Forum (Functions v2 env var bug, 2026-03-27/28): three independent threads at `answers.netlify.com` — critical stack constraint
-- Netlify Blobs docs: `https://docs.netlify.com/build/data-and-storage/netlify-blobs/` — Option B persistence
-- Strava API official docs (authentication, rate limits, activity reference, webhooks): `https://developers.strava.com/docs/` — all API mechanics
-- Strava API Agreement (effective October 9, 2025): `https://www.strava.com/legal/api` — ToS display restriction
-- GitHub fine-grained PATs GA announcement (March 2025): `https://github.blog/changelog/` — GitHub Contents API credentials
-- Astro issue #15076 (AstroCookies + Set-Cookie header conflict): `https://github.com/withastro/astro/issues/15076` — cookie anti-pattern
+- Astro `@astrojs/sitemap` docs (v3.7.2): `https://docs.astro.build/en/guides/integrations-guide/sitemap/`
+- Astro canonical URL pattern: `https://docs.astro.build/en/reference/configuration-reference/`
+- Open Graph Protocol specification: `https://ogp.me/`
+- Google Event Structured Data: `https://developers.google.com/search/docs/appearance/structured-data/event`
+- Schema.org SportsEvent: `https://schema.org/SportsEvent`
+- Google canonical URL guidance: `https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls`
+- Evil Martians favicon guide (confirmed current 2026): `https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-most-needs`
 
 ### Secondary (MEDIUM confidence)
-- Grinduro race results page and Pennsylvania 2024 results — direct observation of reference event patterns
-- Race Roster Results V3 announcement — mobile traffic data (97% mobile on race day)
-- Gravel community non-binary category adoption — corroborated across 3+ event sites
-- DC Rainmaker analysis of November 2024 Strava API changes: `https://www.dcrainmaker.com/2024/11/stravas-changes-to-kill-off-apps.html` — ToS impact analysis
-- CityStrides community discussion — practical ToS enforcement observations
-
-### Tertiary (LOW confidence)
-- GravelRank leaderboard (`https://gravelrank.org/`) — observed features only; no technical details
-- Strava Activity Event Match feature — known to exist but docs were inaccessible during research
+- X/Twitter Card tags: `https://share-preview.com/blog/twitter-meta-tags` (cross-referenced with X developer docs)
+- Social sharing buttons analysis: `https://www.seocomponent.com/blog/you-dont-need-social-share-buttons-on-your-website/`
+- Sharp/Astro Netlify compatibility issues: `https://github.com/withastro/astro/issues/14531`
+- Gravel event discovery platforms: gravelevents.com, gravelcalendar.com, granfondoguide.com (direct observation)
 
 ---
 
-*Research completed: 2026-04-02*
+*Research completed: 2026-04-09*
 *Ready for roadmap: yes*

@@ -287,3 +287,324 @@ Event rules / submission design phase.
 ---
 *Pitfalls research for: Strava-integrated gravel cycling event leaderboard (Iron & Pine Omnium)*
 *Researched: 2026-04-02*
+
+---
+---
+
+# SEO & Social Sharing Pitfalls
+
+**Domain:** Adding SEO meta tags, Open Graph, structured data, and favicons to an existing Astro 6 site
+**Researched:** 2026-04-09
+**Confidence:** HIGH on Astro-specific behavior (verified against GitHub issues and official docs); HIGH on platform caching behavior (multiple corroborating sources); MEDIUM on Netlify trailing slash/canonical interaction (documented pattern, project-specific configuration may vary)
+
+---
+
+## Critical Pitfalls
+
+### SEO Pitfall 1: Missing `site` in `astro.config.mjs` — All Canonical URLs and OG URLs Are Wrong
+
+**What goes wrong:**
+`Astro.site` is `undefined` when the `site` option is not set in `astro.config.mjs`. Any canonical URL built with `new URL(Astro.url.pathname, Astro.site)` silently produces a broken or empty string. The `<link rel="canonical">` tag renders as a relative URL or throws an error, and `og:url` becomes invalid. Both canonical tags and `og:url` are required to be absolute HTTPS URLs — crawlers and social platform scrapers treat relative or malformed URLs as invalid and ignore them.
+
+**This project's current state:** `astro.config.mjs` does not set a `site` property. All canonical URL construction will silently fail until this is added.
+
+**Warning signs:**
+- `astro.config.mjs` does not include a `site: "https://your-domain.com"` property.
+- Rendered HTML shows `<link rel="canonical" href="undefined/leaderboard">` or a bare relative path.
+- Facebook Sharing Debugger reports og:url as invalid.
+
+**Prevention:**
+Add `site: "https://ironpineomnium.com"` (or whatever the production domain is) to `astro.config.mjs` as the very first task of the SEO milestone. All canonical and OG URL construction depends on it. Do not build any SEO components until this is confirmed.
+
+**Phase:** First task of the SEO implementation phase, before writing a single meta tag.
+
+---
+
+### SEO Pitfall 2: Relative Path for `og:image` — Image Invisible to Social Crawlers
+
+**What goes wrong:**
+Social platform crawlers (Facebook, X/Twitter, LinkedIn, iMessage, Slack, Discord) fetch pages without browser context. They cannot resolve relative image paths. A tag like `<meta property="og:image" content="/images/og.jpg">` is silently ignored or treated as invalid — the crawlers do not know your domain. The spec explicitly requires an absolute HTTPS URL. This is the single most common reason a social card shows no image at all.
+
+**Warning signs:**
+- `og:image` content begins with `/` rather than `https://`.
+- Facebook Sharing Debugger shows "Could not retrieve image" or displays no image.
+- Previews work in browser tab (browser resolves relative paths) but fail in Slack/iMessage (crawlers do not).
+
+**Prevention:**
+Always construct the OG image URL as an absolute URL using `Astro.site`:
+```astro
+const ogImage = new URL("/images/og.jpg", Astro.site).toString();
+```
+This requires `site` to be set (see Pitfall 1). Verify the absolute URL appears in rendered HTML before testing any social preview tool.
+
+**Phase:** SEO component implementation. Verify with Facebook Sharing Debugger immediately after first deploy.
+
+---
+
+### SEO Pitfall 3: OG Image Dimensions Below Platform Minimums — Cropped or Rejected Images
+
+**What goes wrong:**
+Different platforms enforce different minimum dimensions, and undersized images are either cropped (showing only the center), displayed as a small thumbnail instead of a large card, or rejected entirely. For this project's single shared OG image approach, one wrong size decision affects all social previews simultaneously.
+
+Platform requirements (verified April 2026):
+- **Facebook:** Minimum 200x200px; optimal 1200x630px; maximum file size 8MB
+- **X/Twitter (summary_large_image):** Minimum 300x157px; optimal 1200x630px; maximum 5MB
+- **LinkedIn:** Minimum 200x200px; optimal 1200x627px
+- **Discord/Slack:** 1200x630px renders well across both
+
+The universal safe target is **1200x630px JPEG or PNG under 5MB**. This satisfies all major platforms.
+
+**Warning signs:**
+- OG image dimensions are not explicitly set via `og:image:width` and `og:image:height` tags alongside `og:image`. Without explicit dimensions, some crawlers must download the image to determine size, which can result in timeouts and fallback to no-image display.
+- Image file is above 5MB (JPEG compression often not applied to PNG exports).
+
+**Prevention:**
+- Set OG image to exactly 1200x630px.
+- Include explicit dimension tags: `<meta property="og:image:width" content="1200">` and `<meta property="og:image:height" content="630">`.
+- Keep file under 2MB (aim for under 500KB for fast crawler fetches).
+- Use JPEG for photographic content (smaller file at same quality vs PNG).
+
+**Phase:** Asset creation phase (before implementation). Do not create the OG image and then discover it is the wrong size.
+
+---
+
+### SEO Pitfall 4: Duplicate Meta Tags from Layout + Page Head Slot — Undefined Behavior
+
+**What goes wrong:**
+Astro does not automatically deduplicate `<head>` content. The existing `BaseLayout.astro` renders a `<title>` and `<meta name="description">` unconditionally, and also exposes a `<slot name="head" />`. If a page uses the head slot to add its own `<title>` or `<meta name="description">`, the result is two of each tag in the rendered HTML.
+
+Browsers handle duplicate tags inconsistently: most use the first occurrence, some use the last. Search engine crawlers may use either or may penalize the page. Social platforms may read the first `og:title` and ignore the second, or vice versa. There is no defined behavior — it depends entirely on the platform.
+
+**This project's specific risk:** `BaseLayout.astro` currently renders both `<title>` and `<meta name="description">` from props. If OG tags are added in the layout AND a page tries to customize them via the head slot, duplicates will appear unless the architecture explicitly prevents it.
+
+**Warning signs:**
+- Viewing page source shows two `<title>` tags.
+- Viewing page source shows two `<meta name="description">` tags.
+- Facebook Sharing Debugger reports "multiple og:title tags found."
+
+**Prevention:**
+Centralize all head content in `BaseLayout.astro`. Do not split SEO tags between the layout and the per-page head slot. Accept all SEO-relevant values as props to the layout (title, description, ogTitle, ogDescription, ogImage, canonicalPath) and render them once. If a page needs different values, pass different props — do not inject additional tags via the head slot.
+
+Only use the head slot for genuinely additive content (e.g., per-page structured data, page-specific preload links) that does not duplicate what the layout already renders.
+
+**Phase:** Architecture decision before any implementation begins. The wrong pattern here is hard to detect until production testing.
+
+---
+
+### SEO Pitfall 5: `twitter:card` Tag Missing — X/Twitter Images Never Appear
+
+**What goes wrong:**
+X (formerly Twitter) requires the `twitter:card` meta tag to be present for any card rendering. Without it, X does not render a preview card even if `og:image`, `og:title`, and `og:description` are all correctly set. X does fall back to OG tags for content, but `twitter:card` itself is the gate — its absence means no card, period.
+
+The correct value for a full-width image preview is `summary_large_image`. Using `summary` renders a small thumbnail instead of a large image card.
+
+**Warning signs:**
+- X/Twitter Card Validator shows "ERROR: No card found" for a page that has OG tags.
+- X shares show only plain text with no image.
+- `<meta name="twitter:card">` is absent from rendered HTML.
+
+**Prevention:**
+Add `<meta name="twitter:card" content="summary_large_image">` to `BaseLayout.astro` alongside the OG tags. This one tag unlocks full card rendering. You do not need separate `twitter:title`, `twitter:description`, or `twitter:image` tags — X falls back to OG equivalents for those — but `twitter:card` must be present and explicit.
+
+**Phase:** SEO component implementation. Test with X Card Validator immediately after first deploy.
+
+---
+
+## Moderate Pitfalls
+
+### SEO Pitfall 6: Netlify Trailing Slash / Canonical Mismatch Creates Duplicate Content
+
+**What goes wrong:**
+Astro's SSG output for a page at `src/pages/leaderboard.astro` produces `dist/leaderboard/index.html`. Netlify serves this at both `/leaderboard` (with a 301 redirect to `/leaderboard/`) and `/leaderboard/`. If canonical tags point to `/leaderboard` (no slash) but the actual served URL is `/leaderboard/` (with slash), search engines see a canonical URL that differs from the actual URL. In strict SEO terms, the canonical tag is then advisory rather than authoritative, and the search engine chooses which version to index.
+
+**Warning signs:**
+- `astro.config.mjs` has `trailingSlash: 'never'` but deployed URLs include trailing slashes.
+- Canonical tags use path without trailing slash; browser address bar shows trailing slash.
+- Google Search Console reports "Alternate page with proper canonical tag" for pages you expect to be indexed.
+
+**Prevention:**
+Match Astro's `trailingSlash` config to Netlify's actual redirect behavior:
+- Astro's default output produces `directory/index.html` files, which Netlify serves with trailing slashes.
+- Set `trailingSlash: 'always'` in `astro.config.mjs` for consistency.
+- Build canonical URLs using `Astro.url.pathname` (which reflects the actual served path including trailing slash) rather than hardcoding paths.
+- Verify in production: navigate to `/leaderboard` and confirm it 301s to `/leaderboard/`, then confirm the canonical tag on `/leaderboard/` points to `https://domain.com/leaderboard/`.
+
+**Phase:** SEO implementation. Test canonical consistency on Netlify preview deploy before production launch.
+
+---
+
+### SEO Pitfall 7: Social Platform Caching Locks In Old Previews After OG Updates
+
+**What goes wrong:**
+Once a URL has been shared on Facebook, X, or LinkedIn, the platform caches the OG metadata it scraped. Subsequent updates to your OG tags (new image, different title) are not automatically reflected. Facebook caches for approximately 30 days; LinkedIn's cache can persist up to 7 days even after using Post Inspector. This means if OG tags are deployed broken (wrong URL, wrong dimensions, wrong title) and then shared, the broken preview persists long after the fix is deployed.
+
+This is particularly relevant for the Iron & Pine Omnium event site: any pre-event social sharing while OG tags are still being iterated can lock in a broken or placeholder preview for weeks.
+
+**Warning signs:**
+- You updated OG image or title, redeployed, but shares still show old content.
+- Facebook Sharing Debugger shows correct current tags but says "cached" with old image.
+- Event announcement posts show wrong preview card.
+
+**Prevention:**
+- Get OG tags correct before any social shares happen. Treat the first share as publishing the preview permanently for 30 days.
+- Use the platform debugger tools proactively before the event launch to force cache refresh:
+  - **Facebook:** https://developers.facebook.com/tools/debug/ — click "Scrape Again" after each OG update
+  - **LinkedIn:** https://www.linkedin.com/post-inspector/ — paste URL and click "Inspect"
+  - **X/Twitter:** https://cards-dev.twitter.com/validator — entering the URL forces a re-scrape
+- Do not share the production URL on social media until OG tags are verified correct.
+
+**Phase:** QA/verification phase after implementation, before any event promotion begins.
+
+---
+
+### SEO Pitfall 8: Favicon SVG Caching — Stale Icon Persists After Updates
+
+**What goes wrong:**
+The project currently serves `logo.svg` as the only favicon (`<link rel="icon" type="image/svg+xml" href="/logo.svg">`). Browsers cache favicons aggressively in a separate favicon database that is not cleared by standard cache-clearing behavior. Hard refresh does not clear favicon cache in Chrome. If the favicon is updated, most visitors will see the old icon until they clear browser data or the cache naturally expires — which can take days or weeks.
+
+Additionally, SVG favicons are not supported in all browsers: older Chrome on Windows, some Android browsers, and some bot crawlers do not render SVG favicons. Without an ICO fallback, those environments show a generic browser icon.
+
+**Warning signs:**
+- You updated `logo.svg` and redeployed but still see the old icon in the browser tab.
+- Testing in incognito window shows the new icon but regular window shows old icon.
+- Browser support coverage requirement includes IE or older Android Webview.
+
+**Prevention:**
+- Add a version query parameter if the favicon changes: `href="/logo.svg?v=2"`. This forces browsers to re-fetch the favicon by treating it as a new URL.
+- Consider providing an ICO fallback for maximum compatibility. The `public/` directory is the correct location for static assets. Adding `public/favicon.ico` (at minimum a 32x32px ICO) alongside the existing SVG covers legacy environments.
+- For this project, the event logo is unlikely to change during the milestone, so favicon versioning is a low-priority concern. Focus on the SVG/ICO fallback issue first.
+
+**Phase:** Asset preparation phase. Favicon format decisions should be made before implementation, not discovered in QA.
+
+---
+
+### SEO Pitfall 9: JSON-LD Structured Data Requires `set:html` Directive — Raw Injection Breaks
+
+**What goes wrong:**
+Astro escapes HTML by default. A `<script>` tag with JSON-LD content inserted as a template expression will have characters like `"`, `<`, `>`, and `&` HTML-escaped, producing invalid JSON in the rendered output. Google's Rich Results Test will then report a JSON parse error, and the structured data is ignored entirely.
+
+This is a known Astro behavior, documented in GitHub issue #3544 (closed as "not a bug" — it is working as designed, and the correct pattern is well-established).
+
+**Warning signs:**
+- Rendered HTML shows `&quot;` instead of `"` inside the JSON-LD script block.
+- Google's Rich Results Test reports "Invalid JSON."
+- Schema.org validator shows parse errors.
+
+**Prevention:**
+Use the `set:html` directive with `JSON.stringify()`:
+```astro
+<script type="application/ld+json" set:html={JSON.stringify(schemaObject)}></script>
+```
+Never use `{schemaObject}` or string interpolation directly in the script tag body. The `set:html` directive bypasses Astro's HTML escaping and is the officially supported pattern.
+
+Additionally, validate structured data in Google's Rich Results Test (https://search.google.com/test/rich-results) after every change — build-time errors do not surface structured data issues.
+
+**Phase:** Implementation phase. Test structured data output in Rich Results Test before marking the task complete.
+
+---
+
+### SEO Pitfall 10: `og:url` Mismatch with Canonical — Contradictory Signals to Crawlers
+
+**What goes wrong:**
+`og:url` should be the canonical URL of the page — the same URL in the `<link rel="canonical">` tag. If they differ (e.g., canonical uses no trailing slash, `og:url` uses a trailing slash, or they use different domains), crawlers receive contradictory canonicalization signals. Facebook in particular uses `og:url` as the deduplification key for shared links — if two pages share the same `og:url`, Facebook may merge their engagement metrics, or may display a cached preview from a different page with the same URL.
+
+**Warning signs:**
+- `<link rel="canonical">` href and `<meta property="og:url">` content are different strings.
+- Facebook Sharing Debugger shows "This URL leads to a different canonical URL."
+
+**Prevention:**
+Compute both canonical and `og:url` from the same source:
+```astro
+const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
+// Use canonicalURL for both <link rel="canonical"> and og:url
+```
+This guarantees they are identical by construction. Do not hardcode either one separately.
+
+**Phase:** Implementation phase. Verify both tags in rendered source on every page type.
+
+---
+
+## Minor Pitfalls
+
+### SEO Pitfall 11: `og:image` Blocked by `robots.txt` — Crawler Cannot Fetch Image
+
+**What goes wrong:**
+If `/images/` or specific image paths are disallowed in `robots.txt`, social crawlers cannot fetch the OG image. The card renders with no image even though the `og:image` URL is correctly formed and the image is accessible in a browser (which ignores `robots.txt`).
+
+**Warning signs:**
+- `robots.txt` includes `Disallow: /images/` or similar broad rules.
+- Facebook Sharing Debugger returns an image error despite the image URL being reachable in browser.
+
+**Prevention:**
+Review `robots.txt` (if it exists) and confirm the OG image path is explicitly allowed. If no `robots.txt` exists, Netlify static deploys allow all crawlers by default. The current project has `public/images/` as a standard Astro static asset directory — this is accessible by default with no `robots.txt` configuration needed unless one is explicitly added.
+
+**Phase:** Pre-launch QA. Low risk for this project unless a `robots.txt` is added during the milestone.
+
+---
+
+### SEO Pitfall 12: Missing `og:type` — Search and Social Platforms Default to Unknown Type
+
+**What goes wrong:**
+Without `<meta property="og:type">`, platforms default to `og:type="website"` implicitly. For this project that is the correct type, so the practical impact is minimal. However, its explicit absence means the OG implementation is technically incomplete, and some strict validators will report it as a warning that obscures other real errors.
+
+**Prevention:**
+Add `<meta property="og:type" content="website">` explicitly. Takes one line. Eliminates noise from validator output so real errors stand out.
+
+**Phase:** Implementation. Zero effort, eliminates validator noise.
+
+---
+
+## Phase-Specific Warnings
+
+| Phase Topic | Likely Pitfall | Mitigation |
+|-------------|---------------|------------|
+| Config setup | Missing `site` in `astro.config.mjs` silently breaks all canonical/OG URLs | Set `site` as first action; verify `Astro.site` is not `undefined` before proceeding |
+| OG image creation | Wrong dimensions, wrong file size | Target 1200x630px JPEG under 500KB; set explicit width/height meta tags |
+| Layout/component design | Duplicate meta tags from layout + head slot | Centralize all SEO tags in `BaseLayout.astro` props; use head slot only for additive content |
+| Structured data | Astro escaping breaks JSON-LD | Always use `set:html={JSON.stringify(...)}` pattern; validate with Rich Results Test |
+| Canonical URLs | Trailing slash mismatch between Astro config and Netlify behavior | Match `trailingSlash` config to output format; derive canonical from `Astro.url.pathname` |
+| First social share | Platform cache locks in broken preview | Verify all OG tags with debugger tools before any social sharing; force-refresh cache after fixing |
+| X/Twitter | No card renders despite correct OG tags | Ensure `twitter:card: "summary_large_image"` is explicitly present |
+| `og:url` | Canonical and og:url computed differently | Derive both from the same expression; never set them independently |
+
+---
+
+## Quick Validation Checklist
+
+Before marking SEO implementation complete:
+
+- [ ] `Astro.site` renders a non-undefined absolute URL in page source
+- [ ] `<link rel="canonical">` is absolute HTTPS URL matching `og:url`
+- [ ] `og:image` is absolute HTTPS URL (not relative path)
+- [ ] OG image is 1200x630px with explicit `og:image:width` and `og:image:height` tags
+- [ ] `twitter:card` is present with value `summary_large_image`
+- [ ] No duplicate `<title>` or `<meta name="description">` tags in page source (check source, not DevTools Elements)
+- [ ] JSON-LD renders as valid JSON in page source (no `&quot;` characters inside script block)
+- [ ] Rich Results Test returns no errors for structured data
+- [ ] Facebook Sharing Debugger returns image and title correctly
+- [ ] X Card Validator shows large image card
+- [ ] LinkedIn Post Inspector shows correct preview
+- [ ] Cache forced-refresh run on all platforms before any event promotion
+
+---
+
+## SEO Sources
+
+- Astro Configuration Reference — `site` option: https://docs.astro.build/en/reference/configuration-reference/
+- Astro GitHub Issue #3544 — JSON-LD script tag escaping behavior and `set:html` workaround: https://github.com/withastro/astro/issues/3544
+- OG image absolute URL requirement — OG protocol specification: https://ogp.me/
+- OG image size guide 2026 (Facebook, X, LinkedIn dimensions): https://myogimage.com/blog/og-image-size-meta-tags-complete-guide
+- Twitter/X Card tag requirements — `twitter:card` required for all card types: https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/markup
+- Facebook Sharing Debugger: https://developers.facebook.com/tools/debug/
+- LinkedIn Post Inspector: https://www.linkedin.com/post-inspector/
+- X/Twitter Card Validator: https://cards-dev.twitter.com/validator
+- Google Rich Results Test: https://search.google.com/test/rich-results
+- Netlify trailing slash behavior and canonical implications — Netlify Support Forum: https://answers.netlify.com/t/support-guide-how-can-i-alter-trailing-slash-behaviour-in-my-urls-will-enabling-pretty-urls-help/31191
+- Social media preview cache timing (Facebook 30 days, LinkedIn 7 days): https://mikebifulco.com/posts/reset-your-open-graph-embeds-on-linkedin-twitter-facebook
+- Favicon caching behavior and version parameter workaround: https://www.codestudy.net/blog/how-do-i-force-a-favicon-refresh/
+- SVG favicon browser support limitations: https://faviconbuilder.com/guides/svg-favicon-browser-support/
+- astro-seo library (open source reference implementation): https://github.com/jonasmerlin/astro-seo
+
+---
+*SEO & Social Sharing pitfalls added: 2026-04-09*
+*Applies to: SEO & Social Sharing milestone on Iron & Pine Omnium (Astro 6, Netlify)*

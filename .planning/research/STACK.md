@@ -1,273 +1,312 @@
-# Stack Research
+# Technology Stack — SEO & Social Sharing Milestone
 
-**Domain:** Gravel cycling event leaderboard with Strava OAuth integration
-**Researched:** 2026-04-02
-**Confidence:** HIGH (most choices verified via official docs, working sibling repo, and 2026 search results)
-
----
-
-## Context
-
-This is a subsequent-milestone addition to an existing Astro 6.1.1 static site. The scoring engine
-already exists. We are adding three capabilities:
-
-1. **Strava OAuth** — riders authenticate to authorize activity access
-2. **Activity data fetching** — pull segment efforts from the authorized activity
-3. **Data persistence** — store per-rider results so they survive deploys
-
-A working implementation of all three already exists in the sibling repo `mkUltraGravel`
-(`/netlify/functions/strava-auth.js`, `strava-callback.js`, `submit-result.js`, `strava-webhook.js`).
-That implementation is the primary reference. This research validates and extends it for ironPineOmnium.
+**Project:** Iron & Pine Omnium
+**Milestone:** SEO & Social Sharing metadata
+**Researched:** 2026-04-09
+**Overall confidence:** HIGH
 
 ---
 
-## Recommended Stack
+## Scope
 
-### Core Technologies
+This document covers only the stack additions and changes needed to add SEO and social sharing
+metadata to the existing Astro 6 static site. The existing stack (Astro 6.1.x, Tailwind CSS 4,
+pnpm, Netlify static hosting) is preserved unchanged. No rendering mode changes are required;
+this milestone is purely additive to a static site.
 
-| Technology | Version | Purpose | Why Recommended |
-|------------|---------|---------|-----------------|
-| Astro | 6.1.1 (pin; latest stable 6.1.3) | Framework | Already in use; hybrid output mode gives static pages + server API routes with no architecture change |
-| @astrojs/netlify | latest (^6.x) | SSR adapter | Official adapter, Astro 6 support confirmed March 10 2026 by Netlify; supports hybrid output, server islands, actions, sessions |
-| Netlify Functions v1 (`exports.handler`) | Node 20 runtime | Serverless API | **v1 syntax only** — a confirmed active bug (March 27-28 2026) causes user-defined env vars to be `undefined` at runtime in v2 (`export default`) functions; v1 is stable. Sibling repo comments document this explicitly. |
-| Strava API v3 | Current | Activity data source | The only way to get segment effort data from athlete activities; OAuth 2.0 flow is stable |
+---
 
-**Confidence:** HIGH — Astro and Netlify adapter confirmed by official changelogs. Functions v1 bug confirmed by three separate Netlify Support Forum threads dated 2026-03-27 through 2026-03-28.
+## Recommended Stack Additions
 
-### Rendering Mode
+### 1. @astrojs/sitemap — Sitemap Generation
 
-Use **hybrid output** (`output: 'hybrid'` in `astro.config.mjs`):
+| Attribute | Value |
+|-----------|-------|
+| Package | `@astrojs/sitemap` |
+| Current version | v3.7.2 |
+| Type | Astro integration |
+| Install | `pnpm astro add sitemap` |
 
-- All existing pages remain statically prerendered (zero runtime cost)
-- API route files opt in to server rendering with `export const prerender = false`
-- This is the minimal change needed — no converting the whole site to SSR
+**Why:** Official Astro integration, maintained by the Astro core team. Automatically crawls all
+statically generated routes at build time and emits `sitemap-index.xml` and `sitemap-0.xml` to
+the output directory. No manual route management needed for this site's 5 pages.
 
-```typescript
-// astro.config.mjs
-import { defineConfig } from 'astro/config';
-import netlify from '@astrojs/netlify';
+**Requirement:** The `site` option must be set in `astro.config.mjs` with the full production URL
+(e.g., `https://ironpineomnium.com`). This is also needed for canonical URL generation across the
+site, so it is required regardless.
+
+**Fits the project:** This site uses `output: 'static'` (no SSR). All five pages are fully static,
+so the integration works perfectly — no `customPages` workarounds needed.
+
+**What it does NOT do:** Does not generate `robots.txt`. That is handled separately (see below).
+
+```javascript
+// astro.config.mjs — additions
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  output: 'hybrid',
-  adapter: netlify(),
+  site: 'https://ironpineomnium.com', // REQUIRED
+  output: 'static',
+  integrations: [sitemap()],
+  vite: { plugins: [tailwindcss()] },
 });
 ```
 
-**Confidence:** HIGH — official Astro docs confirm hybrid mode and `prerender = false` pattern.
+**Confidence:** HIGH — verified from official Astro docs (v3.7.2 confirmed current).
 
-### Data Persistence: Two-Tier Approach
+---
 
-The sibling repo uses **GitHub Contents API as a file store** (committing one JSON file per athlete).
-This is the proven, working pattern for this project family. For ironPineOmnium, use the same
-approach as the primary pattern, with Netlify Blobs as a simpler alternative.
+### 2. Head Meta Tags — Built-In Astro, No External Library
 
-#### Option A (Recommended): GitHub Contents API file commit
+**Recommendation: Do not add astro-seo or any third-party SEO component library.**
 
-**How it works:** On submission, a serverless function commits one JSON file per rider to
-`public/data/results/athletes/{athleteId}.json` via the GitHub Contents API, then fires the
-Netlify build hook to trigger a rebuild. The static site reads those files at build time.
+**Why not astro-seo:** The `astro-seo` package (jonasmerlin/astro-seo) shipped v1.0.0 requiring
+Astro 5.16+ and v1.1.0 on January 13, 2026. It does not explicitly declare Astro 6 support as of
+the researched date. More importantly, for a 5-page site with a single shared OG image, the
+abstraction adds a dependency for no meaningful gain. The existing `BaseLayout.astro` already has
+a `<slot name="head" />` escape hatch and `title`/`description` props — the foundation is already
+correct.
 
-| Aspect | Detail |
-|--------|--------|
-| Packages | Native `fetch` (Node 18+) — no extra deps |
-| Credentials | Fine-grained PAT with `Contents: Read + Write` on this repo. Fine-grained PATs are GA since March 2025. |
-| Race condition | GET-then-PUT pattern; 409 conflict detected and surfaced to user |
-| GDPR/TOS | Deauthorization webhook deletes the file via GitHub Contents DELETE |
-| Rebuild latency | ~1-3 min build time after hook fires |
-| Cost | Free (Netlify free tier, GitHub free tier) |
+**What to build instead:** Extend `BaseLayout.astro` directly with:
 
-**Why this is recommended:** It is already proven in mkUltraGravel with zero issues. For 50-100
-riders over a two-day event window, the write volume (100 PUTs max) is trivially within GitHub
-API limits. The leaderboard is naturally consistent after each rebuild.
+- `<link rel="canonical" href={canonicalURL} />` — built from `Astro.site` + `Astro.url.pathname`
+- `<meta property="og:title" content={...} />`
+- `<meta property="og:description" content={...} />`
+- `<meta property="og:type" content="website" />` (or "event" for the home page)
+- `<meta property="og:url" content={canonicalURL} />`
+- `<meta property="og:image" content={absoluteOgImageUrl} />`
+- `<meta property="og:image:width" content="1200" />`
+- `<meta property="og:image:height" content="630" />`
+- `<meta property="og:site_name" content="Iron & Pine Omnium" />`
+- `<meta name="twitter:card" content="summary_large_image" />`
+- `<meta name="twitter:image" content={absoluteOgImageUrl} />`
+- `<meta name="twitter:title" content={...} />`
+- `<meta name="twitter:description" content={...} />`
 
-**When it breaks down:** If riders need to see each other's submissions in real-time without a
-rebuild. At 1-3 min rebuild latency, this is acceptable for an event leaderboard.
+This is ~20 lines of straightforward Astro template markup. No library needed.
 
-**Confidence:** HIGH — directly ported from working sibling repo code.
+**Canonical URL pattern (verified from Astro docs):**
+```typescript
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+```
+`Astro.site` is populated from the `site` key in `astro.config.mjs`. Works at build time for
+static pages.
 
-#### Option B (Alternative): Netlify Blobs
+**Confidence:** HIGH — pattern verified from official Astro docs and community sources.
 
-**How it works:** Store each rider's JSON blob in a Netlify Blobs store keyed by `athleteId`.
-A server-rendered leaderboard page (or API route) reads all blobs at request time.
+---
 
-| Aspect | Detail |
-|--------|--------|
-| Packages | `@netlify/blobs` (no version pinned; use latest) |
-| Credentials | Zero-configuration inside Netlify Functions — access token injected automatically |
-| Consistency | Eventual by default (60s edge propagation); `{ consistency: 'strong' }` option available |
-| Cost | Free on all Netlify plans |
-| Real-time | Yes — leaderboard page becomes server-rendered and always shows current data |
+### 3. OG Image — Single Static File, No Generation Pipeline
 
-**When to choose Blobs over GitHub API:** If real-time leaderboard updates are a requirement and
-you are willing to convert the leaderboard page from static to server-rendered. For a two-day
-event where "refresh to see updates" is acceptable, Option A is simpler.
+**Recommendation: Design one 1200×630px PNG, place in `public/`, reference by absolute URL.**
 
-**Confidence:** HIGH — Netlify Blobs docs verified directly. `@netlify/blobs` package confirmed
-generally available (no longer beta per current docs).
+**Why not Satori + Sharp:** The project context specifies "single branded OG image to be shared
+across all pages." Dynamic OG image generation (Satori → SVG → Sharp → PNG per-route) exists
+to produce per-post images with variable titles. That complexity is not needed here. Adding Satori
+and Sharp introduces:
+- Sharp's known Netlify/Astro compatibility friction (multiple GitHub issues, November 2025 reports
+  of `Could not find Sharp` errors on Astro 5.13.7+; risk carries into Astro 6)
+- Satori's requirement to load font files at build time (the project uses Google Fonts via CDN link,
+  not local font files — a mismatch)
+- An API endpoint (`pages/og-image.png.ts`) that, while compatible with static mode via
+  `getStaticPaths()`, adds unnecessary build complexity for a single image
 
-### Supporting Libraries
+**The correct approach:**
+1. Create `public/og-image.png` (1200×630px — universal OG + Twitter/X compatible size)
+2. Reference it as an absolute URL: `https://ironpineomnium.com/og-image.png`
+3. OG meta tags require absolute URLs; relative paths silently fail on social platforms
 
-| Library | Version | Purpose | When to Use |
-|---------|---------|---------|-------------|
-| `@netlify/blobs` | latest | Blob storage (Option B only) | If choosing Netlify Blobs over GitHub API |
-| `drizzle-orm` + `@libsql/client` | latest | SQLite ORM + Turso client | Only if you move to a real database (see Alternatives) |
-| `zod` | ^3.x | Runtime schema validation for submission payloads | Optional but recommended for hardening the submit-result function |
+**Image design note (not a stack concern):** The image should match the editorial race-poster
+aesthetic (Spectral headlines, deep forest palette). This is a design deliverable, not a build
+tooling concern.
 
-### Development Tools
+**Confidence:** HIGH — static OG image in public/ is the standard pattern; absolute URL
+requirement confirmed from multiple social platform documentation sources.
 
-| Tool | Purpose | Notes |
-|------|---------|-------|
-| `pnpm` | Package manager | Already in use (`pnpm@10.14.0`) |
-| `@astrojs/check` | TypeScript checking | Already in use |
-| Netlify CLI | Local function dev + Blobs emulation | `netlify dev` emulates Functions and Blobs locally |
-| Strava API Explorer | Test OAuth + activity API calls | `https://developers.strava.com/playground/` |
+---
+
+### 4. Favicon Set — Manual File Placement, No Generation Integration
+
+**Recommendation: Generate offline with realfavicongenerator.net; place files in `public/`.**
+
+The existing `BaseLayout.astro` has `<link rel="icon" type="image/svg+xml" href="/logo.svg" />`.
+This covers modern browsers (Chrome, Firefox, Edge) that support SVG favicons. The gap is:
+
+- Safari on iOS/macOS does not fully honor SVG favicons in all contexts
+- No `apple-touch-icon` for iOS home screen
+- No `favicon.ico` fallback for legacy tools (email clients, feed readers, etc.)
+
+**Minimal modern favicon set (3 files, covers ~100% of cases):**
+
+| File | Size | Purpose |
+|------|------|---------|
+| `public/favicon.ico` | 32×32 | Legacy browsers, email clients, feed readers |
+| `public/icon.svg` | scalable | Modern browsers (rename/reuse logo.svg if identical) |
+| `public/apple-touch-icon.png` | 180×180 | iOS Safari home screen bookmark |
+
+**HTML link tags to add to BaseLayout.astro:**
+```html
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+```
+
+Replace the existing `<link rel="icon" type="image/svg+xml" href="/logo.svg" />` with the three
+tags above (and rename `logo.svg` → `icon.svg` in public/ or keep the `/logo.svg` path if it is
+referenced elsewhere).
+
+**Why not astro-favicons integration:** The `astro-favicons` package automates generation but
+adds a build-time integration dependency for what is a one-time design task. For a branded
+event site with one favicon source, offline generation then committed static files is simpler
+and more predictable.
+
+**Recommended offline tool:** https://realfavicongenerator.net — generates ICO, PNG, and the exact
+HTML tags with correct sizes. Upload the logo SVG; download the zip; copy to `public/`.
+
+**Confidence:** HIGH — three-file approach verified from Evil Martians' authoritative favicon guide
+and confirmed still current by 2025/2026 browser support data.
+
+---
+
+### 5. JSON-LD Structured Data — Inline Component, No Library
+
+**Recommendation: Inline `<script type="application/ld+json">` in BaseLayout.astro.**
+
+No package needed. The pattern for Astro is:
+
+```astro
+---
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "SportsEvent",
+  "name": "Iron & Pine Omnium",
+  "description": "...",
+  "startDate": "2026-06-06",
+  "endDate": "2026-06-07",
+  "location": {
+    "@type": "Place",
+    "name": "Michigan's Upper Peninsula",
+    "address": { "@type": "PostalAddress", "addressRegion": "MI", "addressCountry": "US" }
+  },
+  "organizer": { "@type": "Organization", "name": "Neucadia", "url": "https://neucadia.com" },
+  "image": "https://ironpineomnium.com/og-image.png",
+  "url": "https://ironpineomnium.com",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode"
+};
+---
+<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+```
+
+**Schema type choice:** `SportsEvent` (subtype of `Event`) is the correct type. Google's Event
+rich results accept `SportsEvent`. Required properties for rich result eligibility are `name`,
+`startDate`, and `location` (with `location.name` and `location.address`). The event is physical
+(UP Michigan), which qualifies — Google explicitly excludes virtual-only events.
+
+**`set:html` note:** Astro's `set:html` directive bypasses HTML escaping for the script content,
+which is the correct approach for JSON-LD. This is the established Astro community pattern.
+
+**Where to place it:** Only on pages where it adds value. The home page (`/`) is the primary
+candidate. The `/leaderboard`, `/submit`, `/submit-confirm`, and `/support` pages benefit from
+`og:` meta tags but not necessarily the `SportsEvent` JSON-LD block (which is home-page-level).
+Use the existing `<slot name="head" />` in `BaseLayout.astro` for page-specific structured data,
+and place global structured data directly in the layout.
+
+**Confidence:** HIGH — verified from Google's official structured data documentation and Astro
+community implementation patterns.
+
+---
+
+### 6. robots.txt — Static File in public/
+
+**Recommendation: Add `public/robots.txt` as a hand-authored static file.**
+
+No package needed. A static file in `public/` is copied verbatim to the output root by Astro's
+build process, which is exactly what is needed.
+
+**Recommended content:**
+```
+User-agent: *
+Allow: /
+
+Sitemap: https://ironpineomnium.com/sitemap-index.xml
+```
+
+**Pages to consider blocking:** `/submit`, `/submit-confirm` are functional pages (form UI, OAuth
+redirect target) — not content Google should index or surface. Add `Disallow:` rules if desired,
+though `<meta name="robots" content="noindex">` in the page's `<head>` is more reliable than
+`robots.txt` for preventing indexing of specific pages.
+
+**Confidence:** HIGH — Astro docs confirm `public/` files are served at root path.
+
+---
+
+## What NOT to Add
+
+| Avoid | Why | Use Instead |
+|-------|-----|-------------|
+| `astro-seo` package | Astro 6 compatibility not confirmed; no meaningful gain for a 5-page single-OG-image site | Hand-authored meta tags in BaseLayout.astro |
+| `satori` + `sharp` | Sharp has documented Netlify/Astro compatibility friction (late 2025); fonts are CDN-linked, not local files; single static OG image is sufficient | Pre-designed PNG in `public/` |
+| `astro-favicons` integration | Automated generation is overkill for one favicon source; adds build-time integration dependency | One-time offline generation via realfavicongenerator.net |
+| `astro-robots-txt` package | A static `public/robots.txt` is 5 lines; adding a package to generate 5 lines is unnecessary complexity | Static file |
+| Per-page OG images | No editorial differentiation between pages justifies per-page images; same brand image everywhere is appropriate for an event site | Single `public/og-image.png` |
+
+---
+
+## Integration with Existing Stack
+
+| Existing Element | Change Required |
+|------------------|-----------------|
+| `astro.config.mjs` | Add `site: 'https://ironpineomnium.com'` option; add `sitemap()` to `integrations[]` |
+| `BaseLayout.astro` | Extend `<head>` with canonical, OG, Twitter Card tags, JSON-LD script, favicon link tags |
+| `public/logo.svg` | Keep as-is (already used as icon). Add `favicon.ico` and `apple-touch-icon.png` alongside it |
+| `output: 'static'` | No change — this milestone is fully compatible with static output |
+| Netlify adapter | Not needed; this milestone does not require SSR |
+| Font loading (Google Fonts CDN) | No change — fonts remain CDN-linked, which is why Satori is not viable |
 
 ---
 
 ## Installation
 
 ```bash
-# Add Netlify adapter (run via astro add to auto-configure astro.config.mjs)
-pnpm astro add netlify
+# Only new package for this milestone:
+pnpm astro add sitemap
+# This command auto-adds the integration to astro.config.mjs
 
-# If using Netlify Blobs (Option B)
-pnpm add @netlify/blobs
-
-# Optional: Zod for payload validation
-pnpm add zod
-
-# Dev tools
-pnpm add -D netlify-cli
+# No other packages needed
 ```
 
----
-
-## Alternatives Considered
-
-| Recommended | Alternative | When to Use Alternative |
-|-------------|-------------|-------------------------|
-| Netlify Functions v1 (`exports.handler`) | Functions v2 (`export default`) | Only after the March 2026 env var bug is officially resolved by Netlify |
-| GitHub Contents API file store | Turso / libSQL | If you need relational queries, full-text search, or real-time sub-second updates across more than ~1000 riders |
-| GitHub Contents API file store | Netlify Blobs | If real-time leaderboard (no rebuild) is required by event organizers |
-| GitHub Contents API file store | Supabase Postgres | Only if you need RLS, realtime subscriptions, or a proper dashboard to manage entries |
-| Hybrid output (`output: 'hybrid'`) | Full SSR (`output: 'server'`) | If the majority of pages need dynamic data — not the case here |
-| Astro API endpoints (`src/pages/api/`) | Astro Actions | Actions are optimized for type-safe client-server form calls with Zod; but they cannot issue 302 redirect responses needed for the OAuth callback, making raw API routes the correct choice |
-
----
-
-## What NOT to Use
-
-| Avoid | Why | Use Instead |
-|-------|-----|-------------|
-| Netlify Functions v2 (`export default`) | Active confirmed bug (March 2026): user-defined `process.env` vars are `undefined` at runtime intermittently. Affects ALL v2 functions including scheduled and background types. | Netlify Functions v1 (`exports.handler`) — confirmed stable |
-| Astro Actions for OAuth callback | Actions cannot return a raw `302 Location` redirect response — they are designed for JSON/form call-response cycles, not HTTP redirect flows | Astro server endpoint (`src/pages/api/strava-callback.ts`) returning `new Response(null, { status: 302, headers: { Location: '...' } })` |
-| `netlify.toml` `[context.env]` for secrets | Env vars set in `netlify.toml` contexts do not reliably reach Function runtimes (separate long-standing Netlify limitation) | Set secrets in Netlify Dashboard → Site Settings → Environment Variables |
-| Cookie mixing: `Astro.cookies.set()` + manual `Set-Cookie` header | Known Astro bug (#15076): cookies set via `AstroCookies.set()` are dropped when combined with manually appended `Set-Cookie` headers | Use only raw `Response` with manual `Set-Cookie` header (the pattern used in mkUltraGravel) |
-| Storing access tokens beyond the request | Strava tokens grant activity access; persisting them is a security risk and unnecessary — the token is used once to fetch the activity then discarded | Exchange code → fetch activity → discard token in a single function execution |
-| `activity:read` scope | Only reads public/followers activities; private activities and private segment efforts will be missing | `activity:read_all` scope — required to access segment efforts on private activities |
-
----
-
-## Stack Patterns by Variant
-
-**If event organizers want real-time leaderboard (no rebuild latency):**
-- Use Netlify Blobs (Option B) for persistence
-- Convert the leaderboard page to server-rendered: `export const prerender = false`
-- Because Blobs reads are synchronous per-request with 60s eventual-consistency SLA
-
-**If the scoring involves data from both events (Day 1 Hiawatha's Revenge + Day 2 mkUltraGravel):**
-- Each event site manages its own rider data store independently
-- ironPineOmnium pulls from both at build time (or fetches from their APIs)
-- Because the scoring engine already handles the two-day combination
-
-**If you need to backfill entries manually (race director workflow):**
-- The GitHub Contents API approach allows direct JSON file commits via the GitHub UI or `gh` CLI
-- Because the data format is plain JSON — no database admin interface needed
+Manual steps (not npm packages):
+1. Set `site: 'https://ironpineomnium.com'` in `astro.config.mjs`
+2. Design and commit `public/og-image.png` (1200×630)
+3. Generate and commit `public/favicon.ico` and `public/apple-touch-icon.png`
+4. Add `public/robots.txt`
+5. Extend `BaseLayout.astro` with meta tags and JSON-LD
 
 ---
 
 ## Version Compatibility
 
-| Package | Compatible With | Notes |
-|---------|-----------------|-------|
-| `astro@6.1.x` | `@astrojs/netlify@^6.x` | Official adapter; `npx @astrojs/upgrade` updates both together |
-| `astro@6.1.x` | `@tailwindcss/vite@^4.2.x` | Already confirmed working in this project |
-| `@netlify/blobs` | Netlify Functions (Node 18+) | Node 18+ required for native Fetch API support |
-| Netlify Functions v1 | Node 20 runtime | Default Netlify runtime; no config needed |
-| `drizzle-orm` + `@libsql/client` | Node 18+, Edge runtimes | If Turso path chosen later; use `@libsql/client/web` for edge, `/node` for Functions |
+| Package | Version | Astro 6 Compatible | Notes |
+|---------|---------|--------------------|-------|
+| `@astrojs/sitemap` | v3.7.2 | Yes — official Astro integration | Requires `site` in config |
 
----
-
-## Strava OAuth Flow Summary
-
-The OAuth flow implemented in mkUltraGravel is the correct pattern to adapt:
-
-```
-1. /api/strava-auth (GET)
-   - Validate activityUrl format
-   - Generate CSRF nonce (crypto.randomBytes)
-   - Encode { nonce, activityUrl } as base64url → state param
-   - Set HttpOnly SameSite=Lax cookie with nonce only
-   - 302 → https://www.strava.com/oauth/authorize?scope=activity:read_all&state=...
-
-2. /api/strava-callback (GET, Strava redirects here)
-   - Verify state param decodes and nonce matches cookie
-   - Verify granted scope includes 'activity:read_all'
-   - Exchange code for access token (POST to Strava token endpoint)
-   - Fetch activity: GET /api/v3/activities/{id}?include_all_efforts=true
-   - Filter segment efforts to event segment IDs
-   - Encode payload as base64url → 302 → /submit-confirm?data=...
-   - Clear CSRF cookie (Max-Age=0)
-
-3. /submit-confirm (static page, client-side JS decodes ?data=)
-   - Rider reviews matched segments, selects category, consents
-   - POST form to /api/submit-result
-
-4. /api/submit-result (POST)
-   - Validate consent + category
-   - Decode and validate payload
-   - Commit athlete JSON to GitHub (or write to Netlify Blobs)
-   - Trigger Netlify build hook (if using GitHub API pattern)
-   - Return success page
-
-5. /api/strava-webhook (GET + POST)
-   - GET: Echo hub.challenge for subscription validation
-   - POST: On deauth event (object_type=athlete, aspect_type=delete),
-     delete athlete data from GitHub (or Blobs)
-   - Always respond 200 immediately; process async
-```
-
-**Required Strava env vars:**
-- `STRAVA_CLIENT_ID`
-- `STRAVA_CLIENT_SECRET`
-- `STRAVA_REDIRECT_URI` — must match exactly what is registered in the Strava app settings
-- `STRAVA_VERIFY_TOKEN` — secret for webhook subscription handshake
-
-**Required GitHub env vars (Option A only):**
-- `GITHUB_TOKEN` — fine-grained PAT, Contents: Read + Write
-- `GITHUB_OWNER`
-- `GITHUB_REPO`
-- `NETLIFY_BUILD_HOOK` — build hook URL from Netlify dashboard
+No other new packages are introduced by this milestone.
 
 ---
 
 ## Sources
 
-- Astro official docs (on-demand rendering): `https://docs.astro.build/en/guides/on-demand-rendering/` — HIGH confidence
-- Astro official docs (endpoints/API routes): `https://docs.astro.build/en/guides/endpoints/` — HIGH confidence
-- Astro official docs (actions vs endpoints): `https://docs.astro.build/en/guides/actions/` — HIGH confidence
-- Netlify changelog "Astro 6 just works on Netlify" (March 10 2026): `https://www.netlify.com/changelog/2026-03-10-astro-6/` — HIGH confidence
-- Netlify Support Forum — Functions v2 env var bug (2026-03-27/28): three threads at `answers.netlify.com` — HIGH confidence (multiple independent reports, same symptom)
-- Netlify Blobs docs: `https://docs.netlify.com/build/data-and-storage/netlify-blobs/` — HIGH confidence
-- Strava authentication docs: `https://developers.strava.com/docs/authentication/` — HIGH confidence
-- Drizzle ORM + Turso connection docs: `https://orm.drizzle.team/docs/connect-turso` — HIGH confidence
-- Turso free tier pricing: `https://turso.tech/pricing` — HIGH confidence
-- Astro changelog (confirms 6.1.3 latest as of 2026-04-01): `https://astro-changelog.netlify.app/` — HIGH confidence
-- GitHub blog (fine-grained PATs GA, March 2025): `https://github.blog/changelog/2025-03-18-fine-grained-pats-are-now-generally-available/` — HIGH confidence
-- mkUltraGravel sibling repo (`/netlify/functions/`): Working implementation, reviewed directly — HIGH confidence (source of truth for proven patterns)
-- Astro issue #15076 (AstroCookies.set + manual Set-Cookie header conflict): `https://github.com/withastro/astro/issues/15076` — MEDIUM confidence (issue confirmed, fix status not verified)
+- @astrojs/sitemap official docs (version v3.7.2 confirmed): `https://docs.astro.build/en/guides/integrations-guide/sitemap/` — HIGH confidence
+- Astro canonical URL pattern: `https://docs.astro.build/en/reference/configuration-reference/` — HIGH confidence
+- Google Event structured data requirements: `https://developers.google.com/search/docs/appearance/structured-data/event` — HIGH confidence
+- Evil Martians favicon guide (three-file minimal setup): `https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-most-needs` — HIGH confidence (approach confirmed current by 2025/2026 browser support data)
+- Static OG image in Astro: `https://arne.me/blog/static-og-images-in-astro` — MEDIUM confidence (community source, approach verified by reasoning)
+- OG + Twitter card image dimensions (1200×630): multiple sources including X developer docs — HIGH confidence
+- astro-seo v1.1.0 release date and Astro 6 support status: `https://github.com/jonasmerlin/astro-seo/releases` — MEDIUM confidence (release date confirmed; Astro 6 compat not explicitly documented)
+- Sharp/Astro Netlify compatibility issues: `https://github.com/withastro/astro/issues/14531` — MEDIUM confidence (issue thread, late 2025)
 
 ---
 
-*Stack research for: ironPineOmnium — Strava OAuth + activity data + data persistence*
-*Researched: 2026-04-02*
+*Stack research for: ironPineOmnium — SEO & Social Sharing metadata milestone*
+*Researched: 2026-04-09*
