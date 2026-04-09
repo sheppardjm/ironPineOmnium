@@ -29,7 +29,11 @@ Riders paste a Strava activity URL, authenticate once, and see themselves on a c
 
 ### Active
 
-*(No active requirements — next milestone not yet planned)*
+- Open Graph meta tags with branded shared image across all pages — v1.1
+- Twitter/X card meta tags — v1.1
+- Per-page meta descriptions and titles — v1.1
+- Favicon and web app manifest — v1.1
+- Structured data (JSON-LD) for event discovery — v1.1
 
 ### Out of Scope
 
@@ -39,6 +43,17 @@ Riders paste a Strava activity URL, authenticate once, and see themselves on a c
 - Mobile app — web only
 - Multi-event season tracking — single weekend event only
 - Email / push notifications — disproportionate infrastructure for 50-100 riders
+
+## Current Milestone: v1.1 SEO & Social Sharing
+
+**Goal:** Ensure links shared on social media and search engines display the event logo, proper descriptions, and branded previews.
+
+**Target features:**
+- Open Graph and Twitter Card meta tags on all pages
+- Single branded OG image (logo + event name) used site-wide
+- Per-page titles and descriptions
+- Favicon / web app manifest
+- Structured data for search engine event discovery
 
 ## Context
 
@@ -73,4 +88,4 @@ Riders paste a Strava activity URL, authenticate once, and see themselves on a c
 | CSV manual fallback procedure | Contingency if Strava approval delayed | — Pending (activate if needed by 2026-06-01) |
 
 ---
-*Last updated: 2026-04-08 after v1.0 milestone*
+*Last updated: 2026-04-09 — milestone v1.1 started*
