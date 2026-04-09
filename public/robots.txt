@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ironpineomnium.com/sitemap-index.xml
