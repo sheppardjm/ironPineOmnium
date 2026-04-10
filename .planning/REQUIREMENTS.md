@@ -8,18 +8,18 @@ Ensure all shared links and search results display the event logo, proper descri
 
 ### Social Sharing
 
-- [ ] **SOCIAL-01**: All pages render Open Graph meta tags (og:title, og:description, og:image, og:url, og:type) with a single branded 1200x630 OG image
-- [ ] **SOCIAL-02**: All pages render Twitter Card meta tags (twitter:card=summary_large_image, twitter:title, twitter:description, twitter:image) for full-width social previews
+- [x] **SOCIAL-01**: All pages render Open Graph meta tags (og:title, og:description, og:image, og:url, og:type) with a single branded 1200x630 OG image
+- [x] **SOCIAL-02**: All pages render Twitter Card meta tags (twitter:card=summary_large_image, twitter:title, twitter:description, twitter:image) for full-width social previews
 - [ ] **SOCIAL-03**: A branded OG image (1200x630px) combining event logo and name exists in public/ and is referenced by all OG/Twitter tags
 
 ### Search Optimization
 
-- [ ] **SEO-01**: Each page has a unique, descriptive `<title>` tag reflecting its content
-- [ ] **SEO-02**: Each page has a unique `<meta name="description">` summarizing its purpose
+- [x] **SEO-01**: Each page has a unique, descriptive `<title>` tag reflecting its content
+- [x] **SEO-02**: Each page has a unique `<meta name="description">` summarizing its purpose
 - [ ] **SEO-03**: `site` URL is configured in astro.config.mjs and all pages render `<link rel="canonical">` with absolute URLs
 - [ ] **SEO-04**: sitemap.xml is auto-generated via @astrojs/sitemap and linked in robots.txt
 - [ ] **SEO-05**: robots.txt exists with sitemap reference and appropriate crawl directives
-- [ ] **SEO-06**: /submit-confirm carries a `noindex` meta tag to prevent indexing of transient URLs
+- [x] **SEO-06**: /submit-confirm carries a `noindex` meta tag to prevent indexing of transient URLs
 
 ### Site Identity
 
@@ -62,11 +62,11 @@ Ensure all shared links and search results display the event logo, proper descri
 | IDENT-01 | Phase 14 — Asset Creation | Complete |
 | IDENT-02 | Phase 14 — Asset Creation | Complete |
 | IDENT-03 | Phase 14 — Asset Creation | Complete |
-| SOCIAL-01 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |
-| SOCIAL-02 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |
-| SEO-01 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |
-| SEO-02 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |
-| SEO-06 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |
+| SOCIAL-01 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
+| SOCIAL-02 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
+| SEO-01 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
+| SEO-02 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
+| SEO-06 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
 | SCHEMA-01 | Phase 16 — Structured Data | Pending |
 | QA-01 | Phase 17 — QA and Validation | Pending |
 | QA-02 | Phase 17 — QA and Validation | Pending |
