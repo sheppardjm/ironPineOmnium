@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-09)
 ## Current Position
 
 Phase: 15 of 18 (BaseLayout Extension and Page Metadata)
-Plan: — (not yet planned)
-Status: Ready to plan
-Last activity: 2026-04-09 — Phase 14 complete (OG image, favicons, webmanifest verified)
+Plan: 01 of 02
+Status: In progress
+Last activity: 2026-04-10 — Completed 15-01-PLAN.md (BaseLayout meta tag extension)
 
-Progress: [██████████████░░░░░░] v1.0 complete, v1.1 phase 14 done (14/18)
+Progress: [███████████████░░░░░] v1.0 complete, v1.1 phase 15-01 done (15/18)
 
 ## Accumulated Context
 
@@ -30,6 +30,9 @@ Recent decisions affecting current work:
 - 13-01 robots.txt: References sitemap-index.xml (not sitemap.xml) — astro/sitemap naming convention
 - 14-02 favicon gen: sharp + ImageMagick combo (sharp for PNG, ImageMagick for ICO multi-size); script in scripts/
 - 14-01 OG image: two-column editorial layout with @napi-rs/canvas; 53KB PNG; logo as silhouette on dark panel
+- 15-01 canonical/og:url: Same computed variable used for both — structural guarantee against trailing-slash mismatch
+- 15-01 twitter:card: Set explicitly (no OG fallback exists for card type)
+- 15-01 noindex: Emits noindex-only (not noindex,nofollow) per SEO-06 — sitemap exclusion handles crawl separately
 
 ### Pending Todos
 
@@ -44,6 +47,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-09
-Stopped at: Phase 14 complete — ready for Phase 15 (BaseLayout Extension and Page Metadata)
+Last session: 2026-04-10
+Stopped at: Completed 15-01-PLAN.md — ready for Phase 15-02 (per-page metadata)
 Resume file: None
