@@ -30,6 +30,9 @@ importers:
       netlify-cli:
         specifier: ^24.10.0
         version: 24.10.0(@types/node@25.5.2)(picomatch@4.0.4)(rollup@4.60.1)
+      sharp:
+        specifier: ^0.34.5
+        version: 0.34.5
       typescript:
         specifier: ^5.9.3
         version: 5.9.3

@@ -19,6 +19,7 @@
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
     "netlify-cli": "^24.10.0",
+    "sharp": "^0.34.5",
     "typescript": "^5.9.3"
   },
   "volta": {
