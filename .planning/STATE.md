@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-09)
 ## Current Position
 
 Phase: 15 of 18 (BaseLayout Extension and Page Metadata)
-Plan: 01 of 02
-Status: In progress
-Last activity: 2026-04-10 — Completed 15-01-PLAN.md (BaseLayout meta tag extension)
+Plan: 02 of 02
+Status: Phase complete
+Last activity: 2026-04-09 — Completed 15-02-PLAN.md (per-page metadata: titles, descriptions, noindex)
 
-Progress: [███████████████░░░░░] v1.0 complete, v1.1 phase 15-01 done (15/18)
+Progress: [████████████████░░░░] v1.0 complete, v1.1 phase 15 done (16/18)
 
 ## Accumulated Context
 
@@ -47,6 +47,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-10
-Stopped at: Completed 15-01-PLAN.md — ready for Phase 15-02 (per-page metadata)
+Last session: 2026-04-09
+Stopped at: Completed 15-02-PLAN.md — Phase 15 fully complete; ready for Phase 16 (JSON-LD)
 Resume file: None
