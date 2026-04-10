@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-09)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** v1.1 SEO & Social Sharing — Phase 14: Asset Creation
+**Current focus:** v1.1 SEO & Social Sharing — Phase 15: BaseLayout Extension and Page Metadata
 
 ## Current Position
 
-Phase: 14 of 18 (Asset Creation)
-Plan: 02 of 2 (14-02 favicon-set-and-webmanifest)
-Status: In progress
-Last activity: 2026-04-09 — Completed 14-02-PLAN.md (favicons + webmanifest generated)
+Phase: 15 of 18 (BaseLayout Extension and Page Metadata)
+Plan: — (not yet planned)
+Status: Ready to plan
+Last activity: 2026-04-09 — Phase 14 complete (OG image, favicons, webmanifest verified)
 
-Progress: [████████████░░░░░░░░] v1.0 complete, v1.1 phase 14 plan 02 done (14/18+)
+Progress: [██████████████░░░░░░] v1.0 complete, v1.1 phase 14 done (14/18)
 
 ## Accumulated Context
 
@@ -29,6 +29,7 @@ Recent decisions affecting current work:
 - 13-01 sitemap filter: Use full URL with trailing slash for exclude match (static output format)
 - 13-01 robots.txt: References sitemap-index.xml (not sitemap.xml) — astro/sitemap naming convention
 - 14-02 favicon gen: sharp + ImageMagick combo (sharp for PNG, ImageMagick for ICO multi-size); script in scripts/
+- 14-01 OG image: two-column editorial layout with @napi-rs/canvas; 53KB PNG; logo as silhouette on dark panel
 
 ### Pending Todos
 
@@ -39,11 +40,10 @@ Recent decisions affecting current work:
 
 - **[Pending]**: Strava athlete limit review submitted 2026-04-08 — awaiting approval (7-10 business day window, follow up by 2026-04-22)
 - **[Note]**: If not approved by 2026-06-01, activate CSV manual entry fallback procedure (scripts/csv-fallback.ts)
-- **[Note]**: OG image (Phase 14) is a design deliverable — highest-effort item in the milestone; plan creation time accordingly
 - **[Note]**: Do not share any social links until Phase 17 QA clears — platform caches lock in broken previews for ~30 days
 
 ## Session Continuity
 
 Last session: 2026-04-09
-Stopped at: Completed 14-02 favicon-set-and-webmanifest — ready for Phase 15 (BaseLayout extension)
+Stopped at: Phase 14 complete — ready for Phase 15 (BaseLayout Extension and Page Metadata)
 Resume file: None

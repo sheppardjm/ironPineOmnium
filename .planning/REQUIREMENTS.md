@@ -58,10 +58,10 @@ Ensure all shared links and search results display the event logo, proper descri
 | SEO-03 | Phase 13 — Config and Prerequisites | Complete |
 | SEO-04 | Phase 13 — Config and Prerequisites | Complete |
 | SEO-05 | Phase 13 — Config and Prerequisites | Complete |
-| SOCIAL-03 | Phase 14 — Asset Creation | Pending |
-| IDENT-01 | Phase 14 — Asset Creation | Pending |
-| IDENT-02 | Phase 14 — Asset Creation | Pending |
-| IDENT-03 | Phase 14 — Asset Creation | Pending |
+| SOCIAL-03 | Phase 14 — Asset Creation | Complete |
+| IDENT-01 | Phase 14 — Asset Creation | Complete |
+| IDENT-02 | Phase 14 — Asset Creation | Complete |
+| IDENT-03 | Phase 14 — Asset Creation | Complete |
 | SOCIAL-01 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |
 | SOCIAL-02 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |
 | SEO-01 | Phase 15 — BaseLayout Extension and Page Metadata | Pending |

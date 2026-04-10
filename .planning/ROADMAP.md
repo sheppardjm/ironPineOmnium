@@ -62,8 +62,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 14-01-PLAN.md — Design and create branded OG image (1200x630px) with visual approval checkpoint
-- [ ] 14-02-PLAN.md — Generate favicon set from logo SVG and author site.webmanifest
+- [x] 14-01: Design and create branded OG image (1200x630px) with visual approval checkpoint
+- [x] 14-02: Generate favicon set from logo SVG and author site.webmanifest
 
 ---
 
@@ -167,7 +167,7 @@ Plans:
 | 11. Bug Fix and Dead Code Cleanup | v1.0 | 1/1 | Complete | 2026-04-08 |
 | 12. Strava Athlete Limit Review | v1.0 | 1/1 | Complete | 2026-04-08 |
 | 13. Config and Prerequisites | v1.1 | 1/1 | Complete | 2026-04-09 |
-| 14. Asset Creation | v1.1 | 0/2 | Not started | - |
+| 14. Asset Creation | v1.1 | 2/2 | Complete | 2026-04-09 |
 | 15. BaseLayout Extension and Page Metadata | v1.1 | 0/TBD | Not started | - |
 | 16. Structured Data | v1.1 | 0/TBD | Not started | - |
 | 17. QA and Validation | v1.1 | 0/TBD | Not started | - |
