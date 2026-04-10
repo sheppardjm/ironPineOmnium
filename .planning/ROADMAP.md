@@ -126,7 +126,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 17-01: QA pass — Facebook Sharing Debugger, X Card Validator, Google Rich Results Test, sitemap verification, view-source audit on all pages
+- [x] 17-01: QA pass — Facebook Sharing Debugger, X Card Validator, Google Rich Results Test, sitemap verification, view-source audit on all pages
 
 ---
 
@@ -170,5 +170,5 @@ Plans:
 | 14. Asset Creation | v1.1 | 2/2 | Complete | 2026-04-09 |
 | 15. BaseLayout Extension and Page Metadata | v1.1 | 2/2 | Complete | 2026-04-09 |
 | 16. Structured Data | v1.1 | 1/1 | Complete | 2026-04-09 |
-| 17. QA and Validation | v1.1 | 0/1 | Not started | - |
+| 17. QA and Validation | v1.1 | 1/1 | Complete | 2026-04-10 |
 | 18. Directory Submissions | v1.1 | 0/TBD | Not started | - |

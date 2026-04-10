@@ -33,10 +33,10 @@ Ensure all shared links and search results display the event logo, proper descri
 
 ### QA & Validation
 
-- [ ] **QA-01**: OG tags verified with Facebook Sharing Debugger showing correct image, title, and description
-- [ ] **QA-02**: Twitter Card verified with X Card Validator showing summary_large_image preview
-- [ ] **QA-03**: SportsEvent JSON-LD passes Google Rich Results Test
-- [ ] **QA-04**: sitemap.xml is accessible and contains all indexable pages
+- [x] **QA-01**: OG tags verified with Facebook Sharing Debugger showing correct image, title, and description
+- [x] **QA-02**: Twitter Card verified with X Card Validator showing summary_large_image preview
+- [x] **QA-03**: SportsEvent JSON-LD passes Google Rich Results Test
+- [x] **QA-04**: sitemap.xml is accessible and contains all indexable pages
 
 ### Directory Submissions
 
@@ -68,10 +68,10 @@ Ensure all shared links and search results display the event logo, proper descri
 | SEO-02 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
 | SEO-06 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
 | SCHEMA-01 | Phase 16 — Structured Data | Complete |
-| QA-01 | Phase 17 — QA and Validation | Pending |
-| QA-02 | Phase 17 — QA and Validation | Pending |
-| QA-03 | Phase 17 — QA and Validation | Pending |
-| QA-04 | Phase 17 — QA and Validation | Pending |
+| QA-01 | Phase 17 — QA and Validation | Complete |
+| QA-02 | Phase 17 — QA and Validation | Complete |
+| QA-03 | Phase 17 — QA and Validation | Complete |
+| QA-04 | Phase 17 — QA and Validation | Complete |
 | DIR-01 | Phase 18 — Directory Submissions | Pending |
 | DIR-02 | Phase 18 — Directory Submissions | Pending |
 | DIR-03 | Phase 18 — Directory Submissions | Pending |

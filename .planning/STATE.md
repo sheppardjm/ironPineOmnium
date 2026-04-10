@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-09)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** v1.1 SEO & Social Sharing — Phase 17: QA and Validation
+**Current focus:** v1.1 SEO & Social Sharing — Phase 17: QA and Validation (complete)
 
 ## Current Position
 
 Phase: 17 of 18 (QA and Validation)
-Plan: 01 of 01 (in progress — paused at checkpoint)
-Status: Checkpoint — awaiting deployment before external QA tools
-Last activity: 2026-04-10 — Task 1 complete (17-01 pre-flight checks); deployment blocker found
+Plan: 01 of 01
+Status: Phase complete
+Last activity: 2026-04-10 — All 4 QA requirements verified against live deployment
 
-Progress: [█████████████████░░░] v1.0 complete, v1.1 phase 16 done, phase 17 in progress
+Progress: [██████████████████░░] v1.0 complete, v1.1 phase 17 done (17/18)
 
 ## Accumulated Context
 
@@ -35,6 +35,8 @@ Recent decisions affecting current work:
 - 15-01 noindex: Emits noindex-only (not noindex,nofollow) per SEO-06 — sitemap exclusion handles crawl separately
 - 16-01 JSON-LD: @type Event (not SportsEvent) — only type eligible for Google event rich result cards
 - 16-01 JSON-LD: set:html={JSON.stringify()} mandatory — prevents Astro HTML-escaping that breaks JSON parsing
+- 17-01 QA: Title/description length warnings (71/183 chars) treated as non-blocking findings, not QA failures
+- 17-01 QA: Social links now safe to share — all platform caches will lock in correct previews
 
 ### Pending Todos
 
@@ -43,14 +45,13 @@ Recent decisions affecting current work:
 
 ### Blockers/Concerns
 
-- **[Blocking]**: Live site not deployed — all commits from phases 13-16 exist locally but NOT pushed to origin/main. Netlify is running pre-SEO build. Must push to GitHub before external QA tools can run.
-- **[Blocking]**: Untracked dist/ files (og-image.png, robots.txt, sitemap files, leaderboard/, support/, favicon set) not committed to git — must be committed + pushed for complete deployment.
 - **[Pending]**: Strava athlete limit review submitted 2026-04-08 — awaiting approval (7-10 business day window, follow up by 2026-04-22)
 - **[Note]**: If not approved by 2026-06-01, activate CSV manual entry fallback procedure (scripts/csv-fallback.ts)
-- **[Note]**: Do not share any social links until Phase 17 QA clears — platform caches lock in broken previews for ~30 days
+- **[Resolved]**: Live site deployed — all phases 13-16 SEO work pushed to origin/main and verified on Netlify (2026-04-10)
+- **[Resolved]**: Phase 17 QA cleared — social links safe to share
 
 ## Session Continuity
 
 Last session: 2026-04-10
-Stopped at: 17-01-PLAN.md Task 1 complete; stopped at Task 2 checkpoint (human-action: deploy the site)
-Resume file: None — resume from Task 2 after deployment confirmed
+Stopped at: Completed 17-01-PLAN.md — Phase 17 fully complete; ready for Phase 18 directory submissions
+Resume file: None
