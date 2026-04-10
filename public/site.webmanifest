@@ -1,0 +1,15 @@
+{
+  "name": "Iron & Pine Omnium",
+  "short_name": "Iron & Pine",
+  "start_url": "/",
+  "display": "browser",
+  "theme_color": "#131c1a",
+  "background_color": "#f5f0e8",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
