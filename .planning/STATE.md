@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-09)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** v1.1 SEO & Social Sharing — Phase 15: BaseLayout Extension and Page Metadata
+**Current focus:** v1.1 SEO & Social Sharing — Phase 16: Structured Data (JSON-LD)
 
 ## Current Position
 
-Phase: 15 of 18 (BaseLayout Extension and Page Metadata)
-Plan: 02 of 02
+Phase: 16 of 18 (Structured Data)
+Plan: 01 of 01
 Status: Phase complete
-Last activity: 2026-04-09 — Completed 15-02-PLAN.md (per-page metadata: titles, descriptions, noindex)
+Last activity: 2026-04-09 — Completed 16-01-PLAN.md (Event JSON-LD schema on homepage)
 
-Progress: [████████████████░░░░] v1.0 complete, v1.1 phase 15 done (16/18)
+Progress: [█████████████████░░░] v1.0 complete, v1.1 phase 16 done (17/18)
 
 ## Accumulated Context
 
@@ -33,6 +33,8 @@ Recent decisions affecting current work:
 - 15-01 canonical/og:url: Same computed variable used for both — structural guarantee against trailing-slash mismatch
 - 15-01 twitter:card: Set explicitly (no OG fallback exists for card type)
 - 15-01 noindex: Emits noindex-only (not noindex,nofollow) per SEO-06 — sitemap exclusion handles crawl separately
+- 16-01 JSON-LD: @type Event (not SportsEvent) — only type eligible for Google event rich result cards
+- 16-01 JSON-LD: set:html={JSON.stringify()} mandatory — prevents Astro HTML-escaping that breaks JSON parsing
 
 ### Pending Todos
 
@@ -48,5 +50,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-04-09
-Stopped at: Completed 15-02-PLAN.md — Phase 15 fully complete; ready for Phase 16 (JSON-LD)
+Stopped at: Completed 16-01-PLAN.md — Phase 16 fully complete; ready for Phase 17 QA
 Resume file: None
