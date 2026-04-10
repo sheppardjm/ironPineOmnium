@@ -29,7 +29,7 @@ Ensure all shared links and search results display the event logo, proper descri
 
 ### Structured Data
 
-- [ ] **SCHEMA-01**: Homepage renders SportsEvent JSON-LD with name, startDate, endDate, location, and description for Google event rich results
+- [x] **SCHEMA-01**: Homepage renders SportsEvent JSON-LD with name, startDate, endDate, location, and description for Google event rich results
 
 ### QA & Validation
 
@@ -67,7 +67,7 @@ Ensure all shared links and search results display the event logo, proper descri
 | SEO-01 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
 | SEO-02 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
 | SEO-06 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
-| SCHEMA-01 | Phase 16 — Structured Data | Pending |
+| SCHEMA-01 | Phase 16 — Structured Data | Complete |
 | QA-01 | Phase 17 — QA and Validation | Pending |
 | QA-02 | Phase 17 — QA and Validation | Pending |
 | QA-03 | Phase 17 — QA and Validation | Pending |

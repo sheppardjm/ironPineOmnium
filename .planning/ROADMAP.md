@@ -105,7 +105,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 16-01: Add Event JSON-LD schema to index.astro via head slot using set:html pattern
+- [x] 16-01: Add Event JSON-LD schema to index.astro via head slot using set:html pattern
 
 ---
 
@@ -169,6 +169,6 @@ Plans:
 | 13. Config and Prerequisites | v1.1 | 1/1 | Complete | 2026-04-09 |
 | 14. Asset Creation | v1.1 | 2/2 | Complete | 2026-04-09 |
 | 15. BaseLayout Extension and Page Metadata | v1.1 | 2/2 | Complete | 2026-04-09 |
-| 16. Structured Data | v1.1 | 0/TBD | Not started | - |
+| 16. Structured Data | v1.1 | 1/1 | Complete | 2026-04-09 |
 | 17. QA and Validation | v1.1 | 0/TBD | Not started | - |
 | 18. Directory Submissions | v1.1 | 0/TBD | Not started | - |
