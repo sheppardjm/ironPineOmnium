@@ -82,7 +82,7 @@ Plans:
 4. `<link rel="canonical">` on every page uses the same absolute URL expression as `og:url` — no trailing-slash mismatches
 5. `/submit-confirm` renders `<meta name="robots" content="noindex">` and does not appear in crawl indexes
 
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
 - [ ] 15-01: Extend BaseLayout.astro Props (ogImage?, noindex?, type?); add OG tags, Twitter tags, canonical, favicon/manifest link tags
@@ -168,7 +168,7 @@ Plans:
 | 12. Strava Athlete Limit Review | v1.0 | 1/1 | Complete | 2026-04-08 |
 | 13. Config and Prerequisites | v1.1 | 1/1 | Complete | 2026-04-09 |
 | 14. Asset Creation | v1.1 | 2/2 | Complete | 2026-04-09 |
-| 15. BaseLayout Extension and Page Metadata | v1.1 | 0/TBD | Not started | - |
+| 15. BaseLayout Extension and Page Metadata | v1.1 | 0/2 | Not started | - |
 | 16. Structured Data | v1.1 | 0/TBD | Not started | - |
 | 17. QA and Validation | v1.1 | 0/TBD | Not started | - |
 | 18. Directory Submissions | v1.1 | 0/TBD | Not started | - |
