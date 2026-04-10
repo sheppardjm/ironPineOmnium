@@ -102,10 +102,10 @@ Plans:
 1. The homepage `<head>` contains a `<script type="application/ld+json">` block with a valid SportsEvent object (name, startDate, endDate, location, description)
 2. The JSON is not HTML-escaped — no `&quot;` entities — because `set:html` is used instead of string interpolation
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
-- [ ] 16-01: Author SportsEvent JSON-LD and add to index.astro via `<slot name="head">` using `set:html` pattern
+- [ ] 16-01: Add Event JSON-LD schema to index.astro via head slot using set:html pattern
 
 ---
 
