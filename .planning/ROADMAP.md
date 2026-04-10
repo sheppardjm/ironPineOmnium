@@ -123,7 +123,7 @@ Plans:
 3. Google Rich Results Test confirms the SportsEvent JSON-LD is valid and the event is eligible for rich result display
 4. `/sitemap-index.xml` is accessible on the live domain and contains all indexable page URLs; `/submit-confirm` is absent from the sitemap
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
 - [ ] 17-01: QA pass — Facebook Sharing Debugger, X Card Validator, Google Rich Results Test, sitemap verification, view-source audit on all pages
@@ -143,7 +143,7 @@ Plans:
 2. Iron & Pine Omnium is submitted to gravelcalendar.com with correct event details
 3. Iron & Pine Omnium is submitted to granfondoguide.com with correct event details
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
 - [ ] 18-01: Submit event to gravelevents.com, gravelcalendar.com, and granfondoguide.com (external non-code task)
@@ -170,5 +170,5 @@ Plans:
 | 14. Asset Creation | v1.1 | 2/2 | Complete | 2026-04-09 |
 | 15. BaseLayout Extension and Page Metadata | v1.1 | 2/2 | Complete | 2026-04-09 |
 | 16. Structured Data | v1.1 | 1/1 | Complete | 2026-04-09 |
-| 17. QA and Validation | v1.1 | 0/TBD | Not started | - |
+| 17. QA and Validation | v1.1 | 0/1 | Not started | - |
 | 18. Directory Submissions | v1.1 | 0/TBD | Not started | - |
