@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-12 (shipped 2026-04-08)
-- 🚧 **v1.1 SEO & Social Sharing** — Phases 13-18 (in progress)
+- 🚧 **v1.1 SEO & Social Sharing** — Phases 13-17 (in progress)
 
 ---
 
@@ -130,26 +130,6 @@ Plans:
 
 ---
 
-#### Phase 18: Directory Submissions
-
-**Goal**: The event is listed on the three primary gravel event discovery platforms so riders searching for gravel races in Upper Peninsula Michigan 2026 can find it.
-
-**Depends on**: Phase 17 (QA must pass before any external links drive traffic; social caches must be clean)
-
-**Requirements**: DIR-01, DIR-02, DIR-03
-
-**Success Criteria** (what must be TRUE):
-1. Iron & Pine Omnium is submitted to gravelevents.com with event name, dates (June 6-7, 2026), location, and site URL
-2. Iron & Pine Omnium is submitted to gravelcalendar.com with correct event details
-3. Iron & Pine Omnium is submitted to granfondoguide.com with correct event details
-
-**Plans**: 1 plan
-
-Plans:
-- [ ] 18-01: Submit event to gravelevents.com, gravelcalendar.com, and granfondoguide.com (external non-code task)
-
----
-
 ## Progress
 
 | Phase | Milestone | Plans Complete | Status | Completed |
@@ -171,4 +151,3 @@ Plans:
 | 15. BaseLayout Extension and Page Metadata | v1.1 | 2/2 | Complete | 2026-04-09 |
 | 16. Structured Data | v1.1 | 1/1 | Complete | 2026-04-09 |
 | 17. QA and Validation | v1.1 | 1/1 | Complete | 2026-04-10 |
-| 18. Directory Submissions | v1.1 | 0/TBD | Not started | - |
