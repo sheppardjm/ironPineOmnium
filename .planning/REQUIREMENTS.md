@@ -1,77 +1,72 @@
-# Requirements: v1.1 SEO & Social Sharing
+# Requirements: v1.2 Scoring Integrity
+
+**Defined:** 2026-04-14
+**Core Value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
 
 ## Milestone Goal
 
-Ensure all shared links and search results display the event logo, proper descriptions, and branded previews. Submit to gravel event directories for discovery.
+Prevent sandbagging by replacing moving-time scoring with gun-time scoring on Day 1 and adding minimum distance validation on both days.
 
-## Requirements
+## v1.2 Requirements
 
-### Social Sharing
+### Gun Time Scoring
 
-- [x] **SOCIAL-01**: All pages render Open Graph meta tags (og:title, og:description, og:image, og:url, og:type) with a single branded 1200x630 OG image
-- [x] **SOCIAL-02**: All pages render Twitter Card meta tags (twitter:card=summary_large_image, twitter:title, twitter:description, twitter:image) for full-width social previews
-- [ ] **SOCIAL-03**: A branded OG image (1200x630px) combining event logo and name exists in public/ and is referenced by all OG/Twitter tags
+- [ ] **SCORE-01**: Day 1 race time is computed as `finish_epoch - gun_epoch` where gun start is 8:00 AM ET June 6 2026, using UTC epoch arithmetic
+- [ ] **SCORE-02**: Activities with Strava "Hide Start Time" privacy (`start_date` ending in `T00:00:01Z`) are rejected with a clear error message
+- [ ] **SCORE-03**: Race time (not moving time) is used for the 35% Day 1 scoring component
+- [ ] **SCORE-04**: Score preview shows "Race Time" label and computed gun time before submission
+- [ ] **SCORE-05**: Leaderboard displays "Race Time" column with HH:MM:SS format for the Day 1 component
 
-### Search Optimization
+### Distance Validation
 
-- [x] **SEO-01**: Each page has a unique, descriptive `<title>` tag reflecting its content
-- [x] **SEO-02**: Each page has a unique `<meta name="description">` summarizing its purpose
-- [ ] **SEO-03**: `site` URL is configured in astro.config.mjs and all pages render `<link rel="canonical">` with absolute URLs
-- [ ] **SEO-04**: sitemap.xml is auto-generated via @astrojs/sitemap and linked in robots.txt
-- [ ] **SEO-05**: robots.txt exists with sitemap reference and appropriate crawl directives
-- [x] **SEO-06**: /submit-confirm carries a `noindex` meta tag to prevent indexing of transient URLs
+- [ ] **DIST-01**: Day 1 activities below ~80 miles (129 km) are rejected at fetch time with a user-readable error
+- [ ] **DIST-02**: Day 2 activities below ~80 miles (129 km) are rejected at fetch time with a user-readable error
+- [ ] **DIST-03**: Distance rejection error shows the rider's recorded distance and the minimum required
 
-### Site Identity
+### Configuration
 
-- [ ] **IDENT-01**: favicon.ico (32x32) exists in public/ and is linked in all pages
-- [ ] **IDENT-02**: apple-touch-icon.png (180x180) exists in public/ and is linked in all pages
-- [ ] **IDENT-03**: Web app manifest (site.webmanifest) with event name, theme color, and icon references
+- [ ] **CONFIG-01**: Gun epoch constant, distance thresholds, and event dates are defined in a shared `event-config.ts` module
+- [ ] **CONFIG-02**: `elapsed_time`, `distance`, and `start_date` are extracted from Strava API response at fetch time
 
-### Structured Data
+### Data Integrity
 
-- [x] **SCHEMA-01**: Homepage renders SportsEvent JSON-LD with name, startDate, endDate, location, and description for Google event rich results
-
-### QA & Validation
-
-- [x] **QA-01**: OG tags verified with Facebook Sharing Debugger showing correct image, title, and description
-- [x] **QA-02**: Twitter Card verified with X Card Validator showing summary_large_image preview
-- [x] **QA-03**: SportsEvent JSON-LD passes Google Rich Results Test
-- [x] **QA-04**: sitemap.xml is accessible and contains all indexable pages
-
-### Directory Submissions
-
-- [ ] **DIR-01**: Event submitted to gravelevents.com
-- [ ] **DIR-02**: Event submitted to gravelcalendar.com
-- [ ] **DIR-03**: Event submitted to granfondoguide.com
+- [ ] **DATA-01**: Athlete JSON stores `raceTimeSeconds` and `distanceMeters` for Day 1 submissions
+- [ ] **DATA-02**: Athlete loader handles legacy data (`movingTimeSeconds` fallback) without NaN propagation
 
 ## Out of Scope
 
-- **Social sharing buttons** — Meta shut down external Facebook buttons (Feb 2026), X buttons harm Core Web Vitals, <0.2% engagement rate
-- **Per-page OG images** — marginal value for a 5-page site; one branded image is sufficient
-- **Dynamic rider share cards** — disproportionate complexity (Satori/Sharp + Netlify compatibility issues) for v1.1
-- **SEO for companion sites** — mkUltraGravel and hiawathasRevenge are separate repos
+| Feature | Reason |
+|---------|--------|
+| Moving time as a scoring input | Gameable — defeats the purpose of gun time scoring |
+| Tight distance threshold (90%+) | GPS variance on forested gravel is 3-5%; would produce false rejections |
+| Distance as a scoring component | Binary gate, not a differentiator |
+| Day 2 gun time scoring | Sectors + KOM already validate the ride; gun time adds no value for grinduro format |
+| Admin race time override UI | Out of scope for v1.2; correct data files directly if needed |
+| Dynamic per-rider OG share cards | Deferred from v1.1; not related to scoring integrity |
+| Retroactive recomputation | `start_date` not stored pre-v1.2; handle operationally if needed |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SEO-03 | Phase 13 — Config and Prerequisites | Complete |
-| SEO-04 | Phase 13 — Config and Prerequisites | Complete |
-| SEO-05 | Phase 13 — Config and Prerequisites | Complete |
-| SOCIAL-03 | Phase 14 — Asset Creation | Complete |
-| IDENT-01 | Phase 14 — Asset Creation | Complete |
-| IDENT-02 | Phase 14 — Asset Creation | Complete |
-| IDENT-03 | Phase 14 — Asset Creation | Complete |
-| SOCIAL-01 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
-| SOCIAL-02 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
-| SEO-01 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
-| SEO-02 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
-| SEO-06 | Phase 15 — BaseLayout Extension and Page Metadata | Complete |
-| SCHEMA-01 | Phase 16 — Structured Data | Complete |
-| QA-01 | Phase 17 — QA and Validation | Complete |
-| QA-02 | Phase 17 — QA and Validation | Complete |
-| QA-03 | Phase 17 — QA and Validation | Complete |
-| QA-04 | Phase 17 — QA and Validation | Complete |
-| DIR-01 | Phase 18 — Directory Submissions | Pending |
-| DIR-02 | Phase 18 — Directory Submissions | Pending |
-| DIR-03 | Phase 18 — Directory Submissions | Pending |
+| SCORE-01 | — | Pending |
+| SCORE-02 | — | Pending |
+| SCORE-03 | — | Pending |
+| SCORE-04 | — | Pending |
+| SCORE-05 | — | Pending |
+| DIST-01 | — | Pending |
+| DIST-02 | — | Pending |
+| DIST-03 | — | Pending |
+| CONFIG-01 | — | Pending |
+| CONFIG-02 | — | Pending |
+| DATA-01 | — | Pending |
+| DATA-02 | — | Pending |
+
+**Coverage:**
+- v1.2 requirements: 12 total
+- Mapped to phases: 0
+- Unmapped: 12
+
+---
+*Requirements defined: 2026-04-14*
+*Last updated: 2026-04-14 after initial definition*
