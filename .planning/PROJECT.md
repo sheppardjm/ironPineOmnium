@@ -34,11 +34,11 @@ Riders paste a Strava activity URL, authenticate once, and see themselves on a c
 
 ### Active
 
-- [ ] Gun time scoring for Day 1: race time from 8:00 AM ET gun start replaces moving time — v1.2
-- [ ] Minimum distance validation for Day 1 (80% of ~102-mile route) — v1.2
-- [ ] Minimum distance validation for Day 2 (80% of ~100-mile route) — v1.2
-- [ ] Capture elapsed_time and distance from Strava API — v1.2
-- [ ] Update leaderboard and score preview for race time display — v1.2
+- [ ] Minimum distance validation for Day 1 (95% of ~102-mile route) — v1.2
+- [ ] Minimum distance validation for Day 2 (95% of ~100-mile route) — v1.2
+- [ ] Start time window validation for Day 1 (within 30 min of 8:00 AM ET gun) — v1.2
+- [ ] Hidden Start Time privacy detection and rejection — v1.2
+- [ ] Extract distance and start_date from Strava API for validation — v1.2
 
 ### Out of Scope
 
@@ -51,14 +51,14 @@ Riders paste a Strava activity URL, authenticate once, and see themselves on a c
 
 ## Current Milestone: v1.2 Scoring Integrity
 
-**Goal:** Prevent sandbagging by replacing moving-time scoring with gun-time scoring on Day 1 and adding minimum distance validation on both days.
+**Goal:** Prevent sandbagging by validating that submitted activities cover the full route distance and were recorded from the start — keeping moving-time scoring intact while adding validation gates.
 
 **Target features:**
-- Gun time scoring for Day 1: race time measured from 8:00 AM ET gun start to activity finish
-- Minimum distance validation for Day 1 (~80 miles minimum, 80% of 102-mile route)
-- Minimum distance validation for Day 2 (~80 miles minimum, 80% of 100-mile route)
-- Capture elapsed_time and distance from Strava API at submission time
-- Update leaderboard and score preview to reflect race time instead of moving time
+- Minimum distance validation for both days (95% of expected route distance)
+- Start time window validation for Day 1 (within 30 min of 8:00 AM ET gun)
+- Hidden Start Time privacy detection and rejection
+- Shared event-config module for validation constants
+- Extract distance and start_date from Strava API at fetch time
 
 ## Context
 
