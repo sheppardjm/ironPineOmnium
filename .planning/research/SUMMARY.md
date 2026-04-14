@@ -1,201 +1,294 @@
-# Research Summary: Iron & Pine Omnium — SEO & Social Sharing (v1.1)
+# Research Summary: Iron & Pine Omnium — Scoring Integrity (v1.2)
 
 **Project:** Iron & Pine Omnium
-**Domain:** Static Astro 6 event site — gravel cycling omnium
-**Researched:** 2026-04-09
+**Domain:** Strava-integrated gravel cycling omnium — gun time scoring + distance validation
+**Researched:** 2026-04-14
 **Confidence:** HIGH
 
 ---
 
 ## Key Consensus
 
-All four research dimensions (stack, features, architecture, pitfalls) are tightly aligned and mutually reinforcing. There are no conflicts between researchers. Key points of consensus:
+All four research dimensions are tightly aligned on the core implementation. One significant
+disagreement exists between the Stack researcher and the Features/Architecture researchers on
+timezone handling — resolved below. Key consensus points:
 
-1. **Single OG image, not per-page or dynamic.** STACK, FEATURES, and ARCHITECTURE all independently concluded a 1200×630px PNG in `public/` is the correct approach. PITFALLS confirmed Satori+Sharp has documented Netlify compatibility friction and is not worth pursuing for a one-image site.
-2. **Extend `BaseLayout.astro` directly — no SEO library.** All four files agree `astro-seo` adds no value for a 5-page site and has uncertain Astro 6 compatibility. The existing `<slot name="head">` and props interface is already the right architecture.
-3. **`site` URL in `astro.config.mjs` is the first prerequisite.** FEATURES notes it as a dependency gate; ARCHITECTURE identifies it as step 1 of the build order; PITFALLS calls it the single most dangerous omission (silent failures cascade across all canonical and OG URL construction).
-4. **Only one new npm package: `@astrojs/sitemap`.** Every other item is either a static file (`og-image.png`, `robots.txt`, favicon assets, `site.webmanifest`) or in-layout template markup (meta tags, JSON-LD).
-5. **JSON-LD `SportsEvent` on homepage only.** All researchers agree structured data belongs only on the index page where Google's rich result event card adds value.
+1. **Zero new npm packages.** No date library is needed. `elapsed_time` and `distance` are
+   already returned by the existing `GET /activities/{id}?include_all_efforts=true` endpoint
+   under the existing `activity:read_all` scope.
+
+2. **Gun time uses `start_date` (UTC epoch), not `start_date_local`.** See the resolution
+   below. This is the position endorsed by Features, Architecture, and Pitfalls research.
+
+3. **Distance validation belongs in `strava-fetch-activity.js` at fetch time**, not in
+   `submit-result.js`. Fast-fail with a user-readable error before the rider reaches the
+   confirm screen.
+
+4. **A new `src/lib/event-config.ts` file** holds the gun epoch constant and distance
+   thresholds as a single source of truth. This prevents drift between the Netlify function
+   and any build-time code that needs the same values.
+
+5. **The scoring formula structure is unchanged.** `fastestRaceTime / riderRaceTime * weight`
+   is identical to the existing formula; only the input metric changes from `movingTimeSeconds`
+   to `raceTimeSeconds`.
+
+6. **"Hide Start Time" privacy** returns `start_date = "YYYY-MM-DDT00:00:01Z"`, making gun
+   time impossible to compute. This must be detected and rejected before the calculation runs.
+
+---
+
+## Timezone Disagreement -- Resolution
+
+The Stack researcher proposed: parse `start_date_local` as a string, extract the hour/minute/
+second components, compute seconds-from-midnight, then subtract the gun start's
+seconds-from-midnight. This avoids UTC arithmetic entirely.
+
+The Features and Architecture researchers proposed: parse `start_date` as a true UTC epoch,
+add `elapsed_time` to get the finish epoch, subtract the hardcoded gun epoch (1780660800).
+
+**This summary adopts the Features/Architecture approach (UTC epoch arithmetic) for the
+following reasons:**
+
+- `start_date` is the only field Strava guarantees to be true UTC. `start_date_local` carries
+  a Z suffix that is not a timezone indicator -- it is Strava's formatting convention for local
+  civil time. This is acknowledged in the Stack research itself and called out explicitly in the
+  Pitfalls research as a documented source of 4-hour errors if parsed as UTC.
+
+- Device timezone setting: a rider whose Garmin is set to Central Time will produce a
+  `start_date_local` that reads one hour behind Eastern Time, but `start_date` will still be
+  correct UTC. The Stack approach would compute the wrong offset in this scenario. The
+  UTC epoch approach is immune to device timezone configuration.
+
+- The UTC approach is simpler logic at the formula level: two additions and a subtraction on
+  integers. The `start_date_local` approach requires string slicing, split, map, and
+  multiplication.
+
+- The gun epoch is a fixed, pre-computable constant for June 6 2026 08:00:00 EDT = 12:00:00 UTC.
+  Cross-check: `new Date(GUN_START_EPOCH_SECONDS * 1000).toISOString()` must return
+  `"2026-06-06T12:00:00.000Z"`. Verify this constant before shipping.
+
+**The correct formula:**
+
+```typescript
+// June 6 2026, 8:00 AM EDT = 12:00:00 UTC
+const GUN_START_EPOCH_SECONDS = /* verify independently */;
+
+const startEpoch = Math.floor(new Date(activity.start_date).getTime() / 1000);
+const finishEpoch = startEpoch + activity.elapsed_time;
+const raceTimeSeconds = finishEpoch - GUN_START_EPOCH_SECONDS;
+// raceTimeSeconds <= 0 is an error condition -- reject
+```
 
 ---
 
 ## Stack Additions
 
-The existing stack (Astro 6.1.x, Tailwind CSS 4, pnpm, Netlify static) is **unchanged**. This milestone is purely additive.
+The existing stack (Astro 6, TypeScript, Netlify Functions v1 ESM, pnpm, GitHub Contents API)
+is **unchanged**. This milestone is additive.
 
-**New package (one):**
-- `@astrojs/sitemap` v3.7.2 — official Astro integration; auto-crawls all static routes at build time; requires `site` URL in config. Install via `pnpm astro add sitemap`.
+**New source file (one):**
+- `src/lib/event-config.ts` -- exports the gun epoch constant, distance thresholds, and event
+  date strings as a single source of truth importable by both `.ts` source files and Netlify
+  `.js` functions via relative path (same pattern already used by `segments.ts`).
 
-**New static assets (no packages):**
-- `public/og-image.png` — 1200x630px, under 500KB, branded event image (design deliverable)
-- `public/favicon.ico` — 32x32 ICO fallback for legacy browsers/email clients
-- `public/apple-touch-icon.png` — 180x180 PNG for iOS Safari "Add to Home Screen"
-- `public/favicon-96x96.png` — 96x96 PNG for Android Chrome
-- `public/site.webmanifest` — web app manifest linking icon set
-- `public/robots.txt` — 5-line static file pointing to sitemap
+**New npm packages: zero.**
 
-**Explicitly ruled out:**
-- `astro-seo` — Astro 6 compat unconfirmed; abstraction adds no value at this scale
-- `satori` + `sharp` — Sharp has documented Netlify friction; single static image makes dynamic generation unnecessary
-- `astro-favicons` — one-time offline generation via realfavicongenerator.net is simpler
-- `astro-robots-txt` — overkill for a 5-line file
+| Package | Decision | Reason |
+|---------|----------|--------|
+| luxon, dayjs, moment-timezone | No | UTC epoch arithmetic needs only `new Date().getTime()` -- built into Node/V8 |
+| Any date parsing library | No | ISO 8601 to epoch is `new Date(str).getTime()` -- no library needed |
+
+**Modified files (five):**
+
+| File | Type of change |
+|------|----------------|
+| `netlify/functions/strava-fetch-activity.js` | Extract `elapsed_time`, `distance`, `start_date`; add hidden-start detection; compute `raceTimeSeconds`; add distance gate |
+| `netlify/functions/submit-result.js` | Store `raceTimeSeconds` + `distanceMeters` in athlete JSON; drop `movingTimeSeconds` from Day 1 |
+| `src/lib/athlete-loader.ts` | Update `AthleteJson` interface; map `raceTimeSeconds` to score input; add `movingTimeSeconds` fallback for legacy data |
+| `src/pages/submit-confirm.astro` | Add hidden fields; update Day 1 preview label to "Race Time"; show distance |
+| `src/components/Leaderboard.astro` | Rename column header "Moving Time" to "Race Time" |
 
 ---
 
 ## Feature Categories
 
-### Table Stakes (must ship — social sharing fails without these)
+### Table Stakes (must ship -- scoring is wrong without all of these)
 
-| Feature | Gap Today | Effort |
-|---------|-----------|--------|
-| Open Graph tags: `og:title`, `og:description`, `og:image`, `og:url`, `og:type`, `og:site_name` | Entirely missing | 30-60 min |
-| Twitter/X Card tags: `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`, `twitter:image:alt` | Entirely missing | Bundled with OG |
-| Canonical URL (`<link rel="canonical">`) | Entirely missing | 15 min |
-| OG image asset — 1200x630px PNG | Does not exist | Design: 2-4 hrs |
-| Favicon complete set — ICO, SVG (existing), apple-touch-icon | ICO and apple-touch-icon missing | 1-2 hrs |
-| `@astrojs/sitemap` integration | Missing; no `site` URL set | 30 min |
-| `robots.txt` | Missing | 10 min |
-| Per-page description for leaderboard (only page missing it) | `leaderboard.astro` missing description | 15 min |
-| `site` URL in `astro.config.mjs` | Not set | Trivial — 1 line |
+| Feature | Notes |
+|---------|-------|
+| Extract `elapsed_time` and `distance` from Strava API | Already in response; add to returned payload |
+| Hidden start time detection | Reject if `start_date` ends in `T00:00:01Z`; clear error message to rider |
+| Gun time computation | `(parse(start_date).epoch + elapsed_time) - GUN_START_EPOCH` |
+| Day 1 distance validation | Reject if `distance < 128,748 m` (80 miles); at fetch time with user-readable error |
+| Gun time sanity cap | Reject if `raceTimeSeconds > 50,400` (14 hours) |
+| `RiderResult` schema update | Add `raceTimeSeconds`; `distanceMeters` optional for legacy compat |
+| Scoring formula switch | Use `raceTimeSeconds` in `fastestTime / riderTime * 0.35` |
+| Score preview: Race Time label | Show computed gun time, not `movingTimeSeconds` |
+| Leaderboard column rename | "Moving Time" to "Race Time" |
+| `submit-result.js` storage update | Write `raceTimeSeconds` + `distanceMeters` to athlete JSON |
 
-### Differentiators (high value, low effort — should ship)
+### Differentiators (high value, low effort -- ship in v1.2)
 
-| Feature | Value | Effort |
-|---------|-------|--------|
-| `SportsEvent` JSON-LD on homepage | Google rich results event card; gravel event discovery SEO | 1-2 hrs incl. validation |
-| `site.webmanifest` | "Add to Home Screen" for riders during event weekend | 30 min (once icons exist) |
-| `og:locale` | Signals region to Facebook/LinkedIn crawlers | Trivial — 1 line |
+| Feature | Value |
+|---------|-------|
+| Show moving time alongside race time in preview | Builds rider trust; explains why times differ from Strava |
+| Distance with pass/fail signal in preview | Catches wrong-activity submissions before confirm |
+| Pre-gun start advisory note in preview | Informs riders their early start adds to official race time |
+| Race time in HH:MM:SS on leaderboard | Direct time comparison, not just relative score |
 
 ### Anti-Features (do not build)
 
 | Anti-Feature | Why Not |
 |--------------|---------|
-| Social sharing buttons (X, Facebook) | Meta shut down external Facebook buttons Feb 10, 2026; X share widgets harm Core Web Vitals; 99.8% of mobile users never tap them; OG tags make any shared link polished without buttons |
-| Dynamic per-rider OG share cards | Requires serverless image generation; no demand signal at 50-100 rider scale; revisit Year 2 |
-| Per-page OG images (5 unique images) | Marginal benefit at meaningful production cost; one branded image covers all pages |
-| Breadcrumb structured data | This is a 5-page flat site; breadcrumb schema is for deep hierarchies |
-| FAQ structured data | No FAQ content exists; injecting schema without visible content violates Google policies |
-| hreflang tags | English-only event for regional US audience; zero benefit |
-| AMP pages | Deprecated as ranking signal in 2021; Astro static output is already fast |
+| Use `elapsed_time` directly as race time | Wrong: ignores pre-gun recording offset |
+| Use `moving_time` for scoring | Gameable; defeats the point of gun time |
+| Tight distance threshold (90%+) | GPS variance on forested gravel is 3-5%; would produce false rejections |
+| Distance as a scoring component | It is a binary gate, not a differentiator |
+| Retroactive recomputation of existing entries | `start_date` not stored pre-v1.2; handle operationally (delete + resubmit) |
+| Admin race time override UI | Out of scope; correct data files directly |
+| Day 2 distance gate | Day 2 is sectors-based; a DNF who completed sectors should not be blocked by distance |
 
 ---
 
 ## Architecture Approach
 
-This milestone requires **no architectural changes** to the core system (Strava OAuth, Netlify Functions, GitHub data store, scoring engine). SEO is a pure static-page concern.
+The data flow change is a straight-line substitution: `moving_time` to `raceTimeSeconds` at
+every stage of the pipeline. The existing pipeline shape requires no structural changes.
 
-**What changes:**
+Gun time calculation belongs in `strava-fetch-activity.js`, not `submit-result.js`. All other
+activity-domain logic lives in the fetch function (date validation, ownership check, segment
+extraction). This keeps `submit-result.js` as a pure storage function with no event-domain
+logic. `submit-result.js` receives a clean `raceTimeSeconds` integer and stores it.
 
-| Component | Change |
-|-----------|--------|
-| `astro.config.mjs` | Add `site: 'https://ironpineomnium.com'`; add `sitemap()` integration with filter excluding `/submit-confirm` |
-| `src/layouts/BaseLayout.astro` | Extend Props with `ogImage?`, `noindex?`, `type?`; add OG/Twitter meta tags; add canonical link; add favicon/manifest link tags |
-| `src/pages/index.astro` | Add SportsEvent JSON-LD via `<slot name="head">` |
-| `src/pages/leaderboard.astro` | Add missing `description` prop (one line) |
-| `src/pages/submit-confirm.astro` | Add `noindex={true}` prop |
+Distance validation also lives in `strava-fetch-activity.js` at fetch time, returning
+`{ error: "distance_too_short", distanceMeters: X }` so the confirm UI can show the rider
+their actual recorded distance in the error message.
 
-**Key architecture decision:** Centralize all SEO tags in `BaseLayout.astro` props. Do not split between layout and head slot. Use head slot only for additive content (JSON-LD on homepage). All meta tags go through props to prevent duplicates.
+**Build order (enforced by TypeScript compile dependencies):**
 
-**Canonical URL pattern:**
-```typescript
-const canonicalURL = new URL(Astro.url.pathname, Astro.site).toString();
-// Use this same value for both <link rel="canonical"> AND og:url
+1. `src/lib/event-config.ts` -- no dependencies; establishes constants
+2. `netlify/functions/strava-fetch-activity.js` -- imports event-config; core computation
+3. `src/lib/athlete-loader.ts` -- AthleteJson interface; legacy fallback
+4. `src/lib/types.ts` -- field rename if desired (optional cosmetic change)
+5. `src/lib/scoring.ts` -- likely no changes if field stays named `movingTimeSeconds` internally
+6. `src/pages/submit-confirm.astro` -- client-side; no TS build dependency
+7. `src/components/Leaderboard.astro` -- depends on scoring types
+8. `src/pages/submit.astro` -- error message additions; independent
+9. `netlify/functions/submit-result.js` -- storage; independent of TS build
+
+**Field naming:** Architecture research recommends keeping the internal `RiderResult` field
+named `movingTimeSeconds` for this milestone to avoid touching 7 files for a cosmetic rename.
+The displayed label changes to "Race Time" for users. Internal cleanup can follow in a later pass.
+
+**Athlete JSON schema change:**
+
+```json
+// Before (Day 1)
+{ "day1": { "movingTimeSeconds": 24537, "activityId": "...", "submittedAt": "..." } }
+
+// After (Day 1)
+{ "day1": { "raceTimeSeconds": 24137, "distanceMeters": 164523.4, "activityId": "...", "submittedAt": "..." } }
 ```
 
-**Build order imposed by dependencies:**
-1. Set `site` URL — everything depends on this
-2. Create OG image — blocks social preview testing
-3. Extend BaseLayout — all pages benefit immediately
-4. Fix leaderboard description — one line alongside step 3
-5. Create favicon assets + manifest
-6. Add sitemap integration
-7. Add JSON-LD to index.astro
-8. Add noindex to submit-confirm.astro
+Legacy records fallback in athlete-loader.ts:
+`raceTimeSeconds ?? movingTimeSeconds ?? 0` -- prevents NaN propagation during any transition.
 
 ---
 
 ## Top Pitfalls
 
-**Critical (silent failures, hard to detect without prior knowledge):**
+1. **Gun epoch constant computed incorrectly.** If the EDT/UTC offset is wrong by one hour,
+   every race time is silently off by 3,600 seconds. Two researchers computed different epoch
+   values (see Open Questions). Prevention: independently verify
+   `new Date(GUN_START_EPOCH_SECONDS * 1000).toISOString() === "2026-06-06T12:00:00.000Z"`
+   before writing `event-config.ts`.
 
-1. **Missing `site` in `astro.config.mjs`** — `Astro.site` is `undefined`; canonical and `og:url` silently produce broken strings. Do this first, before writing any meta tag code. This project currently has no `site` property set.
+2. **Hidden start time produces a wildly wrong race time.** "Hide Start Time" privacy returns
+   `start_date = "2026-06-06T00:00:01Z"`. Without detection, the gun time formula computes
+   roughly -46,799 seconds. Always check for the `T00:00:01Z` suffix before computing gun time.
+   The detection must be a separate explicit check -- the existing date validation does not
+   catch this because the date portion (2026-06-06) is still correct.
 
-2. **Relative path in `og:image`** — Social crawlers cannot resolve relative URLs. A tag with `content="/og-image.png"` silently fails for all social cards. Always use `new URL("/og-image.png", Astro.site).toString()`.
+3. **`start_date_local` has a misleading Z suffix -- do not use for epoch arithmetic.** It
+   looks like UTC but is not. A rider with a device set to Central Time produces a
+   `start_date_local` one hour behind Eastern Time. `start_date` is the only safe field for
+   UTC epoch arithmetic.
 
-3. **OG image wrong dimensions or size** — LinkedIn minimum is 1200x627px; narrower images fail to render. File above 5MB may timeout during crawler fetch. Target: exactly 1200x630px, under 500KB. Include explicit `og:image:width` and `og:image:height` tags.
+4. **Distance threshold calibration.** ARCHITECTURE.md proposes 95 miles (152,888 m); FEATURES.md
+   proposes 80 miles (128,748 m). GPS variance on forested gravel can be 3-5%. The 80-mile
+   threshold provides a 20% buffer; the 95-mile threshold provides only 7%. Recommend 80 miles
+   for a first-year event. Confirm against actual route GPS data before launch.
 
-4. **Duplicate meta tags from layout + head slot** — Astro does not deduplicate `<head>` content. If OG tags are in BaseLayout AND a page adds them via head slot, both render. Platform behavior on duplicates is undefined. Prevention: all SEO tags through BaseLayout props only.
-
-5. **`twitter:card` missing** — X does not render a preview card without this tag, even when OG tags are correct. Add `<meta name="twitter:card" content="summary_large_image">` — this single tag unlocks card rendering.
-
-**Moderate (catch in QA):**
-
-6. **JSON-LD Astro escaping** — Never use `{schemaObject}` in a script body. Astro escapes quotes to `&quot;`, producing invalid JSON. Always use `set:html={JSON.stringify(schemaObject)}`.
-
-7. **Social platform cache locks in broken previews** — Facebook caches OG metadata for ~30 days. First share with broken tags = broken preview for a month. Verify all OG tags with Facebook Sharing Debugger and X Card Validator before any social sharing.
-
-8. **Trailing slash canonical mismatch** — Astro SSG produces `directory/index.html`; Netlify serves with trailing slash. Canonicals must match the actual served URL. Derive from `Astro.url.pathname` (not hardcoded paths) and set `trailingSlash: 'always'` in config.
-
-9. **`og:url` differs from canonical** — Both must be computed from the same expression. Never set them independently. Facebook uses `og:url` as deduplication key for shared links.
+5. **Legacy athlete JSON missing `raceTimeSeconds` causes NaN in scoring.** Any JSON written
+   before this milestone has `movingTimeSeconds` only. The loader must include the three-way
+   fallback or the scoring engine propagates NaN across the entire leaderboard.
 
 ---
 
 ## Open Questions
 
-1. **Production domain confirmed?** `https://ironpineomnium.com` is hardcoded in astro.config.mjs and BaseLayout. If the domain changes before launch, it must be updated in both places.
+1. **Gun epoch constant -- resolve before coding.** The Features researcher computed
+   `1780660800` and the Architecture researcher proposed `1749211200`. These differ by
+   ~363 days -- one is wrong. The implementer must independently compute:
+   June 6, 2026 08:00:00 EDT = June 6, 2026 12:00:00 UTC. Verify with
+   `new Date(epoch * 1000).toISOString()`.
 
-2. **OG image design ownership.** The OG image is 2-4 hours of design work (not code). It should follow the editorial race-poster aesthetic. Who is creating it, and is it in scope for this milestone?
+2. **Distance threshold: 80 miles or 95 miles?** Product decision. Recommend 80 miles
+   (128,748 m) -- more forgiving, fewer false rejections in Year 1.
 
-3. **Event dates final for JSON-LD?** `startDate: "2026-06-06"`, `endDate: "2026-06-07"` will be embedded in structured data. Confirm these are correct before committing.
+3. **Day 2 distance gate: add or skip?** Features says add it (80 miles). Stack and
+   Architecture say skip it (sectors-based scoring makes it unnecessary). Recommend skipping
+   it in v1.2; riders who DNF mid-course but completed all sector segments should not be
+   blocked.
 
-4. **Gravel calendar submissions in scope?** gravelevents.com, gravelcalendar.com, granfondoguide.com are the primary discovery channels for riders searching "gravel race Upper Peninsula Michigan 2026." Submitting to these is a non-code task. Is it part of this milestone or deferred?
+4. **`start_date` vs `start_date_local` in existing date validation.** The current date check
+   uses `start_date_local.slice(0, 10)`. Hidden-start-time detection must run as a separate,
+   explicit check -- the `start_date_local` date portion is still correct even when hidden.
 
 ---
 
 ## Roadmap Implications
 
-This milestone is small, well-defined, and has no blocking unknowns. Suggested phase structure:
+This milestone is small and has no blocking unknowns beyond the epoch constant verification.
+All patterns are established. Suggested phase structure:
 
-**Phase 1: Config & Prerequisites** (gates everything else)
-- Add `site: 'https://ironpineomnium.com'` to `astro.config.mjs`
-- Install `@astrojs/sitemap`, add to integrations with submit-confirm filter
-- Verify `Astro.site` is not `undefined` in a local build
-- Rationale: `site` URL gates all canonical/OG URL construction; without it, no other phase can be tested
+**Phase 1: Constants and Configuration**
+- Create `src/lib/event-config.ts` with gun epoch, distance thresholds, event dates
+- Independently verify gun epoch before committing
+- Rationale: all other phases import from this file; a wrong epoch silently corrupts every race time
 
-**Phase 2: Asset Creation** (design-gated)
-- Create `public/og-image.png` — 1200x630px, under 500KB (design task, ~2-4 hrs)
-- Generate favicon set: `favicon.ico`, `apple-touch-icon.png`, `favicon-96x96.png` (via realfavicongenerator.net)
-- Author `public/robots.txt` with Sitemap directive
-- Author `public/site.webmanifest`
-- Rationale: OG image is the critical path item; other assets are low-effort and can be done while design work proceeds
+**Phase 2: Fetch Layer Changes**
+- Modify `strava-fetch-activity.js`: extract `start_date`, `elapsed_time`, `distance`
+- Add hidden start time detection before gun time computation
+- Add gun time computation (UTC epoch arithmetic)
+- Add Day 1 distance validation at fetch time with user-readable error
+- Return `raceTimeSeconds`, `distanceMeters`, `elapsedTimeSeconds` in payload
+- Rationale: fetch function is the integration point; validate and compute here
 
-**Phase 3: BaseLayout Extension** (coding)
-- Extend `BaseLayout.astro` Props: add `ogImage?`, `noindex?`, `type?`
-- Add OG tags, Twitter Card tags, canonical link, favicon/manifest link tags
-- Fix `leaderboard.astro` missing description
-- Add `noindex={true}` to `submit-confirm.astro`
-- Rationale: BaseLayout changes benefit all 5 pages simultaneously; should be done in one pass to avoid partial states
+**Phase 3: Storage Layer Changes**
+- Modify `submit-result.js`: write `raceTimeSeconds` + `distanceMeters` for Day 1
+- Modify `athlete-loader.ts`: update `AthleteJson` interface; add three-way legacy fallback
+- Rationale: must ship before any real submissions so the data store captures the correct fields
 
-**Phase 4: Structured Data** (coding + validation)
-- Add SportsEvent JSON-LD to `index.astro` via `<slot name="head">`
-- Use `set:html={JSON.stringify(...)}` — not string interpolation
-- Validate with Google Rich Results Test against Netlify preview deploy
-- Rationale: validation requires a deployed URL; this phase is last in the coding sequence
+**Phase 4: Scoring and Display**
+- Verify `scoring.ts` picks up `raceTimeSeconds` correctly (likely no formula changes needed)
+- Modify `submit-confirm.astro`: Race Time label, distance display, pre-gun advisory note
+- Modify `Leaderboard.astro`: column rename, HH:MM:SS race time display
+- Add `distance_too_short` error message in `submit.astro`
+- Rationale: user-facing changes; verify end-to-end flow with a test submission
 
-**Phase 5: QA & Pre-Launch Verification** (mandatory before social shares)
-- View source on every page — verify canonical, OG tags, no duplicates
-- Facebook Sharing Debugger — force scrape, confirm image renders
-- X Card Validator — confirm `summary_large_image` card appears
-- Verify `/sitemap-index.xml` returns valid XML
-- Test apple-touch-icon on iOS (Add to Home Screen)
-- Google Rich Results Test — confirm event rich result eligibility
-- Rationale: platform caching means the first share locks in the preview for up to 30 days; QA is mandatory before any promotion
-
-**Total estimated effort:** 6-12 hours (dominated by OG image design and QA round-trips)
+**Phase 5: End-to-End Verification**
+- Submit a test activity; verify `raceTimeSeconds` in stored athlete JSON is correct
+- Verify leaderboard shows "Race Time" column with correct HH:MM:SS
+- Test hidden start time rejection (mock `start_date = "2026-06-06T00:00:01Z"`)
+- Test distance rejection (mock `distance = 50000`)
+- Test pre-gun start (device started before 8:00 AM; verify race time > elapsed time)
 
 ### Research Flags
 
-No phase needs `/gsd:research-phase` — this milestone is entirely documented territory with HIGH confidence sources (official Astro docs, Google structured data docs, ogp.me spec). All patterns are established and stable.
+No phase needs `/gsd:research-phase`. All patterns are established with HIGH confidence from
+official Strava API docs and deterministic UTC arithmetic. The gun epoch value is a calculation,
+not research.
 
 ---
 
@@ -203,39 +296,47 @@ No phase needs `/gsd:research-phase` — this milestone is entirely documented t
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | One new package with official Astro docs; all other additions are static files or inline markup |
-| Features | HIGH | OG spec, Google structured data docs, and Twitter/X Card docs are authoritative and stable |
-| Architecture | HIGH | Based on direct inspection of the existing codebase plus official Astro docs |
-| Pitfalls | HIGH | Derived from official Astro behavior, official platform specs, and documented Netlify/Astro behavior |
+| Stack | HIGH | Zero new packages; all fields in official Strava DetailedActivity docs |
+| Features | HIGH | API mechanics verified via official docs; distance threshold is judgment (MEDIUM) |
+| Architecture | HIGH | Based on direct codebase inspection; build order is deterministic |
+| Pitfalls | HIGH | Hidden-start-time behavior, epoch arithmetic risks, NaN propagation all documented |
 
 **Overall confidence: HIGH**
 
 ### Gaps to Address
 
-- **Production domain** — confirm `ironpineomnium.com` is final before coding begins
-- **OG image design** — highest-effort item; needs explicit ownership and time budget
-- **Trailing slash behavior** — verify Netlify's actual redirect behavior for this deployment against Astro's `trailingSlash` setting before finalizing canonical URL construction
+- **Gun epoch constant:** Two researchers computed different values. Resolve by independent
+  calculation before writing `event-config.ts`. This is the highest-stakes number in the
+  milestone.
+
+- **Distance threshold:** 80 miles (Features) vs 95 miles (Architecture). Recommend 80 miles
+  for Year 1.
+
+- **Day 2 distance gate:** Features says add it; Stack and Architecture say skip it.
+  Recommend skipping in v1.2.
 
 ---
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- Astro `@astrojs/sitemap` docs (v3.7.2): `https://docs.astro.build/en/guides/integrations-guide/sitemap/`
-- Astro canonical URL pattern: `https://docs.astro.build/en/reference/configuration-reference/`
-- Open Graph Protocol specification: `https://ogp.me/`
-- Google Event Structured Data: `https://developers.google.com/search/docs/appearance/structured-data/event`
-- Schema.org SportsEvent: `https://schema.org/SportsEvent`
-- Google canonical URL guidance: `https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls`
-- Evil Martians favicon guide (confirmed current 2026): `https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-most-needs`
+- Strava API DetailedActivity model (`elapsed_time`, `distance`, `start_date`, `start_date_local`):
+  `https://developers.strava.com/docs/reference/#api-models-DetailedActivity`
+- Strava authentication scope documentation (`activity:read_all` field access):
+  `https://developers.strava.com/docs/authentication/`
+- Strava API changelog -- "Hide Start Time" privacy (July 3, 2024):
+  `https://developers.strava.com/docs/changelog/`
+- UTC epoch arithmetic: deterministic computation
+- Michigan UP observes EDT (UTC-4) in June: US timezone law
 
 ### Secondary (MEDIUM confidence)
-- X/Twitter Card tags: `https://share-preview.com/blog/twitter-meta-tags` (cross-referenced with X developer docs)
-- Social sharing buttons analysis: `https://www.seocomponent.com/blog/you-dont-need-social-share-buttons-on-your-website/`
-- Sharp/Astro Netlify compatibility issues: `https://github.com/withastro/astro/issues/14531`
-- Gravel event discovery platforms: gravelevents.com, gravelcalendar.com, granfondoguide.com (direct observation)
+- Strava community hub -- elapsed time vs moving time semantics:
+  `https://communityhub.strava.com/developers-api-7/how-to-get-end-date-or-calculate-end-date-2598`
+- Gun time vs chip time definitions: `https://www.finishlinetiming.com/gun-time-vs-chip-time`
+- GPS distance variance (1-3% typical, 5% in poor conditions):
+  `https://www.dcrainmaker.com/2010/11/sport-device-gps-accuracy-in-depth-part_11.html`
 
 ---
 
-*Research completed: 2026-04-09*
+*Research completed: 2026-04-14*
 *Ready for roadmap: yes*

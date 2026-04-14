@@ -608,3 +608,456 @@ Before marking SEO implementation complete:
 ---
 *SEO & Social Sharing pitfalls added: 2026-04-09*
 *Applies to: SEO & Social Sharing milestone on Iron & Pine Omnium (Astro 6, Netlify)*
+
+
+---
+---
+
+# Scoring Integrity Pitfalls
+
+**Domain:** Gun time scoring + distance validation for Strava-integrated gravel event
+**Researched:** 2026-04-14
+**Confidence:** HIGH on Strava API field behavior (verified against official docs and community); HIGH on UTC/Eastern Time mechanics; MEDIUM on GPS distance accuracy thresholds (empirical data varies by device/terrain)
+
+---
+
+## Critical Pitfalls
+
+### Scoring Pitfall 1: Misinterpreting `start_date_local` with Its Misleading `Z` Suffix
+
+**What goes wrong:**
+The Strava API returns `start_date_local` in the format `"2026-06-06T08:03:22Z"`. The `Z` suffix conventionally means UTC in ISO 8601, but Strava uses it incorrectly here — the datetime value is already in the athlete's local timezone; the `Z` is a lie. If code passes this string to `new Date()` or `Date.parse()`, JavaScript interprets the `Z` as UTC and adjusts the result to local machine time, producing a time that is off by the UTC offset (4 hours for EDT, or 5 hours for EST). Specifically, an 8:03 AM EDT start would appear as 4:03 AM UTC if misinterpreted.
+
+This is confirmed by the Strava developer community and the API's own documentation, which describes `start_date_local` as "the UTC version of the local start time," meaning: the wall-clock digits represent local time, but the `Z` suffix should be ignored as a timezone indicator.
+
+**The correct approach (already used in this project):**
+`activity.start_date_local.slice(0, 10)` extracts the local date string `"2026-06-06"` purely as digits, never constructing a Date object. This is correct and avoids the Z-suffix trap entirely.
+
+**Where the trap reappears when adding gun time scoring:**
+Gun time calculation requires computing `race_time = activity_start - gun_time`. If `activity_start` is derived from `start_date_local` by constructing a Date object (e.g., `new Date(activity.start_date_local)`), the JavaScript runtime will interpret the `Z` as UTC, apply a 4-hour eastward shift, and compute a `race_time` that is 4 hours wrong. A rider who started at 8:03 AM EDT would appear to have started at 4:03 AM UTC, yielding a negative race time when compared against gun time expressed as `2026-06-06T08:00:00-04:00`.
+
+**Prevention:**
+Never pass `start_date_local` to `new Date()`. Extract only the digits you need:
+```javascript
+// Correct: treat as wall-clock local time by stripping the Z
+const [datePart, timePart] = activity.start_date_local.replace("Z", "").split("T");
+// timePart is "08:03:22" — wall clock time in rider's local timezone
+const [hours, minutes, seconds] = timePart.split(":").map(Number);
+const startSecondsSinceMidnight = hours * 3600 + minutes * 60 + seconds;
+
+// Gun time expressed the same way: 8:00:00 AM = 28800 seconds since midnight
+const GUN_TIME_SECONDS_SINCE_MIDNIGHT = 8 * 3600; // 28800
+
+const raceTimeSeconds = startSecondsSinceMidnight - GUN_TIME_SECONDS_SINCE_MIDNIGHT;
+// If positive: rider started that many seconds after the gun
+// raceTimeSeconds feeds into total race time = raceTimeSeconds + movingTimeSeconds
+```
+
+**Warning signs:**
+- Any code path that calls `new Date(activity.start_date_local)`
+- Any code that computes a timestamp difference using a JS Date object constructed from `start_date_local`
+- Gun time is defined as a UTC timestamp and compared against a Date constructed from `start_date_local`
+
+**Severity:** CRITICAL — silent wrong result, no error thrown
+
+**Phase to address:** Gun time scoring implementation, before any start-time arithmetic is written
+
+---
+
+### Scoring Pitfall 2: Defining Gun Time as UTC Instead of Local Wall Clock
+
+**What goes wrong:**
+8:00 AM Eastern Time on June 6, 2026 is `2026-06-06T12:00:00Z` (UTC), because June is EDT which is UTC-4. If a developer defines the gun time as `"2026-06-06T08:00:00Z"` (treating 8:00 AM as UTC), the gun time is off by 4 hours — it represents what would be 8:00 AM in London, not Michigan.
+
+The resulting race times would be exactly 4 hours (14,400 seconds) wrong for every rider. Riders who started at or near gun time would show race times of negative 14,400 seconds — flagged as impossible and rejected, or silently stored as an enormous positive number if absolute value is taken.
+
+**Michigan UP specifics (June 2026, verified):**
+- The UP (except four westernmost counties) observes EDT in June
+- EDT = UTC-4
+- DST began March 8, 2026 and ends November 1, 2026
+- June 6 is firmly in EDT: 8:00 AM EDT = 12:00 PM UTC
+- No DST transitions occur within the event weekend
+
+**Prevention:**
+Store gun time as seconds-since-midnight in local time, matching how `start_date_local` digits are treated. Never store it as a UTC timestamp and compare against `start_date_local`-derived values:
+
+```javascript
+// In scoring config — store as local wall clock, not UTC
+const DAY1_GUN_TIME = {
+  date: "2026-06-06",
+  secondsSinceMidnightLocal: 8 * 3600, // 08:00:00 local = 28800
+};
+
+// If UTC timestamp comparison is truly needed (e.g., for cross-checking with start_date):
+// 8:00 AM EDT = 2026-06-06T12:00:00Z — document this explicitly
+const DAY1_GUN_TIME_UTC = "2026-06-06T12:00:00Z";
+```
+
+**Warning signs:**
+- Gun time is defined as `"2026-06-06T08:00:00Z"` anywhere in the codebase
+- Race times for most riders are negative or suspiciously large
+- Scores are computed against `activity.start_date` (true UTC field) using a gun time that does not apply the EDT offset
+
+**Severity:** CRITICAL — systematic 4-hour error on every single race time
+
+**Phase to address:** Before gun time constant is written; document the UTC offset explicitly in a code comment
+
+---
+
+### Scoring Pitfall 3: `Math.min(...[])` Returns `Infinity` — First Rider Gets 100% by Division
+
+**What goes wrong:**
+The existing `scoring.ts` uses `Math.min(...riders.map(...))` to find the fastest time. If only one rider is in a category (or the first rider submits), `Math.min` works correctly for one element. However, the movingTimeScore formula divides `fastestMovingTimeSeconds / rider.movingTimeSeconds`. When only one rider exists, `fastestMovingTimeSeconds === rider.movingTimeSeconds`, so the ratio is `1.0`, and that rider receives the maximum score. This is expected behavior.
+
+The silent failure mode is if `riders` is empty for a category: `Math.min(...[])` returns `Infinity`, and `Infinity / rider.movingTimeSeconds` is `Infinity`. The score becomes `Infinity`, which renders as `Infinity` or `NaN` in the UI rather than throwing an error.
+
+Adding gun time adds a new time field (`raceTimeSeconds`), which means a new `Math.min` call across `raceTimeSeconds` values. If `raceTimeSeconds` is missing (field not populated yet), the spread produces `Infinity` silently.
+
+**Current code location:** `scoring.ts` line 24 — `Math.min(...riders.map((rider) => rider.movingTimeSeconds))`
+
+**Prevention:**
+Guard all `Math.min` calls against empty arrays:
+```typescript
+const fastestRaceTimeSeconds = riders.length > 0
+  ? Math.min(...riders.map((r) => r.raceTimeSeconds))
+  : 0;
+```
+Also validate after: if `fastestRaceTimeSeconds === Infinity || isNaN(fastestRaceTimeSeconds)`, log a warning and return a zeroed score.
+
+**Warning signs:**
+- Leaderboard shows "Infinity" or "NaN" in any score column
+- A category with one rider shows them with exactly 100 points on every metric
+- No guard clause before `Math.min` spread on a potentially-empty array
+
+**Severity:** CRITICAL in production (wrong scores render silently); catches in dev if you notice the output
+
+**Phase to address:** Scoring engine implementation, before any display component reads scores
+
+---
+
+### Scoring Pitfall 4: `start_date_local` Privacy Redaction — Midnight Returned for Hidden Activity Start Times
+
+**What goes wrong:**
+Strava's September 2024 changelog documents that activities with "hidden start time" privacy setting return an obscured `start_date_local` of midnight + 1 second: `"2026-06-06T00:00:01Z"`. This is not an error — the API returns 200 OK with a valid activity. For date validation (slicing the first 10 characters), this still returns the correct date `"2026-06-06"`, so the submission passes date validation.
+
+However, for gun time scoring, `start_date_local` of `T00:00:01` means the computed start time is 12:00:01 AM local — nearly 8 hours before the gun. The race time calculation yields a large negative number (or, if floor-clamped, still produces a wildly wrong race time that effectively scores as if the rider pre-rode the course overnight).
+
+This only affects riders who have enabled "Hide start time" on their activity privacy settings.
+
+**Prevention:**
+After extracting `start_date_local` digits, validate the derived start time is plausible before computing race time:
+```javascript
+const startSecondsSinceMidnight = hours * 3600 + minutes * 60 + seconds;
+
+// Sanity check: Day 1 gun is 8:00 AM. Reject starts before 7:00 AM or after 10:00 AM
+// (generous 2-hour window; adjust per event expectations)
+const MIN_VALID_START = 7 * 3600;  // 07:00 local
+const MAX_VALID_START = 10 * 3600; // 10:00 local
+
+if (startSecondsSinceMidnight < MIN_VALID_START || startSecondsSinceMidnight > MAX_VALID_START) {
+  return { error: "implausible_start_time" };
+}
+```
+Return a user-facing error that instructs the rider to disable "Hide start time" privacy on this specific activity before resubmitting.
+
+**Warning signs:**
+- `start_date_local` contains `T00:00:01Z` for any submission
+- Computed race time is negative by more than 60 seconds
+- No plausibility window check is applied before computing race time
+
+**Severity:** CRITICAL — silent wrong score if not caught; the activity passes all other validation
+
+**Phase to address:** Gun time computation, alongside the `start_date_local` Z-suffix handling
+
+---
+
+## Moderate Pitfalls
+
+### Scoring Pitfall 5: Elapsed Time vs. Moving Time for Gun Time Scoring
+
+**What goes wrong:**
+The current Day 1 scoring uses `movingTimeSeconds` (`activity.moving_time`). For gun time scoring, what matters is the total time from gun to finish. These are different concepts:
+
+- `moving_time`: Strava's calculated time spent moving (excludes pauses, stops, auto-pause gaps). Varies by device.
+- `elapsed_time`: Total time from recording start to recording stop. Always includes everything.
+
+For gun time scoring, the finish clock time is what matters — a rider who stops for a flat tire and takes 10 minutes to fix it should have those 10 minutes count against them. `elapsed_time` is closer to "finish time" for an event context, but it is anchored to when the rider started recording — not when the gun fired.
+
+**The correct formula for gun time scoring:**
+```
+race_time = (activity_start_time - gun_time) + elapsed_time
+```
+Where `activity_start_time` is the local wall clock time from `start_date_local`, and `elapsed_time` is `activity.elapsed_time` in seconds.
+
+If `moving_time` is used instead of `elapsed_time`, riders who auto-paused at road crossings or stopped for mechanicals get a faster "race time" than riders who rode through without stopping — the opposite of what gun time scoring intends.
+
+**Key API fact (confirmed via Strava support docs):**
+`elapsed_time` always includes paused time. `moving_time` excludes paused intervals. `elapsed_time` is anchored to device recording start/stop, not to the gun.
+
+**Prevention:**
+Use `activity.elapsed_time` (not `activity.moving_time`) as the ride duration component in gun time race time calculation. Store `elapsed_time` in the athlete JSON alongside `raceTimeSeconds`. Keep `movingTimeSeconds` only if the current weighted score formula continues to use it for a sub-component.
+
+**Warning signs:**
+- Race time formula uses `activity.moving_time` as the duration component
+- The data model stores only `movingTimeSeconds` and nothing computes `elapsed_time`
+- Two riders with identical performance but different auto-pause settings get different race times
+
+**Severity:** MODERATE — scoring inequity that is detectable by comparing rider notes, not a silent crash
+
+**Phase to address:** Scoring formula design, before the data model is locked
+
+---
+
+### Scoring Pitfall 6: Rider Starts Recording Before Gun — Pre-Gun Warm-Up Inflates Race Time
+
+**What goes wrong:**
+Riders who hit "record" for a warm-up lap and never stopped (or who started recording 15 minutes early and forgot) will have `start_date_local` earlier than the gun time. The computed pre-gun offset `(activity_start - gun_time)` is negative, meaning their `raceTimeSeconds` = negative offset + `elapsed_time` is smaller than their actual ride duration. They effectively get a head start on the clock — recording 10 minutes early gives them a 10-minute race time advantage.
+
+Conversely, riders who crop the warm-up portion off their activity using Strava's crop tool will have `start_date_local` updated to reflect the cropped start. The crop tool adjusts start time, `elapsed_time`, and `distance` in the API response. So a cropped activity is handled correctly — but only if the rider thinks to crop before submitting.
+
+**Prevention:**
+Clamp the pre-gun offset at zero: if `activity_start - gun_time < 0`, treat it as `0` (the rider started at or before the gun, giving no race-time penalty for early starts but also no advantage):
+```javascript
+const preGunOffsetSeconds = Math.max(0, startSecondsSinceMidnight - GUN_TIME_SECONDS_SINCE_MIDNIGHT);
+const raceTimeSeconds = preGunOffsetSeconds + elapsedTimeSeconds;
+```
+This means riders who start early get the same gun-time start as riders who start exactly on the gun — the early-start offset is floored to zero. Document this policy in the event rules.
+
+**An alternative policy** (stricter): reject submissions where `activity_start` is more than 30 minutes before the gun, requiring the rider to crop their activity first. This is more correct but adds a support burden.
+
+**Warning signs:**
+- No clamping on the pre-gun offset computation
+- Race times are shorter than `elapsed_time` for some riders
+- No mention of early-start policy in event rules
+
+**Severity:** MODERATE — some riders get an unearned advantage; detectable by comparing race time to elapsed time
+
+**Phase to address:** Gun time formula implementation; document early-start policy before coding
+
+---
+
+### Scoring Pitfall 7: Multiple Activity Submissions for the Same Day
+
+**What goes wrong:**
+A rider might record two separate Strava activities for Day 1 — one for the first 50 miles before a GPS device died, and one for the final 50 miles after restarting. The current system enforces one submission per (athlete, day) with a unique constraint, but a rider might not realize they need to submit only one activity and might try submitting both, or submit the second (shorter) activity expecting it to represent their full day.
+
+The system correctly rejects a second submission attempt if the `(athleteId, day)` slot is already filled. However, if a rider submits only the second segment (the shorter, post-restart recording), their distance and elapsed time will appear to cover only half the route — likely failing distance validation and leaving them unscored despite completing the course.
+
+**Prevention:**
+- Instruct riders clearly in event rules: "If you record multiple activities, merge them in Strava before submitting. Strava allows combining separate activities into one using third-party tools. Submit only the merged activity."
+- In the submission error response for `wrong_distance` or `short_elapsed_time`, include messaging: "If you recorded multiple activities, please merge them into one before resubmitting."
+- Consider whether the organizer needs a manual override path to accept a composite time.
+
+**Warning signs:**
+- A rider's submitted activity covers roughly half the expected route distance
+- A rider contacts organizer because "my submission shows the wrong distance"
+- No mention of multi-activity recording in event instructions
+
+**Severity:** MODERATE — rider left unscored despite completing the course; requires manual intervention
+
+**Phase to address:** Submission flow design; event communications; error message copy
+
+---
+
+### Scoring Pitfall 8: Segment Efforts Decluttered or Hidden — Silent Zero on Scoring Segments
+
+**What goes wrong:**
+Strava's September 2024 segment decluttering removed hundreds of thousands of duplicate or low-quality segments. As of the API changelog, decluttered segments return an empty array from the segment efforts endpoint. Additionally, the `hidden` attribute was added to segment effort objects; a `hidden: true` effort means Strava has excluded the effort from leaderboards.
+
+For this project, if one of the designated scoring segments (SECTOR_SEGMENT_IDS or KOM_SEGMENT_IDS from `segments.ts`) is decluttered by Strava between now and the event, the API will return no effort for that segment — and the rider will silently score zero for it. No error is returned; the absence of a segment effort looks identical to a rider who missed the segment.
+
+**Prevention:**
+- Before the event, verify all scoring segments still exist by fetching them directly from the Strava segments API and confirming they are not flagged as archived or hidden.
+- After any submission, if an expected segment ID is absent from a rider's segment efforts AND their distance indicates they rode the full course, flag the submission for manual review rather than auto-scoring zero.
+- Keep a manual override in the admin path that allows an organizer to enter a segment time directly if the API returns nothing.
+- Note: `hidden: true` on a segment effort (added 2024) means Strava excluded it from leaderboards, but the effort still appears in the API response. Decide in advance whether hidden efforts count in your event.
+
+**Warning signs:**
+- A submitted activity covers the full course distance but returns zero sector efforts
+- Segment exists in `segments.ts` but returns no effort for any submitted activity
+- No segment validation step before the event weekend
+
+**Severity:** MODERATE — missed scoring for affected riders; not detectable until riders complain
+
+**Phase to address:** Pre-event segment validation check; submission handler review logic
+
+---
+
+### Scoring Pitfall 9: Scores Must Recompute When New Riders Submit — Stale Leaderboard
+
+**What goes wrong:**
+This project uses relative scoring: `score = (fastest_time / rider_time) * weight * scale`. The fastest time denominator changes each time a faster rider submits. This means every existing rider's score changes when a new, faster rider submits. The current architecture computes scores at build time from static JSON files.
+
+If scores are computed once per submission (at submission time) and stored, they become stale the moment a faster rider submits. A rider who submitted first with `movingTimeSeconds = 6000` receives a score based on `6000/6000 = 1.0` (max) until someone faster arrives. After a faster rider submits, the stored score is wrong but the JSON file still says the old value.
+
+**Current architecture behavior:** `loadAthleteResults()` loads raw times; `scoreOmnium()` recomputes scores at each Astro build. Scores are not stored — they are computed from raw times. This is correct. However, if scoring is extended to store `raceTimeSeconds` in the JSON and scores are ever pre-computed and cached anywhere, this becomes a stale-score problem.
+
+**Prevention:**
+- Never store computed scores in the athlete JSON files. Store only raw measured values (`movingTimeSeconds`, `raceTimeSeconds`, `elapsed_time`, `sectorEfforts`, etc.). Recompute all scores at render time from raw values. This is the existing pattern — maintain it.
+- If a client-side score cache is added (e.g., localStorage), ensure it is invalidated on each page load or on a short TTL.
+- Document this constraint: "scores are always derived, never stored."
+
+**Warning signs:**
+- A pull request adds a `score` field to the athlete JSON schema
+- Score computation moves from build-time to submission-time in the Netlify function
+- A first rider's score is 100 and it stays 100 after faster riders arrive
+
+**Severity:** MODERATE — incorrect leaderboard positions; detectable by comparing scores to expected ranking
+
+**Phase to address:** Data schema design before scoring changes are implemented
+
+---
+
+## Minor Pitfalls
+
+### Scoring Pitfall 10: GPS Distance Over-Read on Forest/Gravel Terrain — False Validation Rejections
+
+**What goes wrong:**
+GPS receivers over-read distance on rough terrain due to "track inflation" — the recorded GPS path snakes more than the actual path when GNSS signals bounce off tree canopy and obstacles. Studies and community reports indicate forest canopy can increase positional error by 30-40%, and real-world over-reads of 5-15% are common in forested gravel conditions similar to the Michigan UP. Strava applies some GPS smoothing, but the smoothing is device-dependent.
+
+For a 102-mile Day 1 course:
+- 5% over-read: rider records 107.1 miles
+- 10% over-read: rider records 112.2 miles
+- 15% over-read: rider records 117.3 miles
+
+For a distance validation that rejects submissions below a minimum, the relevant risk is under-reads (short GPS from poor signal). Under-reads are less common on gravel than over-reads, but can occur if a GPS device briefly loses lock and gaps out. A 5% under-read on 102 miles is 96.9 miles.
+
+**Recommended threshold (based on GPS accuracy literature and gravel event precedent):**
+- Minimum accepted distance: 88% of nominal route distance
+- Maximum accepted distance: 120% of nominal route distance
+
+For 102 miles:
+- Minimum: ~89.8 miles (accept anything above ~90 miles)
+- Maximum: ~122.4 miles (reject anything above ~122 miles — likely a wrong activity)
+
+These thresholds are deliberately wide. Falsely rejecting a legitimate ride is worse than accepting a sandbagged distance, because sandbagging would require riding a shorter route that still hits all the scoring segments — which is separately validated.
+
+**Prevention:**
+```javascript
+const ROUTE_DISTANCE_METERS_DAY1 = 164166; // 102 miles in meters
+const MIN_DISTANCE_RATIO = 0.88;
+const MAX_DISTANCE_RATIO = 1.20;
+
+const minAccepted = ROUTE_DISTANCE_METERS_DAY1 * MIN_DISTANCE_RATIO;
+const maxAccepted = ROUTE_DISTANCE_METERS_DAY1 * MAX_DISTANCE_RATIO;
+
+if (activity.distance < minAccepted || activity.distance > maxAccepted) {
+  return { error: "distance_out_of_range", actual: activity.distance, expected: ROUTE_DISTANCE_METERS_DAY1 };
+}
+```
+
+**Warning signs:**
+- Distance validation uses a tight threshold like 95% or 98% — this will produce false rejections
+- The route distance constant assumes GPS accuracy comparable to road cycling
+- No provision for devices that lose lock mid-ride
+
+**Severity:** LOW — riders who are falsely rejected can appeal to organizer; embarrassing but recoverable
+
+**Phase to address:** Submission validation logic; document threshold rationale in a comment
+
+---
+
+### Scoring Pitfall 11: Negative Race Time or Race Time Exceeding Plausible Finish Window
+
+**What goes wrong:**
+Defensive coding requires handling impossible values:
+
+- **Negative race time** (start_date_local is before gun time by more than the clamping threshold): use the floor-zero clamp from Pitfall 6.
+- **Race time > 24 hours** (someone forgets to stop their GPS; elapsed_time is 86,400+ seconds): A 24+ hour elapsed time on a ~102-mile gravel ride is implausible. The submission should be rejected or flagged.
+- **`raceTimeSeconds` is `NaN`**: possible if `start_date_local` is malformed or parsing fails.
+
+**Prevention:**
+```javascript
+// After computing raceTimeSeconds:
+if (!Number.isFinite(raceTimeSeconds) || raceTimeSeconds < 0) {
+  return { error: "invalid_race_time" };
+}
+
+// Plausibility window: 0 to 16 hours (57,600 seconds) for a 102-mile gravel event
+const MAX_PLAUSIBLE_RACE_TIME = 16 * 3600;
+if (raceTimeSeconds > MAX_PLAUSIBLE_RACE_TIME) {
+  return { error: "implausible_race_time", actual: raceTimeSeconds };
+}
+```
+
+**Warning signs:**
+- No `Number.isFinite` or `isNaN` check before storing race time
+- No upper bound check on elapsed_time
+- Tests do not include a case with `elapsed_time = 0` or `elapsed_time = 999999`
+
+**Severity:** LOW — detectable in testing; does not affect real riders if validation is in place
+
+**Phase to address:** Submission validation; include edge case tests
+
+---
+
+### Scoring Pitfall 12: Data Migration — `movingTimeSeconds` Rename or Schema Change
+
+**What goes wrong:**
+The question was asked about data migration from old format to new. Confirmed: there is no pre-existing athlete data (the event is June 2026; no real rides have happened). No data migration is needed.
+
+However, a schema evolution risk exists going forward: if `raceTimeSeconds` is added as a required field but old athlete JSON files (created during development/testing with placeholder data) do not have it, the build-time loader will encounter `undefined` for `raceTimeSeconds`, and `Math.min(...[undefined, ...])` yields `NaN`.
+
+**Prevention:**
+Treat all new scoring fields as optional in `AthleteJson` with a sensible default during the transition period. When the scoring engine reads `raceTimeSeconds`, fall back to zero or exclude the rider from gun-time scoring if the field is absent:
+```typescript
+raceTimeSeconds: athlete.day1?.raceTimeSeconds ?? 0,
+```
+Document in `types.ts` which fields are "required for scoring" vs "optional fallback."
+
+**Warning signs:**
+- A new required field is added to `AthleteJson` without a default fallback in `athlete-loader.ts`
+- Test JSON fixtures are not updated when the schema changes
+- TypeScript type is updated but the Netlify function that writes JSON does not write the new field
+
+**Severity:** LOW for production (no real data exists); MODERATE during development (breaks local build if test fixtures not updated)
+
+**Phase to address:** Schema design, before athlete JSON writer in the Netlify function is modified
+
+---
+
+## Phase-Specific Warnings
+
+| Phase Topic | Likely Pitfall | Mitigation |
+|-------------|---------------|------------|
+| Gun time constant definition | UTC vs. local confusion (Pitfall 2) | Define as `secondsSinceMidnightLocal = 8 * 3600`; add comment with UTC equivalent |
+| `start_date_local` arithmetic | Z-suffix Date object trap (Pitfall 1) | Never pass to `new Date()`; slice and split digits only |
+| `start_date_local` privacy | Midnight redaction for hidden start times (Pitfall 4) | Plausibility window check before computing race time |
+| Scoring formula | `elapsed_time` vs `moving_time` for race duration (Pitfall 5) | Use `elapsed_time` as ride duration; `moving_time` only for weighted sub-score if kept |
+| Early-start riders | Pre-gun offset yields race time advantage (Pitfall 6) | Clamp pre-gun offset at zero; document policy |
+| Single-rider category | `Math.min` on empty/singleton produces `Infinity` or 100% (Pitfall 3) | Guard all `Math.min` calls; validate against `Infinity` and `NaN` |
+| Distance validation threshold | Too-tight threshold causes false rejections (Pitfall 10) | Use 88%-120% window; GPS over-reads 5-15% on gravel/forest |
+| Segment scoring | Decluttered or hidden segment efforts missing (Pitfall 8) | Pre-event segment health check; flag submissions with missing efforts |
+| Schema changes | New field undefined in old test fixtures (Pitfall 12) | Always provide fallback in loader; update fixtures before marking task done |
+
+---
+
+## Quick Validation Checklist — Scoring Integrity
+
+Before marking gun time scoring implementation complete:
+
+- [ ] `start_date_local` is never passed to `new Date()` in any scoring code path
+- [ ] Gun time is defined as seconds-since-midnight-local with a code comment stating the UTC equivalent (`"2026-06-06T12:00:00Z"`)
+- [ ] Pre-gun start offset is clamped to zero (no negative race time advantage)
+- [ ] Plausibility window rejects `start_date_local = T00:00:01Z` (hidden start time) before race time computation
+- [ ] Race time uses `elapsed_time` as ride duration, not `moving_time`
+- [ ] All `Math.min` calls on scoring arrays are guarded against empty arrays and checked for `Infinity`/`NaN`
+- [ ] Distance validation threshold is documented with rationale; threshold is no tighter than 88%
+- [ ] Scores are computed at render/build time from raw values; no computed scores are stored in athlete JSON
+- [ ] Test fixtures cover: one rider (singleton), no riders (empty category), pre-gun start, midnight-redacted start time, elapsed_time > 16 hours
+
+---
+
+## Scoring Integrity Sources
+
+- Strava API field behavior — `start_date_local` Z suffix (confirmed community discussion): https://groups.google.com/g/strava-api/c/vmJUsW-srdM/m/ac7MhfruCQAJ
+- Strava API changelog — September 2024 (hidden start time redaction to midnight + 1s, hidden attribute on segment efforts): https://developers.strava.com/docs/changelog/
+- Strava API — `elapsed_time` vs `moving_time` definitions: https://support.strava.com/hc/en-us/articles/115001188684-Moving-Time-Speed-and-Pace-Calculations
+- Strava crop tool behavior (adjusts `start_date_local`, `elapsed_time`, `distance`): https://support.strava.com/hc/en-us/articles/216919437-Crop-Tool-for-Activities
+- Strava 2024 segment declutter effects on API (empty array for decluttered segments): https://blog.veloviewer.com/effects-of-the-2024-strava-segment-declutter-in-veloviewer
+- Michigan UP time zone (EDT = UTC-4 in June): https://www.timeanddate.com/time/zone/@12217946
+- DST 2026 transition dates for Eastern Time: March 8, 2026 (spring forward) to November 1, 2026 (fall back)
+- GPS distance accuracy on forest/gravel terrain (canopy error +30-42%, real-world over-reads 5-15%): https://support.strava.com/hc/en-us/articles/216919487-How-Distance-is-Calculated
+
+---
+*Scoring integrity pitfalls added: 2026-04-14*

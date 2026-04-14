@@ -1,312 +1,319 @@
-# Technology Stack — SEO & Social Sharing Milestone
+# Technology Stack — Gun Time Scoring + Distance Validation Milestone
 
 **Project:** Iron & Pine Omnium
-**Milestone:** SEO & Social Sharing metadata
-**Researched:** 2026-04-09
+**Milestone:** Gun time scoring (Day 1) + distance validation at submission
+**Researched:** 2026-04-14
 **Overall confidence:** HIGH
 
 ---
 
 ## Scope
 
-This document covers only the stack additions and changes needed to add SEO and social sharing
-metadata to the existing Astro 6 static site. The existing stack (Astro 6.1.x, Tailwind CSS 4,
-pnpm, Netlify static hosting) is preserved unchanged. No rendering mode changes are required;
-this milestone is purely additive to a static site.
+This document covers only the stack additions and changes needed to implement:
+
+1. **Gun time scoring** — replace `moving_time` with race time (wall-clock finish minus fixed gun start)
+2. **Distance validation** — reject submissions below minimum distance threshold at fetch time
+
+The existing stack (Astro 6, TypeScript, Netlify Functions v1 ESM, pnpm, GitHub Contents API,
+Netlify rebuild hooks) is preserved unchanged. No new packages are needed.
 
 ---
 
-## Recommended Stack Additions
+## Strava API Field Reference
 
-### 1. @astrojs/sitemap — Sitemap Generation
+All fields are returned by the existing endpoint:
+`GET https://www.strava.com/api/v3/activities/{id}?include_all_efforts=true`
 
-| Attribute | Value |
-|-----------|-------|
-| Package | `@astrojs/sitemap` |
-| Current version | v3.7.2 |
-| Type | Astro integration |
-| Install | `pnpm astro add sitemap` |
+No endpoint change is required.
 
-**Why:** Official Astro integration, maintained by the Astro core team. Automatically crawls all
-statically generated routes at build time and emits `sitemap-index.xml` and `sitemap-0.xml` to
-the output directory. No manual route management needed for this site's 5 pages.
+### Fields Currently Captured
 
-**Requirement:** The `site` option must be set in `astro.config.mjs` with the full production URL
-(e.g., `https://ironpineomnium.com`). This is also needed for canonical URL generation across the
-site, so it is required regardless.
+| Field | Type | Unit | Example | Notes |
+|-------|------|------|---------|-------|
+| `moving_time` | integer | seconds | `16200` | Already extracted; used as Day 1 score |
+| `start_date_local` | string (ISO 8601) | — | `"2026-06-06T08:03:22Z"` | Already used for date validation |
 
-**Fits the project:** This site uses `output: 'static'` (no SSR). All five pages are fully static,
-so the integration works perfectly — no `customPages` workarounds needed.
+### New Fields to Capture
 
-**What it does NOT do:** Does not generate `robots.txt`. That is handled separately (see below).
+| Field | Type | Unit | Example | Notes |
+|-------|------|------|---------|-------|
+| `elapsed_time` | integer | seconds | `17405` | Total wall-clock duration (includes stops) |
+| `distance` | float | meters | `163,934.0` | GPS-measured distance for the full activity |
+| `start_date` | string (ISO 8601, UTC) | — | `"2026-06-06T12:03:22Z"` | UTC absolute instant — NOT needed (see below) |
+
+**Confidence:** HIGH — field names, types, and example values confirmed from official Strava API
+reference at `https://developers.strava.com/docs/reference/#api-models-DetailedActivity`.
+
+---
+
+## Field Semantics — Critical Distinctions
+
+### `start_date` vs `start_date_local`
+
+Both are ISO 8601 strings ending in `Z`. This is misleading:
+
+- `start_date` — TRUE UTC. `"2026-06-06T12:03:22Z"` means 12:03 UTC = 8:03 AM EDT.
+- `start_date_local` — Local civil time, formatted AS IF UTC. `"2026-06-06T08:03:22Z"` means
+  "the athlete's device showed 8:03 AM." The `Z` suffix is technically wrong; Strava attaches it
+  as a formatting convention, not a timezone indicator.
+
+This is documented Strava behavior and already handled correctly in `strava-fetch-activity.js`
+via `activity.start_date_local.slice(0, 10)` for date comparison. The comment on line 156
+explicitly notes the misleading `Z` suffix.
+
+### `elapsed_time`
+
+Wall-clock seconds from the moment the device started recording to the moment it stopped.
+Includes all pauses, stops, and rest time. For a bike race where the rider stops at an aid station,
+`elapsed_time` captures the full duration. `moving_time` strips pauses. Gun time scoring requires
+`elapsed_time` — not `moving_time`.
+
+### `distance`
+
+Total GPS-measured distance in meters (float). For a ~102-mile ride, expect approximately
+`164,000` meters (1 mile ≈ 1,609.344 meters). The value reflects the actual GPS track distance;
+it may be slightly higher than the nominal course distance due to GPS drift.
+
+---
+
+## Scope Authorization
+
+The existing `activity:read_all` scope covers `elapsed_time` and `distance` without any change.
+
+**Why:** Scope controls which activities are visible (public vs "Only You"), not which fields
+within an activity are returned. All `DetailedActivity` fields — including `elapsed_time`,
+`distance`, `start_date`, `start_date_local`, `timezone`, and `utc_offset` — are returned for
+any activity the scope permits the app to read. The app already holds `activity:read_all`, so
+no re-authorization and no scope change is needed.
+
+**Confidence:** HIGH — confirmed from Strava authentication documentation at
+`https://developers.strava.com/docs/authentication/`. The scope page describes access by
+visibility level only, with no per-field restrictions documented.
+
+---
+
+## Gun Time Calculation
+
+### Approach: Fixed Gun Start + elapsed_time
+
+**Do not compute finish_time = start_date_local + elapsed_time for race scoring.**
+
+Gun time in a mass-start race is:
+```
+race_time = finish_time - gun_start_time
+          = (rider_device_start + elapsed_time) - gun_start
+```
+
+But since the gun start is fixed and known, and riders start their devices near gun time, a
+simpler and more auditable formula is:
+
+```
+gun_time_seconds = elapsed_time + (device_start_offset_from_gun)
+```
+
+The cleanest implementation for this event:
+
+```typescript
+// Day 1: Hiawatha's Revenge, June 6 2026, gun start 8:00 AM EDT
+// Gun time = elapsed_time on the activity, anchored relative to gun start.
+//
+// start_date_local "2026-06-06T08:03:22Z" means device started at 8:03:22 AM local.
+// Gun went off at 8:00:00 AM local.
+// device_start_offset = 3 minutes 22 seconds = 202 seconds late start
+//
+// race_time = elapsed_time + device_start_offset
+//           = elapsed_time + (device_local_start_seconds - gun_start_seconds)
+
+const GUN_START_SECONDS_FROM_MIDNIGHT = 8 * 3600; // 8:00:00 AM = 28800 seconds
+
+function computeGunTimeSeconds(
+  startDateLocal: string,  // e.g. "2026-06-06T08:03:22Z"
+  elapsedTime: number      // seconds from Strava API
+): number {
+  // Extract local time components — treat the string as local time ignoring the Z
+  const [, timePart] = startDateLocal.split('T');
+  const [hh, mm, ss] = timePart.replace('Z', '').split(':').map(Number);
+  const deviceStartSecondsFromMidnight = hh * 3600 + mm * 60 + ss;
+
+  const startOffset = deviceStartSecondsFromMidnight - GUN_START_SECONDS_FROM_MIDNIGHT;
+  // startOffset > 0 means rider started device AFTER the gun (common)
+  // startOffset < 0 means rider started device BEFORE the gun (pre-staging)
+
+  return elapsedTime + startOffset;
+}
+```
+
+This approach:
+- Uses `start_date_local` (already in the response, already understood)
+- Requires no timezone library — the local time IS the correct civil time
+- Does not use `start_date` (UTC) at all — avoids UTC/local conversion entirely
+- Is fully deterministic from the two values Strava returns
+
+### Why NOT to use `start_date` (UTC) for this calculation
+
+The tempting approach of `finish_UTC = new Date(start_date) + elapsed_time` then converting to
+EDT introduces unnecessary complexity. The gun start is defined in local civil time (8:00 AM EDT).
+`start_date_local` is already in local civil time. No conversion needed.
+
+### Edge cases to handle in implementation
+
+| Scenario | Expected behavior |
+|----------|-------------------|
+| Rider started device 5+ min before gun | `startOffset` is negative; subtract from elapsed_time |
+| Rider forgot to stop device at finish | `elapsed_time` is inflated; leaderboard shows slow time naturally |
+| Rider paused/resumed mid-ride | `elapsed_time` captures full wall clock; correct for gun time |
+| `start_date_local` is midnight+1s (hidden activity) | Date validation already rejects this (wrong date) |
+
+---
+
+## Distance Validation
+
+### Threshold Values
+
+| Day | Event | Nominal Distance | Minimum Threshold | Rationale |
+|-----|-------|-----------------|-------------------|-----------|
+| Day 1 (June 6) | Hiawatha's Revenge | ~102 miles (~164 km) | 145 km (90 mi) | ~10% under nominal; allows GPS drift shortfall |
+| Day 2 (June 7) | MK Ultra Gravel | ~100 miles (~161 km) | No change (sectors/KOM scoring) | Distance not used as score; threshold optional |
+
+**Recommended:** For Day 1, reject if `activity.distance < 145_000` (meters). This is a sanity
+check against someone submitting a partial ride, not a precise finish validator.
+
+### Implementation pattern
+
+```typescript
+// In strava-fetch-activity.js, after date validation:
+const MIN_DISTANCE_METERS = {
+  "2026-06-06": 145_000,  // Hiawatha: ~90 miles minimum
+  "2026-06-07": 0,         // MK Ultra: no distance floor (sectors-based scoring)
+};
+
+const minDist = MIN_DISTANCE_METERS[localDateStr] ?? 0;
+if (activity.distance < minDist) {
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      error: "distance_too_short",
+      actualDistanceMeters: activity.distance,
+      minimumDistanceMeters: minDist,
+    }),
+  };
+}
+```
+
+**Confidence:** HIGH — `distance` field behavior and units confirmed from official docs. Threshold
+values are a product/event decision, not a Strava constraint.
+
+---
+
+## Timezone Handling
+
+### Verdict: No library needed.
+
+The gun start is defined in local civil time. `start_date_local` already contains local civil time.
+The calculation (extract hours/minutes/seconds from the string) requires only basic string parsing —
+no timezone awareness, no DST handling, no IANA database lookup.
+
+**Michigan's Upper Peninsula timezone context:**
+
+The UP observes Eastern Time. On June 6, 2026, EDT is UTC-4 (DST in effect). This means:
+- Gun start: 8:00 AM EDT = 12:00 PM UTC
+- `start_date` for a rider starting at 8:03 AM will show `"2026-06-06T12:03:22Z"` (UTC)
+- `start_date_local` for the same rider shows `"2026-06-06T08:03:22Z"` (local, misleading Z)
+
+The calculation only touches `start_date_local`. UTC and DST rules are irrelevant.
+
+**If timezone conversion were ever needed** (not currently needed), the correct built-in approach
+is `Intl.DateTimeFormat` with `timeZone: 'America/New_York'`. This handles DST automatically
+via the V8/Node.js IANA timezone database, which is bundled in Node.js 18+. No `luxon`, `dayjs`,
+or `moment-timezone` is needed.
+
+**No new npm packages for timezone handling.**
+
+---
+
+## Changes to `strava-fetch-activity.js`
+
+This is the only file that needs modification. Changes are additive:
+
+### 1. Extract two new fields from the activity response
 
 ```javascript
-// astro.config.mjs — additions
-import sitemap from '@astrojs/sitemap';
-
-export default defineConfig({
-  site: 'https://ironpineomnium.com', // REQUIRED
-  output: 'static',
-  integrations: [sitemap()],
-  vite: { plugins: [tailwindcss()] },
-});
+// After: movingTimeSeconds: activity.moving_time,
+elapsedTimeSeconds: activity.elapsed_time,   // integer, seconds
+distanceMeters: activity.distance,            // float, meters
 ```
 
-**Confidence:** HIGH — verified from official Astro docs (v3.7.2 confirmed current).
+### 2. Add distance validation block (after date validation, before segment extraction)
 
----
+Insert the distance threshold check described above.
 
-### 2. Head Meta Tags — Built-In Astro, No External Library
+### 3. Add gun time computation (for Day 1 only)
 
-**Recommendation: Do not add astro-seo or any third-party SEO component library.**
+Compute `gunTimeSeconds` from `elapsed_time` + device start offset vs gun start. Return it
+alongside `movingTimeSeconds` so the scoring layer can use the correct value.
 
-**Why not astro-seo:** The `astro-seo` package (jonasmerlin/astro-seo) shipped v1.0.0 requiring
-Astro 5.16+ and v1.1.0 on January 13, 2026. It does not explicitly declare Astro 6 support as of
-the researched date. More importantly, for a 5-page site with a single shared OG image, the
-abstraction adds a dependency for no meaningful gain. The existing `BaseLayout.astro` already has
-a `<slot name="head" />` escape hatch and `title`/`description` props — the foundation is already
-correct.
+### 4. Pass gun time in the returned JSON
 
-**What to build instead:** Extend `BaseLayout.astro` directly with:
-
-- `<link rel="canonical" href={canonicalURL} />` — built from `Astro.site` + `Astro.url.pathname`
-- `<meta property="og:title" content={...} />`
-- `<meta property="og:description" content={...} />`
-- `<meta property="og:type" content="website" />` (or "event" for the home page)
-- `<meta property="og:url" content={canonicalURL} />`
-- `<meta property="og:image" content={absoluteOgImageUrl} />`
-- `<meta property="og:image:width" content="1200" />`
-- `<meta property="og:image:height" content="630" />`
-- `<meta property="og:site_name" content="Iron & Pine Omnium" />`
-- `<meta name="twitter:card" content="summary_large_image" />`
-- `<meta name="twitter:image" content={absoluteOgImageUrl} />`
-- `<meta name="twitter:title" content={...} />`
-- `<meta name="twitter:description" content={...} />`
-
-This is ~20 lines of straightforward Astro template markup. No library needed.
-
-**Canonical URL pattern (verified from Astro docs):**
-```typescript
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-```
-`Astro.site` is populated from the `site` key in `astro.config.mjs`. Works at build time for
-static pages.
-
-**Confidence:** HIGH — pattern verified from official Astro docs and community sources.
-
----
-
-### 3. OG Image — Single Static File, No Generation Pipeline
-
-**Recommendation: Design one 1200×630px PNG, place in `public/`, reference by absolute URL.**
-
-**Why not Satori + Sharp:** The project context specifies "single branded OG image to be shared
-across all pages." Dynamic OG image generation (Satori → SVG → Sharp → PNG per-route) exists
-to produce per-post images with variable titles. That complexity is not needed here. Adding Satori
-and Sharp introduces:
-- Sharp's known Netlify/Astro compatibility friction (multiple GitHub issues, November 2025 reports
-  of `Could not find Sharp` errors on Astro 5.13.7+; risk carries into Astro 6)
-- Satori's requirement to load font files at build time (the project uses Google Fonts via CDN link,
-  not local font files — a mismatch)
-- An API endpoint (`pages/og-image.png.ts`) that, while compatible with static mode via
-  `getStaticPaths()`, adds unnecessary build complexity for a single image
-
-**The correct approach:**
-1. Create `public/og-image.png` (1200×630px — universal OG + Twitter/X compatible size)
-2. Reference it as an absolute URL: `https://ironpineomnium.com/og-image.png`
-3. OG meta tags require absolute URLs; relative paths silently fail on social platforms
-
-**Image design note (not a stack concern):** The image should match the editorial race-poster
-aesthetic (Spectral headlines, deep forest palette). This is a design deliverable, not a build
-tooling concern.
-
-**Confidence:** HIGH — static OG image in public/ is the standard pattern; absolute URL
-requirement confirmed from multiple social platform documentation sources.
-
----
-
-### 4. Favicon Set — Manual File Placement, No Generation Integration
-
-**Recommendation: Generate offline with realfavicongenerator.net; place files in `public/`.**
-
-The existing `BaseLayout.astro` has `<link rel="icon" type="image/svg+xml" href="/logo.svg" />`.
-This covers modern browsers (Chrome, Firefox, Edge) that support SVG favicons. The gap is:
-
-- Safari on iOS/macOS does not fully honor SVG favicons in all contexts
-- No `apple-touch-icon` for iOS home screen
-- No `favicon.ico` fallback for legacy tools (email clients, feed readers, etc.)
-
-**Minimal modern favicon set (3 files, covers ~100% of cases):**
-
-| File | Size | Purpose |
-|------|------|---------|
-| `public/favicon.ico` | 32×32 | Legacy browsers, email clients, feed readers |
-| `public/icon.svg` | scalable | Modern browsers (rename/reuse logo.svg if identical) |
-| `public/apple-touch-icon.png` | 180×180 | iOS Safari home screen bookmark |
-
-**HTML link tags to add to BaseLayout.astro:**
-```html
-<link rel="icon" href="/favicon.ico" sizes="32x32">
-<link rel="icon" href="/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+```javascript
+// Returned body additions:
+gunTimeSeconds: computedGunTime,      // null for Day 2 (no gun time scoring)
+elapsedTimeSeconds: activity.elapsed_time,
+distanceMeters: activity.distance,
 ```
 
-Replace the existing `<link rel="icon" type="image/svg+xml" href="/logo.svg" />` with the three
-tags above (and rename `logo.svg` → `icon.svg` in public/ or keep the `/logo.svg` path if it is
-referenced elsewhere).
+### File path
 
-**Why not astro-favicons integration:** The `astro-favicons` package automates generation but
-adds a build-time integration dependency for what is a one-time design task. For a branded
-event site with one favicon source, offline generation then committed static files is simpler
-and more predictable.
-
-**Recommended offline tool:** https://realfavicongenerator.net — generates ICO, PNG, and the exact
-HTML tags with correct sizes. Upload the logo SVG; download the zip; copy to `public/`.
-
-**Confidence:** HIGH — three-file approach verified from Evil Martians' authoritative favicon guide
-and confirmed still current by 2025/2026 browser support data.
-
----
-
-### 5. JSON-LD Structured Data — Inline Component, No Library
-
-**Recommendation: Inline `<script type="application/ld+json">` in BaseLayout.astro.**
-
-No package needed. The pattern for Astro is:
-
-```astro
----
-const structuredData = {
-  "@context": "https://schema.org",
-  "@type": "SportsEvent",
-  "name": "Iron & Pine Omnium",
-  "description": "...",
-  "startDate": "2026-06-06",
-  "endDate": "2026-06-07",
-  "location": {
-    "@type": "Place",
-    "name": "Michigan's Upper Peninsula",
-    "address": { "@type": "PostalAddress", "addressRegion": "MI", "addressCountry": "US" }
-  },
-  "organizer": { "@type": "Organization", "name": "Neucadia", "url": "https://neucadia.com" },
-  "image": "https://ironpineomnium.com/og-image.png",
-  "url": "https://ironpineomnium.com",
-  "eventStatus": "https://schema.org/EventScheduled",
-  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode"
-};
----
-<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+```
+netlify/functions/strava-fetch-activity.js
 ```
 
-**Schema type choice:** `SportsEvent` (subtype of `Event`) is the correct type. Google's Event
-rich results accept `SportsEvent`. Required properties for rich result eligibility are `name`,
-`startDate`, and `location` (with `location.name` and `location.address`). The event is physical
-(UP Michigan), which qualifies — Google explicitly excludes virtual-only events.
-
-**`set:html` note:** Astro's `set:html` directive bypasses HTML escaping for the script content,
-which is the correct approach for JSON-LD. This is the established Astro community pattern.
-
-**Where to place it:** Only on pages where it adds value. The home page (`/`) is the primary
-candidate. The `/leaderboard`, `/submit`, `/submit-confirm`, and `/support` pages benefit from
-`og:` meta tags but not necessarily the `SportsEvent` JSON-LD block (which is home-page-level).
-Use the existing `<slot name="head" />` in `BaseLayout.astro` for page-specific structured data,
-and place global structured data directly in the layout.
-
-**Confidence:** HIGH — verified from Google's official structured data documentation and Astro
-community implementation patterns.
+No other files require stack-level changes for this milestone. The scoring logic that consumes
+`gunTimeSeconds` (replacing `movingTimeSeconds` for Day 1) lives in whatever calls this function
+and writes to the leaderboard JSON.
 
 ---
 
-### 6. robots.txt — Static File in public/
+## New Packages
 
-**Recommendation: Add `public/robots.txt` as a hand-authored static file.**
+**None.** This milestone requires zero new npm packages.
 
-No package needed. A static file in `public/` is copied verbatim to the output root by Astro's
-build process, which is exactly what is needed.
-
-**Recommended content:**
-```
-User-agent: *
-Allow: /
-
-Sitemap: https://ironpineomnium.com/sitemap-index.xml
-```
-
-**Pages to consider blocking:** `/submit`, `/submit-confirm` are functional pages (form UI, OAuth
-redirect target) — not content Google should index or surface. Add `Disallow:` rules if desired,
-though `<meta name="robots" content="noindex">` in the page's `<head>` is more reliable than
-`robots.txt` for preventing indexing of specific pages.
-
-**Confidence:** HIGH — Astro docs confirm `public/` files are served at root path.
+| Package | Decision | Reason |
+|---------|----------|--------|
+| `luxon` | No | Timezone handling not needed for this calculation |
+| `dayjs` + timezone plugin | No | Same — `start_date_local` already in civil time |
+| `moment-timezone` | No | Deprecated; not appropriate regardless |
+| Any date library | No | String slicing of ISO 8601 is sufficient and correct |
 
 ---
 
-## What NOT to Add
+## What NOT to Change
 
-| Avoid | Why | Use Instead |
-|-------|-----|-------------|
-| `astro-seo` package | Astro 6 compatibility not confirmed; no meaningful gain for a 5-page single-OG-image site | Hand-authored meta tags in BaseLayout.astro |
-| `satori` + `sharp` | Sharp has documented Netlify/Astro compatibility friction (late 2025); fonts are CDN-linked, not local files; single static OG image is sufficient | Pre-designed PNG in `public/` |
-| `astro-favicons` integration | Automated generation is overkill for one favicon source; adds build-time integration dependency | One-time offline generation via realfavicongenerator.net |
-| `astro-robots-txt` package | A static `public/robots.txt` is 5 lines; adding a package to generate 5 lines is unnecessary complexity | Static file |
-| Per-page OG images | No editorial differentiation between pages justifies per-page images; same brand image everywhere is appropriate for an event site | Single `public/og-image.png` |
-
----
-
-## Integration with Existing Stack
-
-| Existing Element | Change Required |
-|------------------|-----------------|
-| `astro.config.mjs` | Add `site: 'https://ironpineomnium.com'` option; add `sitemap()` to `integrations[]` |
-| `BaseLayout.astro` | Extend `<head>` with canonical, OG, Twitter Card tags, JSON-LD script, favicon link tags |
-| `public/logo.svg` | Keep as-is (already used as icon). Add `favicon.ico` and `apple-touch-icon.png` alongside it |
-| `output: 'static'` | No change — this milestone is fully compatible with static output |
-| Netlify adapter | Not needed; this milestone does not require SSR |
-| Font loading (Google Fonts CDN) | No change — fonts remain CDN-linked, which is why Satori is not viable |
-
----
-
-## Installation
-
-```bash
-# Only new package for this milestone:
-pnpm astro add sitemap
-# This command auto-adds the integration to astro.config.mjs
-
-# No other packages needed
-```
-
-Manual steps (not npm packages):
-1. Set `site: 'https://ironpineomnium.com'` in `astro.config.mjs`
-2. Design and commit `public/og-image.png` (1200×630)
-3. Generate and commit `public/favicon.ico` and `public/apple-touch-icon.png`
-4. Add `public/robots.txt`
-5. Extend `BaseLayout.astro` with meta tags and JSON-LD
-
----
-
-## Version Compatibility
-
-| Package | Version | Astro 6 Compatible | Notes |
-|---------|---------|--------------------|-------|
-| `@astrojs/sitemap` | v3.7.2 | Yes — official Astro integration | Requires `site` in config |
-
-No other new packages are introduced by this milestone.
+| Existing element | Status |
+|-----------------|--------|
+| `activity:read_all` scope | No change — already covers `elapsed_time` and `distance` |
+| Strava API endpoint | No change — `include_all_efforts=true` already returns both fields |
+| Date validation logic (`start_date_local.slice(0, 10)`) | No change — correct as-is |
+| Cookie/session handling | No change |
+| GitHub Contents API persistence | Minor change — leaderboard schema adds `gunTimeSeconds`, `distanceMeters` columns |
+| Day 2 scoring (sectors + KOM) | No change — `elapsed_time` is already extracted per-segment-effort, not the activity level |
 
 ---
 
 ## Sources
 
-- @astrojs/sitemap official docs (version v3.7.2 confirmed): `https://docs.astro.build/en/guides/integrations-guide/sitemap/` — HIGH confidence
-- Astro canonical URL pattern: `https://docs.astro.build/en/reference/configuration-reference/` — HIGH confidence
-- Google Event structured data requirements: `https://developers.google.com/search/docs/appearance/structured-data/event` — HIGH confidence
-- Evil Martians favicon guide (three-file minimal setup): `https://evilmartians.com/chronicles/how-to-favicon-in-2021-six-files-that-fit-most-needs` — HIGH confidence (approach confirmed current by 2025/2026 browser support data)
-- Static OG image in Astro: `https://arne.me/blog/static-og-images-in-astro` — MEDIUM confidence (community source, approach verified by reasoning)
-- OG + Twitter card image dimensions (1200×630): multiple sources including X developer docs — HIGH confidence
-- astro-seo v1.1.0 release date and Astro 6 support status: `https://github.com/jonasmerlin/astro-seo/releases` — MEDIUM confidence (release date confirmed; Astro 6 compat not explicitly documented)
-- Sharp/Astro Netlify compatibility issues: `https://github.com/withastro/astro/issues/14531` — MEDIUM confidence (issue thread, late 2025)
+- Strava API DetailedActivity model (elapsed_time, distance, start_date, start_date_local types
+  and examples): `https://developers.strava.com/docs/reference/#api-models-DetailedActivity` — HIGH confidence
+- Strava authentication scope documentation (activity:read_all field access):
+  `https://developers.strava.com/docs/authentication/` — HIGH confidence
+- Strava community: end time = start_date + elapsed_time:
+  `https://communityhub.strava.com/developers-api-7/how-to-get-end-date-or-calculate-end-date-2598` — HIGH confidence
+- start_date_local misleading Z suffix: confirmed in existing codebase comment (line 156
+  of `netlify/functions/strava-fetch-activity.js`) and consistent with Strava community docs — HIGH confidence
+- Intl.DateTimeFormat + IANA timezone support in Node.js 18+ (if ever needed):
+  MDN `https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat` — HIGH confidence
+- Distance field units (meters, float): Strava API reference — HIGH confidence
 
 ---
 
-*Stack research for: ironPineOmnium — SEO & Social Sharing metadata milestone*
-*Researched: 2026-04-09*
+*Stack research for: ironPineOmnium — Gun Time Scoring + Distance Validation milestone*
+*Researched: 2026-04-14*
