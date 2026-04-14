@@ -12,8 +12,7 @@
 import { parse, serialize } from "cookie-es";
 import { getValidAccessToken } from "./lib/strava-tokens.js";
 import { SECTOR_SEGMENT_IDS, KOM_SEGMENT_IDS } from "../../src/lib/segments.ts";
-
-const EVENT_DATES = ["2026-06-06", "2026-06-07"];
+import { EVENT_DATES } from "../../src/lib/event-config.ts";
 
 export const handler = async (event, _context) => {
   // Step 1: Read strava_session cookie
@@ -204,6 +203,9 @@ export const handler = async (event, _context) => {
     }
   }
 
+  const distanceMeters = activity.distance;
+  const startDate = activity.start_date;
+
   // Step 8: Return trimmed response
   return {
     statusCode: 200,
@@ -219,6 +221,8 @@ export const handler = async (event, _context) => {
       sectorEfforts,
       komSegmentIds,
       komEfforts,   // NEW: elapsed times for KOM segments
+      distanceMeters,
+      startDate,
     }),
   };
 };
