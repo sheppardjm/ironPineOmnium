@@ -72,6 +72,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
           <input type="hidden" name="sectorEfforts" id="h-sectorEfforts" />
           <input type="hidden" name="komSegmentIds" id="h-komSegmentIds" />
           <input type="hidden" name="komEfforts" id="h-komEfforts" />
+          <input type="hidden" name="distanceMeters" id="h-distanceMeters" />
+          <input type="hidden" name="startDate" id="h-startDate" />
 
           <div class="form-actions">
             <button type="submit" class="primary-button" id="confirm-btn">
@@ -111,6 +113,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       sectorEfforts?: Record<string, number>;
       komSegmentIds?: string[];
       komEfforts?: Record<string, number>;
+      distanceMeters?: number;
+      startDate?: string;
     };
 
     function renderPreview(payload: Payload): void {
@@ -247,6 +251,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       set("h-sectorEfforts", payload.sectorEfforts ?? {});
       set("h-komSegmentIds", payload.komSegmentIds ?? []);
       set("h-komEfforts", payload.komEfforts ?? {});
+      set("h-distanceMeters", payload.distanceMeters);
+      set("h-startDate", payload.startDate);
     }
 
     function setupForm(): void {
