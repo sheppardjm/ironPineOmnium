@@ -3,7 +3,8 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-12 (shipped 2026-04-08)
-- 🚧 **v1.1 SEO & Social Sharing** — Phases 13-17 (in progress)
+- ✅ **v1.1 SEO & Social Sharing** — Phases 13-17 (shipped 2026-04-10)
+- 🚧 **v1.2 Scoring Integrity** — Phases 18-19 (in progress)
 
 ---
 
@@ -20,11 +21,8 @@ See `.planning/milestones/v1.0-ROADMAP.md` for full phase details.
 
 ---
 
-### 🚧 v1.1 SEO & Social Sharing (In Progress)
-
-**Milestone Goal:** Ensure all shared links and search results display the event logo, proper descriptions, and branded previews. Submit to gravel event directories for discovery.
-
----
+<details>
+<summary>✅ v1.1 SEO & Social Sharing (Phases 13-17) — SHIPPED 2026-04-10</summary>
 
 #### Phase 13: Config and Prerequisites
 
@@ -128,6 +126,50 @@ Plans:
 Plans:
 - [x] 17-01: QA pass — Facebook Sharing Debugger, X Card Validator, Google Rich Results Test, sitemap verification, view-source audit on all pages
 
+</details>
+
+---
+
+### 🚧 v1.2 Scoring Integrity (In Progress)
+
+**Milestone Goal:** Prevent sandbagging by adding validation gates that reject activities too short to represent a complete route attempt and activities that started after the gun-time window — while leaving the moving-time scoring formula, leaderboard display, and athlete JSON schema entirely untouched.
+
+---
+
+#### Phase 18: Configuration Foundation
+
+**Goal**: All event constants needed for validation are in a single shared module, and the Strava fetch function extracts the two new fields (`distance`, `start_date`) that validation gates will inspect.
+
+**Depends on**: Phase 17 (v1.1 complete)
+
+**Requirements**: CONFIG-01, CONFIG-02
+
+**Success Criteria** (what must be TRUE):
+1. `src/lib/event-config.ts` exists and exports the gun start epoch, start-time window, and per-day distance thresholds as named constants — no magic numbers appear anywhere else in the codebase
+2. `netlify/functions/strava-fetch-activity.js` reads `distance` and `start_date` from the Strava API response and makes both available for downstream validation
+3. A local build (`astro build`) succeeds with no TypeScript errors after the new module is introduced
+
+**Plans**: 0 plans (pending)
+
+---
+
+#### Phase 19: Fetch Pipeline Validation Gates
+
+**Goal**: Activities that are too short or started outside the allowed window are rejected at fetch time with errors that tell the rider exactly what was wrong and what the threshold is — no invalid data ever reaches the data store.
+
+**Depends on**: Phase 18 (event-config.ts constants must exist before validation logic can reference thresholds)
+
+**Requirements**: VAL-01, VAL-02, VAL-03, VAL-04, VAL-05
+
+**Success Criteria** (what must be TRUE):
+1. Submitting a Day 1 activity shorter than 156 km is rejected at fetch time with an error message that states the rider's recorded distance and the 156 km minimum
+2. Submitting a Day 2 activity shorter than 153 km is rejected at fetch time with an error message that states the rider's recorded distance and the 153 km minimum
+3. Submitting a Day 1 activity where `start_date` ends in `T00:00:01Z` (Strava "Hide Start Time") is rejected with a clear message before any further processing
+4. Submitting a Day 1 activity where `start_date` is more than 30 minutes after the 8:00 AM ET gun time is rejected with a message that states the rider's actual start time and the allowed window
+5. The submit page (`submit.astro`) surfaces each new error code (`distance_too_short`, `start_too_late`, `hidden_start_time`) as a human-readable message matching the above criteria
+
+**Plans**: 0 plans (pending)
+
 ---
 
 ## Progress
@@ -151,3 +193,5 @@ Plans:
 | 15. BaseLayout Extension and Page Metadata | v1.1 | 2/2 | Complete | 2026-04-09 |
 | 16. Structured Data | v1.1 | 1/1 | Complete | 2026-04-09 |
 | 17. QA and Validation | v1.1 | 1/1 | Complete | 2026-04-10 |
+| 18. Configuration Foundation | v1.2 | 0/? | In Progress | — |
+| 19. Fetch Pipeline Validation Gates | v1.2 | 0/? | Pending | — |

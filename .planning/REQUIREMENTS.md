@@ -37,19 +37,19 @@ Prevent sandbagging by validating that submitted activities cover the full route
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| VAL-01 | — | Pending |
-| VAL-02 | — | Pending |
-| VAL-03 | — | Pending |
-| VAL-04 | — | Pending |
-| VAL-05 | — | Pending |
-| CONFIG-01 | — | Pending |
-| CONFIG-02 | — | Pending |
+| CONFIG-01 | Phase 18 | Pending |
+| CONFIG-02 | Phase 18 | Pending |
+| VAL-01 | Phase 19 | Pending |
+| VAL-02 | Phase 19 | Pending |
+| VAL-03 | Phase 19 | Pending |
+| VAL-04 | Phase 19 | Pending |
+| VAL-05 | Phase 19 | Pending |
 
 **Coverage:**
 - v1.2 requirements: 7 total
-- Mapped to phases: 0
-- Unmapped: 7
+- Mapped to phases: 7
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-14*
-*Last updated: 2026-04-14 after scope revision*
+*Last updated: 2026-04-14 after scope revision — traceability updated for 2-phase structure*

@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** v1.2 Scoring Integrity — not started (defining requirements)
+**Current focus:** v1.2 Scoring Integrity — Phase 18: Configuration Foundation
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 18 — Configuration Foundation
 Plan: —
-Status: Defining requirements
-Last activity: 2026-04-14 — Milestone v1.2 started
+Status: Ready to plan
+Last activity: 2026-04-14 — Roadmap revised for v1.2 (scope narrowed to validation gates only, 2 phases)
 
-Progress: [░░░░░░░░░░░░░░░░░░░] v1.2 not started
+Progress: [░░░░░░░░░░░░░░░░░░░] v1.2 Phase 18 of 19
 
 ## Accumulated Context
 
@@ -23,10 +23,17 @@ Progress: [░░░░░░░░░░░░░░░░░░░] v1.2 not s
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- v1.2 scoping: Gun time scoring replaces moving_time for Day 1 — prevents sandbagging by anchoring to 8:00 AM ET gun start
-- v1.2 scoping: Minimum distance validation on both days (80% of expected route distance)
-- Day 1 route: ~102 miles (±2-3), gun time 8:00 AM ET on 2026-06-06
-- Day 2 route: ~100 miles (±2-3), sectors/KOM scoring unchanged
+- v1.2 scope revision: Moving time scoring is NOT replaced — validation gates only (distance + start time window)
+- v1.2 scoping: Day 1 minimum distance 156 km (95% of ~164 km / ~102 miles route)
+- v1.2 scoping: Day 2 minimum distance 153 km (95% of ~161 km / ~100 miles route)
+- v1.2 scoping: Day 1 start window — reject if start_date > 30 minutes after 8:00 AM ET gun time
+- v1.2 scoping: Hidden start time detection — reject if start_date ends in T00:00:01Z
+- v1.2 phases reduced from 3 to 2 — no Phase 20 (scoring formula/UI) because scoring is unchanged
+- Files NOT touched: scoring.ts, leaderboard display, score preview, athlete JSON schema, submit-result.js, athlete-loader.ts
+- Files changed: NEW src/lib/event-config.ts, MODIFIED strava-fetch-activity.js, MODIFIED submit.astro
+- Gun epoch: June 6 2026 08:00:00 EDT = 12:00:00 UTC (verify independently before hardcoding)
+- Hidden start detection: start_date ending in T00:00:01Z — reject before computation
+- Zero new npm packages for v1.2 implementation
 
 ### Pending Todos
 
@@ -41,5 +48,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-04-14
-Stopped at: Milestone v1.2 initialization — defining requirements
+Stopped at: v1.2 roadmap revised — ready to plan Phase 18
 Resume file: None
