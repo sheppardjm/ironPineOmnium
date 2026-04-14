@@ -124,6 +124,17 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         let message: string;
         if (data.error === "wrong_date" && typeof data.actualDate === "string") {
           message = `That activity is from ${data.actualDate}. The Iron & Pine Omnium is June 6-7, 2026.`;
+        } else if (data.error === "distance_too_short") {
+          message = `Your activity was ${data.actualDistanceKm} km. The minimum for this day is ${data.minDistanceKm} km (95% of the full route). Make sure you submitted the complete ride.`;
+        } else if (data.error === "start_too_late") {
+          const actual = new Date(data.actualStartTime as string).toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            timeZone: "America/New_York",
+          });
+          message = `Your activity started at ${actual} ET. Submissions must begin within 30 minutes of the 8:00 AM gun (by 8:30 AM ET). If you started before Strava was recording, edit your activity start time and resubmit.`;
+        } else if (data.error === "hidden_start_time") {
+          message = `Your Strava activity has "Hide Start Time" enabled. Disable this privacy setting in the Strava app or website and resubmit your activity.`;
         } else {
           message =
             errorMessages[data.error as string] ?? "Something went wrong. Please try again.";
