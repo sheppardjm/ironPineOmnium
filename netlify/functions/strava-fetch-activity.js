@@ -12,7 +12,14 @@
 import { parse, serialize } from "cookie-es";
 import { getValidAccessToken } from "./lib/strava-tokens.js";
 import { SECTOR_SEGMENT_IDS, KOM_SEGMENT_IDS } from "../../src/lib/segments.ts";
-import { EVENT_DATES } from "../../src/lib/event-config.ts";
+import {
+  EVENT_DATES,
+  DAY1_DATE,
+  DAY1_MIN_DISTANCE_METERS,
+  DAY2_MIN_DISTANCE_METERS,
+  GUN_EPOCH_SECONDS,
+  START_WINDOW_SECONDS,
+} from "../../src/lib/event-config.ts";
 
 export const handler = async (event, _context) => {
   // Step 1: Read strava_session cookie
@@ -205,6 +212,58 @@ export const handler = async (event, _context) => {
 
   const distanceMeters = activity.distance;
   const startDate = activity.start_date;
+
+  // Step 7.5: Validation gates (VAL-01 through VAL-04)
+  // Order is critical: hidden_start_time MUST precede epoch arithmetic.
+
+  // VAL-04: Hidden start time — reject before any epoch arithmetic.
+  // Strava emits T00:00:01Z when "Hide Start Time" is enabled, which parses
+  // as midnight UTC and would falsely trigger the start-time window check.
+  if (startDate.endsWith("T00:00:01Z")) {
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      ...(Object.keys(multiValueHeaders).length ? { multiValueHeaders } : {}),
+      body: JSON.stringify({ error: "hidden_start_time" }),
+    };
+  }
+
+  // VAL-01 / VAL-02: Distance gate — enforces per-day minimum.
+  const isDay1 = localDateStr === DAY1_DATE;
+  const minDistanceMeters = isDay1 ? DAY1_MIN_DISTANCE_METERS : DAY2_MIN_DISTANCE_METERS;
+  const minDistanceKm = isDay1 ? 156 : 153;
+
+  if (distanceMeters < minDistanceMeters) {
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      ...(Object.keys(multiValueHeaders).length ? { multiValueHeaders } : {}),
+      body: JSON.stringify({
+        error: "distance_too_short",
+        actualDistanceKm: Math.round(distanceMeters / 10) / 100,
+        minDistanceKm,
+      }),
+    };
+  }
+
+  // VAL-03: Start-time window — Day 1 only.
+  // Reject if activity started more than 30 minutes after the 8:00 AM ET gun.
+  if (isDay1) {
+    const startEpoch = Math.floor(new Date(startDate).getTime() / 1000);
+    const cutoffEpoch = GUN_EPOCH_SECONDS + START_WINDOW_SECONDS;
+    if (startEpoch > cutoffEpoch) {
+      return {
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" },
+        ...(Object.keys(multiValueHeaders).length ? { multiValueHeaders } : {}),
+        body: JSON.stringify({
+          error: "start_too_late",
+          actualStartTime: startDate,
+          cutoffTime: new Date(cutoffEpoch * 1000).toISOString(),
+        }),
+      };
+    }
+  }
 
   // Step 8: Return trimmed response
   return {
