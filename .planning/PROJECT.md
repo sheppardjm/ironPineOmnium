@@ -26,14 +26,19 @@ Riders paste a Strava activity URL, authenticate once, and see themselves on a c
 - ✓ Strava API compliance: only computed scores and rider-chosen names displayed publicly — v1.0
 - ✓ Strava athlete limit review submitted (2026-04-08, pending approval) — v1.0
 - ✓ Strava deauth webhook deletes athlete data on revocation — v1.0
+- ✓ Open Graph meta tags with branded shared image across all pages — v1.1
+- ✓ Twitter/X card meta tags — v1.1
+- ✓ Per-page meta descriptions and titles — v1.1
+- ✓ Favicon and web app manifest — v1.1
+- ✓ Structured data (JSON-LD) for event discovery — v1.1
 
 ### Active
 
-- Open Graph meta tags with branded shared image across all pages — v1.1
-- Twitter/X card meta tags — v1.1
-- Per-page meta descriptions and titles — v1.1
-- Favicon and web app manifest — v1.1
-- Structured data (JSON-LD) for event discovery — v1.1
+- [ ] Gun time scoring for Day 1: race time from 8:00 AM ET gun start replaces moving time — v1.2
+- [ ] Minimum distance validation for Day 1 (80% of ~102-mile route) — v1.2
+- [ ] Minimum distance validation for Day 2 (80% of ~100-mile route) — v1.2
+- [ ] Capture elapsed_time and distance from Strava API — v1.2
+- [ ] Update leaderboard and score preview for race time display — v1.2
 
 ### Out of Scope
 
@@ -44,16 +49,16 @@ Riders paste a Strava activity URL, authenticate once, and see themselves on a c
 - Multi-event season tracking — single weekend event only
 - Email / push notifications — disproportionate infrastructure for 50-100 riders
 
-## Current Milestone: v1.1 SEO & Social Sharing
+## Current Milestone: v1.2 Scoring Integrity
 
-**Goal:** Ensure links shared on social media and search engines display the event logo, proper descriptions, and branded previews.
+**Goal:** Prevent sandbagging by replacing moving-time scoring with gun-time scoring on Day 1 and adding minimum distance validation on both days.
 
 **Target features:**
-- Open Graph and Twitter Card meta tags on all pages
-- Single branded OG image (logo + event name) used site-wide
-- Per-page titles and descriptions
-- Favicon / web app manifest
-- Structured data for search engine event discovery
+- Gun time scoring for Day 1: race time measured from 8:00 AM ET gun start to activity finish
+- Minimum distance validation for Day 1 (~80 miles minimum, 80% of 102-mile route)
+- Minimum distance validation for Day 2 (~80 miles minimum, 80% of 100-mile route)
+- Capture elapsed_time and distance from Strava API at submission time
+- Update leaderboard and score preview to reflect race time instead of moving time
 
 ## Context
 
@@ -88,4 +93,4 @@ Riders paste a Strava activity URL, authenticate once, and see themselves on a c
 | CSV manual fallback procedure | Contingency if Strava approval delayed | — Pending (activate if needed by 2026-06-01) |
 
 ---
-*Last updated: 2026-04-09 — milestone v1.1 started*
+*Last updated: 2026-04-14 — milestone v1.2 started*

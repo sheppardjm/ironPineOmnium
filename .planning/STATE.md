@@ -2,19 +2,19 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-09)
+See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** v1.1 SEO & Social Sharing — Phase 17: QA and Validation (complete)
+**Current focus:** v1.2 Scoring Integrity — not started (defining requirements)
 
 ## Current Position
 
-Phase: 17 of 17 (QA and Validation)
-Plan: 01 of 01
-Status: Phase complete — milestone complete
-Last activity: 2026-04-10 — All 4 QA requirements verified against live deployment
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-14 — Milestone v1.2 started
 
-Progress: [████████████████████] v1.0 complete, v1.1 complete (17/17)
+Progress: [░░░░░░░░░░░░░░░░░░░] v1.2 not started
 
 ## Accumulated Context
 
@@ -23,20 +23,10 @@ Progress: [████████████████████] v1.0 co
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- v1.1 scoping: Single static OG image (not per-page or dynamic) — Satori/Sharp has documented Netlify friction
-- v1.1 scoping: Extend BaseLayout.astro directly, no astro-seo library — Astro 6 compat unconfirmed for third-party
-- v1.1 architecture: `site` URL in astro.config.mjs is prerequisite gate — must be set before any other tag work
-- 13-01 sitemap filter: Use full URL with trailing slash for exclude match (static output format)
-- 13-01 robots.txt: References sitemap-index.xml (not sitemap.xml) — astro/sitemap naming convention
-- 14-02 favicon gen: sharp + ImageMagick combo (sharp for PNG, ImageMagick for ICO multi-size); script in scripts/
-- 14-01 OG image: two-column editorial layout with @napi-rs/canvas; 53KB PNG; logo as silhouette on dark panel
-- 15-01 canonical/og:url: Same computed variable used for both — structural guarantee against trailing-slash mismatch
-- 15-01 twitter:card: Set explicitly (no OG fallback exists for card type)
-- 15-01 noindex: Emits noindex-only (not noindex,nofollow) per SEO-06 — sitemap exclusion handles crawl separately
-- 16-01 JSON-LD: @type Event (not SportsEvent) — only type eligible for Google event rich result cards
-- 16-01 JSON-LD: set:html={JSON.stringify()} mandatory — prevents Astro HTML-escaping that breaks JSON parsing
-- 17-01 QA: Title/description length warnings (71/183 chars) treated as non-blocking findings, not QA failures
-- 17-01 QA: Social links now safe to share — all platform caches will lock in correct previews
+- v1.2 scoping: Gun time scoring replaces moving_time for Day 1 — prevents sandbagging by anchoring to 8:00 AM ET gun start
+- v1.2 scoping: Minimum distance validation on both days (80% of expected route distance)
+- Day 1 route: ~102 miles (±2-3), gun time 8:00 AM ET on 2026-06-06
+- Day 2 route: ~100 miles (±2-3), sectors/KOM scoring unchanged
 
 ### Pending Todos
 
@@ -47,11 +37,9 @@ Recent decisions affecting current work:
 
 - **[Pending]**: Strava athlete limit review submitted 2026-04-08 — awaiting approval (7-10 business day window, follow up by 2026-04-22)
 - **[Note]**: If not approved by 2026-06-01, activate CSV manual entry fallback procedure (scripts/csv-fallback.ts)
-- **[Resolved]**: Live site deployed — all phases 13-16 SEO work pushed to origin/main and verified on Netlify (2026-04-10)
-- **[Resolved]**: Phase 17 QA cleared — social links safe to share
 
 ## Session Continuity
 
-Last session: 2026-04-10
-Stopped at: Completed 17-01-PLAN.md — Phase 17 fully complete; ready for Phase 18 directory submissions
+Last session: 2026-04-14
+Stopped at: Milestone v1.2 initialization — defining requirements
 Resume file: None
