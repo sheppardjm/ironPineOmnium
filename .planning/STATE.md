@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-14)
 ## Current Position
 
 Phase: 19 — Fetch Pipeline Validation Gates
-Plan: —
-Status: Pending (needs planning)
-Last activity: 2026-04-14 — Phase 18 complete, verified, and committed
+Plan: 01 of 01
+Status: Phase complete
+Last activity: 2026-04-14 — Completed 19-01-PLAN.md (validation gates + submit.astro error handlers)
 
-Progress: [██████████░░░░░░░░░] v1.2 Phase 18 complete, Phase 19 pending
+Progress: [████████████████████] v1.2 Scoring Integrity complete (Phase 18 + Phase 19)
 
 ## Accumulated Context
 
@@ -36,6 +36,10 @@ Recent decisions affecting current work:
 - Zero new npm packages for v1.2 implementation
 - event-config.ts naming: follows segments.ts pattern (named exports, as const, no default export)
 - startDate in fetch payload uses activity.start_date (UTC ISO string) for epoch comparison in Phase 19
+- Phase 19 shipped: three validation gates in strava-fetch-activity.js (hidden_start_time → distance_too_short → start_too_late) and matching error handlers in submit.astro
+- Gate ordering: hidden_start_time MUST precede epoch arithmetic (T00:00:01Z parses as midnight UTC)
+- start_too_late is Day 1 only — Day 2 activities exempt from start-window check
+- v1.2 Scoring Integrity is complete — no further phases planned
 
 ### Pending Todos
 
@@ -49,6 +53,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-14
-Stopped at: Phase 18 complete — ready to plan Phase 19
+Last session: 2026-04-14T23:56:37Z
+Stopped at: Phase 19 Plan 01 complete — v1.2 Scoring Integrity fully shipped
 Resume file: None
