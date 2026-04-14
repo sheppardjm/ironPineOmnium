@@ -10,6 +10,7 @@
 // use non-200.
 
 import { parse } from "cookie-es";
+import { DAY1_DATE, DAY2_DATE } from "../../src/lib/event-config.ts";
 
 const GITHUB_API = "https://api.github.com";
 
@@ -87,9 +88,9 @@ export const handler = async (event, _context) => {
 
   // Step 5: Determine which day from startDateLocal
   let isDay1;
-  if (startDateLocal === "2026-06-06") {
+  if (startDateLocal === DAY1_DATE) {
     isDay1 = true;
-  } else if (startDateLocal === "2026-06-07") {
+  } else if (startDateLocal === DAY2_DATE) {
     isDay1 = false;
   } else {
     return {
