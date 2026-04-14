@@ -171,7 +171,10 @@ Plans:
 4. Submitting a Day 1 activity where `start_date` is more than 30 minutes after the 8:00 AM ET gun time is rejected with a message that states the rider's actual start time and the allowed window
 5. The submit page (`submit.astro`) surfaces each new error code (`distance_too_short`, `start_too_late`, `hidden_start_time`) as a human-readable message matching the above criteria
 
-**Plans**: 0 plans (pending)
+**Plans**: 1 plan
+
+Plans:
+- [ ] 19-01: Add validation gates to strava-fetch-activity.js and error message handlers to submit.astro
 
 ---
 
@@ -197,4 +200,4 @@ Plans:
 | 16. Structured Data | v1.1 | 1/1 | Complete | 2026-04-09 |
 | 17. QA and Validation | v1.1 | 1/1 | Complete | 2026-04-10 |
 | 18. Configuration Foundation | v1.2 | 1/1 | Complete | 2026-04-14 |
-| 19. Fetch Pipeline Validation Gates | v1.2 | 0/? | Pending | — |
+| 19. Fetch Pipeline Validation Gates | v1.2 | 0/1 | Pending | — |
