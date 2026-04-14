@@ -149,7 +149,10 @@ Plans:
 2. `netlify/functions/strava-fetch-activity.js` reads `distance` and `start_date` from the Strava API response and makes both available for downstream validation
 3. A local build (`astro build`) succeeds with no TypeScript errors after the new module is introduced
 
-**Plans**: 0 plans (pending)
+**Plans**: 1 plan
+
+Plans:
+- [x] 18-01: Create event-config.ts module, extend strava-fetch-activity.js with distance/startDate extraction, and wire submit-confirm.astro transport layer
 
 ---
 
@@ -193,5 +196,5 @@ Plans:
 | 15. BaseLayout Extension and Page Metadata | v1.1 | 2/2 | Complete | 2026-04-09 |
 | 16. Structured Data | v1.1 | 1/1 | Complete | 2026-04-09 |
 | 17. QA and Validation | v1.1 | 1/1 | Complete | 2026-04-10 |
-| 18. Configuration Foundation | v1.2 | 0/? | In Progress | — |
+| 18. Configuration Foundation | v1.2 | 1/1 | Complete | 2026-04-14 |
 | 19. Fetch Pipeline Validation Gates | v1.2 | 0/? | Pending | — |

@@ -19,8 +19,8 @@ Prevent sandbagging by validating that submitted activities cover the full route
 
 ### Configuration
 
-- [ ] **CONFIG-01**: Gun epoch, start time window, and distance thresholds are defined in a shared `event-config.ts` module
-- [ ] **CONFIG-02**: `distance` and `start_date` are extracted from the Strava API response at fetch time
+- [x] **CONFIG-01**: Gun epoch, start time window, and distance thresholds are defined in a shared `event-config.ts` module
+- [x] **CONFIG-02**: `distance` and `start_date` are extracted from the Strava API response at fetch time
 
 ## Out of Scope
 
@@ -37,8 +37,8 @@ Prevent sandbagging by validating that submitted activities cover the full route
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| CONFIG-01 | Phase 18 | Pending |
-| CONFIG-02 | Phase 18 | Pending |
+| CONFIG-01 | Phase 18 | Complete |
+| CONFIG-02 | Phase 18 | Complete |
 | VAL-01 | Phase 19 | Pending |
 | VAL-02 | Phase 19 | Pending |
 | VAL-03 | Phase 19 | Pending |

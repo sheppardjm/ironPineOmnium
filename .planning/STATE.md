@@ -5,16 +5,16 @@
 See: .planning/PROJECT.md (updated 2026-04-14)
 
 **Core value:** Riders paste a Strava activity URL, authenticate once, and see themselves on a combined leaderboard that scores both days fairly across three categories.
-**Current focus:** v1.2 Scoring Integrity — Phase 18: Configuration Foundation
+**Current focus:** v1.2 Scoring Integrity — Phase 19: Fetch Pipeline Validation Gates
 
 ## Current Position
 
-Phase: 18 — Configuration Foundation
-Plan: 01 of 01
-Status: Phase complete
-Last activity: 2026-04-14 — Completed 18-01-PLAN.md (configuration foundation)
+Phase: 19 — Fetch Pipeline Validation Gates
+Plan: —
+Status: Pending (needs planning)
+Last activity: 2026-04-14 — Phase 18 complete, verified, and committed
 
-Progress: [█████████░░░░░░░░░░] v1.2 Phase 18 of 19 (Phase 18 complete, Phase 19 remaining)
+Progress: [██████████░░░░░░░░░] v1.2 Phase 18 complete, Phase 19 pending
 
 ## Accumulated Context
 
@@ -29,9 +29,9 @@ Recent decisions affecting current work:
 - v1.2 scoping: Day 1 start window — reject if start_date > 30 minutes after 8:00 AM ET gun time
 - v1.2 scoping: Hidden start time detection — reject if start_date ends in T00:00:01Z
 - v1.2 phases reduced from 3 to 2 — no Phase 20 (scoring formula/UI) because scoring is unchanged
-- Files NOT touched: scoring.ts, leaderboard display, score preview, athlete JSON schema, submit-result.js, athlete-loader.ts
-- Files changed: NEW src/lib/event-config.ts, MODIFIED strava-fetch-activity.js, MODIFIED submit.astro
-- Gun epoch: June 6 2026 08:00:00 EDT = 12:00:00 UTC (verified as 1780747200 and hardcoded in event-config.ts)
+- Files NOT touched: scoring.ts, leaderboard display, score preview, athlete JSON schema, athlete-loader.ts
+- Phase 18 shipped: event-config.ts (7 constants), strava-fetch-activity.js (distanceMeters/startDate extraction), submit-confirm.astro (transport layer), submit-result.js (dates from event-config)
+- Gun epoch: June 6 2026 08:00:00 EDT = 12:00:00 UTC = 1780747200
 - Hidden start detection: start_date ending in T00:00:01Z — reject before computation
 - Zero new npm packages for v1.2 implementation
 - event-config.ts naming: follows segments.ts pattern (named exports, as const, no default export)
@@ -50,5 +50,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-04-14
-Stopped at: Completed 18-01-PLAN.md — Phase 18 complete, ready to plan Phase 19
+Stopped at: Phase 18 complete — ready to plan Phase 19
 Resume file: None
