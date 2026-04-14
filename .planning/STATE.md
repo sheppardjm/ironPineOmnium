@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-14)
 ## Current Position
 
 Phase: 18 — Configuration Foundation
-Plan: —
-Status: Ready to plan
-Last activity: 2026-04-14 — Roadmap revised for v1.2 (scope narrowed to validation gates only, 2 phases)
+Plan: 01 of 01
+Status: Phase complete
+Last activity: 2026-04-14 — Completed 18-01-PLAN.md (configuration foundation)
 
-Progress: [░░░░░░░░░░░░░░░░░░░] v1.2 Phase 18 of 19
+Progress: [█████████░░░░░░░░░░] v1.2 Phase 18 of 19 (Phase 18 complete, Phase 19 remaining)
 
 ## Accumulated Context
 
@@ -31,9 +31,11 @@ Recent decisions affecting current work:
 - v1.2 phases reduced from 3 to 2 — no Phase 20 (scoring formula/UI) because scoring is unchanged
 - Files NOT touched: scoring.ts, leaderboard display, score preview, athlete JSON schema, submit-result.js, athlete-loader.ts
 - Files changed: NEW src/lib/event-config.ts, MODIFIED strava-fetch-activity.js, MODIFIED submit.astro
-- Gun epoch: June 6 2026 08:00:00 EDT = 12:00:00 UTC (verify independently before hardcoding)
+- Gun epoch: June 6 2026 08:00:00 EDT = 12:00:00 UTC (verified as 1780747200 and hardcoded in event-config.ts)
 - Hidden start detection: start_date ending in T00:00:01Z — reject before computation
 - Zero new npm packages for v1.2 implementation
+- event-config.ts naming: follows segments.ts pattern (named exports, as const, no default export)
+- startDate in fetch payload uses activity.start_date (UTC ISO string) for epoch comparison in Phase 19
 
 ### Pending Todos
 
@@ -48,5 +50,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-04-14
-Stopped at: v1.2 roadmap revised — ready to plan Phase 18
+Stopped at: Completed 18-01-PLAN.md — Phase 18 complete, ready to plan Phase 19
 Resume file: None
