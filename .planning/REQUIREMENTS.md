@@ -11,11 +11,11 @@ Prevent sandbagging by validating that submitted activities cover the full route
 
 ### Activity Validation
 
-- [ ] **VAL-01**: Day 1 activities below ~97 miles (156 km, 95% of route) are rejected at fetch time with a user-readable error
-- [ ] **VAL-02**: Day 2 activities below ~95 miles (153 km, 95% of route) are rejected at fetch time with a user-readable error
-- [ ] **VAL-03**: Day 1 activities that started more than 30 minutes after the 8:00 AM ET gun time are rejected with a user-readable error
-- [ ] **VAL-04**: Activities with Strava "Hide Start Time" privacy (`start_date` ending in `T00:00:01Z`) are rejected with a clear error message
-- [ ] **VAL-05**: All validation errors show the rider's actual value (distance or start time) and the required threshold
+- [x] **VAL-01**: Day 1 activities below ~97 miles (156 km, 95% of route) are rejected at fetch time with a user-readable error
+- [x] **VAL-02**: Day 2 activities below ~95 miles (153 km, 95% of route) are rejected at fetch time with a user-readable error
+- [x] **VAL-03**: Day 1 activities that started more than 30 minutes after the 8:00 AM ET gun time are rejected with a user-readable error
+- [x] **VAL-04**: Activities with Strava "Hide Start Time" privacy (`start_date` ending in `T00:00:01Z`) are rejected with a clear error message
+- [x] **VAL-05**: All validation errors show the rider's actual value (distance or start time) and the required threshold
 
 ### Configuration
 
@@ -39,11 +39,11 @@ Prevent sandbagging by validating that submitted activities cover the full route
 |-------------|-------|--------|
 | CONFIG-01 | Phase 18 | Complete |
 | CONFIG-02 | Phase 18 | Complete |
-| VAL-01 | Phase 19 | Pending |
-| VAL-02 | Phase 19 | Pending |
-| VAL-03 | Phase 19 | Pending |
-| VAL-04 | Phase 19 | Pending |
-| VAL-05 | Phase 19 | Pending |
+| VAL-01 | Phase 19 | Complete |
+| VAL-02 | Phase 19 | Complete |
+| VAL-03 | Phase 19 | Complete |
+| VAL-04 | Phase 19 | Complete |
+| VAL-05 | Phase 19 | Complete |
 
 **Coverage:**
 - v1.2 requirements: 7 total

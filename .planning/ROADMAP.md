@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 MVP** — Phases 1-12 (shipped 2026-04-08)
 - ✅ **v1.1 SEO & Social Sharing** — Phases 13-17 (shipped 2026-04-10)
-- 🚧 **v1.2 Scoring Integrity** — Phases 18-19 (in progress)
+- ✅ **v1.2 Scoring Integrity** — Phases 18-19 (shipped 2026-04-14)
 
 ---
 
@@ -130,7 +130,7 @@ Plans:
 
 ---
 
-### 🚧 v1.2 Scoring Integrity (In Progress)
+### ✅ v1.2 Scoring Integrity (Shipped 2026-04-14)
 
 **Milestone Goal:** Prevent sandbagging by adding validation gates that reject activities too short to represent a complete route attempt and activities that started after the gun-time window — while leaving the moving-time scoring formula, leaderboard display, and athlete JSON schema entirely untouched.
 
@@ -174,7 +174,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 19-01: Add validation gates to strava-fetch-activity.js and error message handlers to submit.astro
+- [x] 19-01: Add validation gates to strava-fetch-activity.js and error message handlers to submit.astro
 
 ---
 
@@ -200,4 +200,4 @@ Plans:
 | 16. Structured Data | v1.1 | 1/1 | Complete | 2026-04-09 |
 | 17. QA and Validation | v1.1 | 1/1 | Complete | 2026-04-10 |
 | 18. Configuration Foundation | v1.2 | 1/1 | Complete | 2026-04-14 |
-| 19. Fetch Pipeline Validation Gates | v1.2 | 0/1 | Pending | — |
+| 19. Fetch Pipeline Validation Gates | v1.2 | 1/1 | Complete | 2026-04-14 |
